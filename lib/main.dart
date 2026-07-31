@@ -32,9 +32,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FlutterAppBadger.removeBadge();
 
-  kakao.KakaoSdk.init(
-    nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe',
-  );
+  kakao.KakaoSdk.init(nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe');
   await _initAsyncTasks();
   runApp(const tablebid());
 }
@@ -103,8 +101,6 @@ Future<void> _initAsyncTasks() async {
   });
 }
 
-
-
 class tablebid extends StatefulWidget {
   const tablebid({super.key});
 
@@ -113,7 +109,6 @@ class tablebid extends StatefulWidget {
 }
 
 class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
-  
   @override
   void initState() {
     super.initState();
@@ -126,17 +121,17 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this); // 감지기 해제
     super.dispose();
   }
-  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if(state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed) {
       FlutterAppBadger.removeBadge();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp( 
+    return MaterialApp(
       title: 'tablebid',
       theme: ThemeData(
         brightness: Brightness.dark,
@@ -177,6 +172,16 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           selectedItemColor: Colors.white,
           unselectedItemColor: Colors.white70,
           type: BottomNavigationBarType.fixed,
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: const Color(0xFF2C2C2E).withValues(alpha:1),
+          surfaceTintColor: Colors.white.withValues(alpha: 0.04),
+          elevation: 24,
+          shadowColor: Colors.black87,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+            side: BorderSide(color: Colors.white.withValues(alpha: 0.24)),
+          ),
         ),
       ),
       home: SplashScreen(),
