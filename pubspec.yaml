@@ -34,17 +34,48 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  image_picker: ^1.1.1
+  firebase_core: ^4.0.0
+  firebase_auth: ^6.0.1
+  google_sign_in: ^6.0.0
+  cloud_firestore: ^6.0.0
+  firebase_storage: ^13.0.3
+  firebase_app_check: ^0.4.1+4
+  url_launcher: ^6.3.2
+  firebase_messaging: ^16.1.1
+  flutter_local_notifications: ^20.0.0
+  flutter_app_badger: ^1.5.0
+  intl: ^0.20.2
+  kakao_flutter_sdk_user: ^1.10.0
+  sign_in_with_apple: ^7.0.1
+  http: ^1.2.2
+  package_info_plus: ^10.1.0
+  web_socket_channel: ^3.0.3
 
 dev_dependencies:
+  change_app_package_name: ^1.4.0
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/table_bid.png"
+  adaptive_icon_background: "#ffffff"
+  adaptive_icon_foreground: "assets/images/tablebid_logo.png"
+
+flutter_native_splash:
+  color: "#ffffff" # 배경색 (흰색)
+  image: assets/images/tablebid_logo.png # 중앙에 띄울 로고 경로
+  fullscreen: true
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+  # rules and activating additional ones
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
