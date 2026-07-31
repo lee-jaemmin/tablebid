@@ -35,7 +35,7 @@ void main() async {
   kakao.KakaoSdk.init(
     nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe',
   );
-  _initAsyncTasks();
+  await _initAsyncTasks();
   runApp(const tablebid());
 }
 
@@ -136,87 +136,49 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xFF16A34A); // 원하는 초록
-
-    final lightScheme = ColorScheme.fromSeed(
-      seedColor: seed,
-      brightness: Brightness.light,
-    );
-    final darkScheme = ColorScheme.fromSeed(
-      seedColor: seed,
-      brightness: Brightness.dark,
-    );
     return MaterialApp( 
       title: 'tablebid',
       theme: ThemeData(
-        colorScheme: lightScheme,
-        primaryColor: const Color.fromARGB(255, 1, 10, 61),
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.white,
+          surface: Colors.black,
+          onSurface: Colors.white,
+        ),
+        primaryColor: Colors.white,
         appBarTheme: const AppBarTheme(
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.white,
+          foregroundColor: Colors.white,
+          backgroundColor: Colors.black,
           elevation: 0,
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: Sizes.size18,
-            color: Colors.black,
+            color: Colors.white,
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: const UnderlineInputBorder(),
+        inputDecorationTheme: const InputDecorationTheme(
+          border: UnderlineInputBorder(),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: lightScheme.outlineVariant),
+            borderSide: BorderSide(color: Colors.white54),
           ),
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: lightScheme.primary, width: 2),
+            borderSide: BorderSide(color: Colors.white, width: 2),
           ),
-          floatingLabelStyle: TextStyle(color: lightScheme.primary),
+          floatingLabelStyle: TextStyle(color: Colors.white),
         ),
         // 진행바 색
-        progressIndicatorTheme: ProgressIndicatorThemeData(
-          color: lightScheme.primary,
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: Colors.white,
         ),
         // BottomNavigationBar 색
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: lightScheme.surface,
-          selectedItemColor: lightScheme.primary,
-          unselectedItemColor: lightScheme.onSurfaceVariant,
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
           type: BottomNavigationBarType.fixed,
         ),
       ),
-      darkTheme: ThemeData(
-        colorScheme: darkScheme,
-        primaryColor: const Color.fromARGB(255, 1, 10, 61),
-        appBarTheme: AppBarTheme(
-          foregroundColor: darkScheme.onSurface,
-          backgroundColor: darkScheme.surface,
-          elevation: 0,
-          titleTextStyle: TextStyle(
-            fontWeight: FontWeight.w800,
-            fontSize: Sizes.size18,
-            color: darkScheme.onSurface,
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: const UnderlineInputBorder(),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: darkScheme.outlineVariant),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: darkScheme.primary, width: 2),
-          ),
-          floatingLabelStyle: TextStyle(color: darkScheme.primary),
-        ),
-        progressIndicatorTheme: ProgressIndicatorThemeData(
-          color: darkScheme.primary,
-        ),
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-          backgroundColor: darkScheme.surface,
-          selectedItemColor: darkScheme.primary,
-          unselectedItemColor: darkScheme.onSurfaceVariant,
-          type: BottomNavigationBarType.fixed,
-        ),
-      ),
-      themeMode: ThemeMode.system,
       home: SplashScreen(),
     );
   }
