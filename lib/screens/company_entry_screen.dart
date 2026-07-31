@@ -478,7 +478,19 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                 icon: Icons.vpn_key_outlined,
                 onTap: _showInviteCodeDialog,
               ),
-            ],
+              SizedBox(height: 48),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton(onPressed: () {}, child: Text('손님입니다', style: TextStyle(fontSize: 20),), style: FilledButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      )
+                    ),),
+                  ),
+                ],
+              ),            
+              ],
           ),
         ),
       ),
