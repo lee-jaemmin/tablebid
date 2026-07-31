@@ -217,9 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => CompanyEntryScreen(
-              userId: user.id,
-            ),
+            builder: (context) => CompanyEntryScreen(userId: user.id),
           ),
         );
       }
@@ -231,9 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              error.toString().replaceAll('Exception: ', ''),
-            ),
+            content: Text(error.toString().replaceAll('Exception: ', '')),
           ),
         );
       }
@@ -329,9 +325,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (companyId != null && companyId != 'null' && companyId != '') {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(
-              builder: (context) => HomeScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
           );
         } else {
           Navigator.pushReplacement(
@@ -416,6 +410,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      side: BorderSide(color: Colors.white),
                       backgroundColor: Colors.black,
                       foregroundColor: Colors.white,
                       elevation: 0,
@@ -438,9 +433,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      foregroundColor: Theme.of(context).colorScheme.onSurface,
+                      backgroundColor: Colors.grey.shade300,
+                      foregroundColor: Colors.black,
                     ),
                     onPressed: () {
                       Navigator.push(
@@ -464,10 +458,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onTap: _showLegacyEmailLogin,
                   child: const Text(
                     "기존 이메일로 로그인하기",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
               ],
