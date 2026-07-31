@@ -362,21 +362,14 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "GRID",
+                "TABLE BID",
                 style: TextStyle(
                   fontSize: 48,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                "스마트한 매장 관리의 시작",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
+              
               const SizedBox(height: 80),
 
               if (_isLoginLoading)
