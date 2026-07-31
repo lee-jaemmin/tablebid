@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:tablebid/models/log_model.dart';
+import 'package:tablebid/models/table_purchases_model.dart';
+import 'package:tablebid/services/log_api.dart';
+import 'package:tablebid/services/purchase_api.dart';
+import 'package:tablebid/widgets/price_formatter.dart';
+
+class EditPurchaseScreen extends StatefulWidget {
+  final tableId;
+  const EditPurchaseScreen({required this.tableId, super.key});
+
+  @override
+  State<EditPurchaseScreen> createState() => _EditPurchaseScreenState();
+}
+
+class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
+  List<TablePurchasesModel> _purchases = []; // 이렇게 선언해놓고 initState에서 가져오는 게 정석
+  List<LogModel> _logs = [];
+
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final purchases = await PurchaseApi().getPurchases(widget.tableId);
+    final logs = await LogApi().getLogs(widget.tableId);
+
+    if (!context.mounted) return;
+
+    setState(() {
+      _purchases = purchases;
+      _logs = logs;
+    });
+  }
+
+  Future<void> _modifyLogsAndPurchases(LogModel log) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('구매 취소 확인'),
+          content: Text('${log.itemName} ${log.quantity}개 구매 기록을 취소하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text('아니오'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text('네'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if(confirm != true) return; // 밖에 누르면 null이 올 수도 있음. true로 체크
+
+    print(
+      'delete log id=${log.id}, itemId=${log.itemId}, name=${log.itemName}, 개수=${log.quantity}',
+    );
+
+    try {
+      await LogApi().deleteLogAndPurchase(logId: log.id);
+      if (!context.mounted) return;
+      await _loadData();
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('구매 내역 삭제 도중 오류 발생: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('구매 내역 삭제'),
+      ),
+      body: _logs.length == 0
+          ? Center(
+              child: Text('아직 구매 내역이 없습니다.'),
+            )
+          : ListView.builder(
+              itemCount: _logs.length,
+              itemBuilder: (context, index) {
+                final log = _logs[index];
+                return ListTile(
+                  title: Text(log.itemName),
+                  subtitle: Text('수량: ${log.quantity}'),
+                  trailing: Text(
+                    formatPrice(log.quantity * log.unitPrice),
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: IconButton(
+                      onPressed: () async {
+                        _modifyLogsAndPurchases(log);
+                      },
+                      icon: Icon(Icons.delete_rounded),
+                      color: Colors.red,
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
