@@ -195,7 +195,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: BorderSide(color: Colors.white),
                 ),
                 hintText: "매장 이름은 변경할 수 없으니 신중하게 입력해주세요.",
               ),
@@ -244,23 +244,42 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("취소", style: TextStyle(color: Colors.black)),
-          ),
-          ElevatedButton(
-            onPressed: _isLoading
-                ? null
-                : () async {
-                    if (_companyNameController.text.trim().isEmpty ||
-                        _addressController.text.trim().isEmpty)
-                      return; // 매장 이름이 비어있으면 return
-                    await _createCompany(); // 매장 생성 로직 실행
-                  },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : Text('생성하기'),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(
+                      color: Colors.white,
+                    ),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("취소", style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () async {
+                          if (_companyNameController.text.trim().isEmpty ||
+                              _addressController.text.trim().isEmpty)
+                            return; // 매장 이름이 비어있으면 return
+                          await _createCompany(); // 매장 생성 로직 실행
+                        },
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(
+                      color: Colors.white,
+                    ),
+                    backgroundColor: Colors.white, foregroundColor: Colors.black),
+                  child: _isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : Text('생성하기'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
