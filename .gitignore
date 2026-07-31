@@ -43,3 +43,30 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android Release Signing (보안 중요)
+android/key.properties
+android/app/*.jks
+android/app/*.keystore
+android/app/google-services.json
+# Firebase 설정 파일 (유출 주의)
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+
+# 환경 변수 파일 (API 키, DB 비밀번호 등)
+.env
+*.env
+*.key
+*.pem
+
+# 맥 OS 시스템 파일
+.DS_Store
+
+# Xcode 개인 설정
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+
+# Firebase config
+lib/firebase_options.dart
