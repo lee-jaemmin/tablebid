@@ -7,6 +7,7 @@ import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/agree_checkbox.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/foundation.dart'; 
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -76,9 +77,26 @@ class _SignupScreenState extends State<SignupScreen> {
 
     setState(() => isLoading = true);
 
+    
+
     try {
       UserCredential userCredential;
-      final fcmtoken = await FirebaseMessaging.instance.getToken();
+      String? fcmtoken;
+      try {
+        final messeging = FirebaseMessaging.instance;
+        await messeging.requestPermission();
+        if(defaultTargetPlatform == TargetPlatform.iOS) {
+          final apnToken = await messeging.getAPNSToken();
+
+          if(apnToken != null) {
+            fcmtoken = await messeging.getToken();
+          } else {
+            print('apn token 발급 안되어서 fcm 발급 보류');
+          }
+        }
+      } catch (e) {
+        print('FCM 토큰 발급 보류: $e');
+      }
 
       userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
