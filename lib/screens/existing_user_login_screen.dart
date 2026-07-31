@@ -8,6 +8,7 @@ import 'package:tablebid/screens/password_reset_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
 import 'home_screen.dart';
+import 'package:flutter/cupertino.dart';
 
 class ExistingUserLogin extends StatefulWidget {
   const ExistingUserLogin({super.key});
@@ -174,7 +175,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -182,7 +183,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     "이전에 가입하신 이메일로 로그인해주세요.",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 50),
@@ -223,7 +224,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     child: ElevatedButton(
                       onPressed: _isFormValid() ? _submit : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black87,
+                        backgroundColor: Colors.white,
                         disabledBackgroundColor: Colors.grey.shade300,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
@@ -231,14 +232,23 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                         elevation: 0,
                       ),
                       child: isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          ? const CupertinoActivityIndicator(color: Colors.black,)
+                          : _isFormValid() ? 
+                          const Text(
+                              "로그인",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ) : 
+                            const Text(
                               "로그인",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
                               ),
-                            ),
+                            )
+                            ,
                     ),
                   ),
                   const SizedBox(height: 30),
