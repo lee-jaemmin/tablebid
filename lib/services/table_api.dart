@@ -54,6 +54,9 @@ class TableApi {
     String? purchaseSummary,
     bool clearTimer = false,
     DateTime? reservedAt,
+    DateTime? bidEndAt,
+    bool? bidAvailable,
+    int? leastBidPrice,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId');
     final currentTable = await getTable(tableId);
@@ -98,16 +101,15 @@ class TableApi {
         if (timerAlertSentAt != null)
           'timer_alert_sent_at': timerAlertSentAt.toUtc().toIso8601String(),
       },
+      if (bidEndAt != null) 'bid_end_at': bidEndAt.toUtc().toIso8601String(),
+      if (bidAvailable != null) 'bid_avaiable': bidAvailable,
+      if (leastBidPrice != null) 'least_bid_price': leastBidPrice,
     };
-    print('PATCH $url');
-    print(jsonEncode(body));
     final response = await http.patch(
       url,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(body),
     );
-    print('RESPONSE ${response.statusCode}');
-    print(response.body);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return TableModel.fromJson(data);

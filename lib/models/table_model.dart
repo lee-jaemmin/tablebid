@@ -25,6 +25,7 @@ class TableModel {
   DateTime? reservedAt;
   DateTime? bidEndAt;
   bool bidAvailable;
+  int? leastBidPrice;
 
   TableModel({
     required this.id,
@@ -53,6 +54,7 @@ class TableModel {
     this.reservedAt,
     this.bidEndAt,
     required this.bidAvailable,
+    this.leastBidPrice,
   });
 
   static DateTime? _parseUtcDateTime(dynamic value) {
@@ -91,7 +93,8 @@ class TableModel {
       purchaseSummary: (json['purchase_summary'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       isReserved: json['is_reserved'],
       bidAvailable: json['bid_available'],
-      bidEndAt: _parseUtcDateTime(json['bid_end_at'])
+      bidEndAt: _parseUtcDateTime(json['bid_end_at']),
+      leastBidPrice: json['least_bid_price'],
     );
   }
 }
