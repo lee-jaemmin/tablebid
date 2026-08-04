@@ -21,8 +21,8 @@ class SidebarMenu extends StatelessWidget {
           name,
           style: TextStyle(
             fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         leading: Icon(

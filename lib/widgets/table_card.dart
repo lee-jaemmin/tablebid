@@ -64,14 +64,14 @@ class TableCard extends StatelessWidget {
               ? Colors.red
               : isInUse
               ? Colors.orange.shade100
-              : Colors.grey.shade300,
+              : Colors.grey.shade400,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isPassed
                 ? Colors.red
                 : isInUse
                 ? Colors.orange
-                : Colors.grey.shade300,
+                : Colors.grey.shade400,
           ),
         ),
 

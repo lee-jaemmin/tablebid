@@ -430,8 +430,6 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('설정'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0.5,
       ),
       body: ListView(
@@ -468,7 +466,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             title: const Text(
               '알림이 오지 않나요?',
-              style: TextStyle(color: Colors.black),
+              
             ),
             subtitle: const Text('토큰 다시 발급 받기'),
             onTap: () => _reAssignToken(context, _currentUser),

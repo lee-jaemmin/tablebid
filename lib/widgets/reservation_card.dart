@@ -63,6 +63,7 @@ class ReservationCard extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
+                  color: Colors.black
                 ),
               ),
               const SizedBox(height: 8),
@@ -80,7 +81,7 @@ class ReservationCard extends StatelessWidget {
               else
                 const Text(
                   '예약 없음',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
             ],
           ),

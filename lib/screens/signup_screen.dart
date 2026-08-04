@@ -184,7 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "GRID",
+                    "TABLE BID",
                     style: TextStyle(
                       fontSize: 38,
                       fontWeight: FontWeight.bold,
@@ -254,7 +254,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black87,
+                        backgroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -266,7 +266,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               "가입 및 입장하기",
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
