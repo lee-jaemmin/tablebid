@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
@@ -6,6 +7,7 @@ import 'package:tablebid/models/log_model.dart';
 import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
 import 'package:tablebid/services/log_api.dart';
+import 'package:tablebid/services/purchase_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/purchase_item_chip.dart';
 
@@ -56,7 +58,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     super.initState();
     print('구매 화면 userid: ${widget.userId}');
     _searchController = TextEditingController();
-    _loadData();
+    _loadMenu();
+    _loadPurchases(widget.tableId);
   }
 
   @override
@@ -65,7 +68,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     super.dispose();
   }
 
-  Future<void> _loadData({bool forceRefresh = false}) async {
+  Future<void> _loadMenu({bool forceRefresh = false}) async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -97,6 +100,24 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     }
   }
 
+  Future<void> _loadPurchases(String tableId) async {
+    try {
+      final purchases = await PurchaseApi().getPurchases(tableId);
+      if (!mounted) return;
+      setState(() {
+        _existedPurchase = purchases;
+      });
+    } catch (e) {
+      print("누적 구매 불러오는 중 오류: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('누적 구매 불러오는 중 오류가 발생했습니다.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   Future<void> _addPurchase(ItemModel item) async {
     // 한 번 누를 때마다 실행.
     final selectedItem = SelectedItem(
@@ -123,7 +144,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     try {
       showDialog(
         context: context,
-        builder: (context) => Center(child: CircularProgressIndicator()),
+        builder: (context) => Center(child: CupertinoActivityIndicator()),
         barrierDismissible: false,
       );
       final batchId = DateTime.now().microsecondsSinceEpoch
@@ -156,7 +177,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     setState(() {
       _newPurchases.clear();
     });
-    await _loadData();
+    await _loadMenu();
   }
 
   @override
@@ -222,7 +243,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                             final isSelected =
                                 category.id == _selectedCategoryId;
                             return Material(
-                              color: Colors.transparent, 
+                              color: Colors.transparent,
                               child: ListTile(
                                 dense: true,
                                 selected: isSelected,
@@ -252,15 +273,21 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                 padding: const EdgeInsets.all(12),
                                 child: Wrap(
                                   spacing: 8,
-                                  runSpacing: 8
-                                  ,
+                                  runSpacing: 8,
                                   children: categorySelectedItems.map((item) {
-                                    final purchaseIndex = _newPurchases.indexWhere((element) => element.itemId == item.id);
-                                    final quantity = purchaseIndex == -1 ? 0 : _newPurchases[purchaseIndex].quantity;
+                                    final purchaseIndex = _newPurchases
+                                        .indexWhere(
+                                          (element) =>
+                                              element.itemId == item.id,
+                                        );
+                                    final quantity = purchaseIndex == -1
+                                        ? 0
+                                        : _newPurchases[purchaseIndex].quantity;
                                     return PurchaseItemChip(
                                       itemName: item.itemName,
                                       isSelected: _newPurchases.any(
-                                        (purchase) => purchase.itemId == item.id,
+                                        (purchase) =>
+                                            purchase.itemId == item.id,
                                       ),
                                       onTap: () => _addPurchase(item),
                                       quantity: quantity,
@@ -319,7 +346,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   style: FilledButton.styleFrom(
                     side: BorderSide(color: Colors.black),
                     foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Colors.red,
                     minimumSize: const Size(double.infinity, 52),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -343,6 +370,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    
                   ),
                   onPressed: () async {
                     await _sendData(_newPurchases);
@@ -399,7 +427,13 @@ class _PurchaseSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('누적 구매 목록', style: TextStyle(color: Color(0xffecb88d), fontWeight: FontWeight.bold),),
+                Text(
+                  '누적 구매 목록',
+                  style: TextStyle(
+                    color: Color(0xffecb88d),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   '총 가격: ${formatPrice(totalPrice)}',
@@ -429,7 +463,13 @@ class _PurchaseSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('최근 구매 목록', style: TextStyle(color: Color(0xffecb88d), fontWeight: FontWeight.bold),),
+                const Text(
+                  '최근 구매 목록',
+                  style: TextStyle(
+                    color: Color(0xffecb88d),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 if (newPurchases.isEmpty)
                   latestLogs.isEmpty
