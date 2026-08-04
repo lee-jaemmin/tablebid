@@ -3,6 +3,7 @@ class CompanyModel {
   final String name;
   final String inviteCode;
   final String region;
+  final String address;
   final List<String> sections;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -12,6 +13,7 @@ class CompanyModel {
     required this.name,
     required this.inviteCode,
     required this.region,
+    required this.address,
     required this.sections,
     required this.createdAt,
     required this.updatedAt,
@@ -23,6 +25,7 @@ class CompanyModel {
       name: json['name'],
       inviteCode: json['invite_code'],
       region: json['region'],
+      address: json['address'],
       sections: List<String>.from(
         json['sections'] ?? [],
       ), // FastApi에서 Dart로 처음 넘어오면 List<dynamic>으로 넘어옴.

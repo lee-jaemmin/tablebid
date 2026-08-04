@@ -20,12 +20,12 @@ class CompanyApi {
 
   Future<CompanyModel> createCompany({
     required String name,
-    required String region,
+    required String address,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/companies');
     final body = {
       'name': name,
-      'region': region,
+      'address': address,
     };
 
     final response = await http.post(
