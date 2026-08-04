@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/table_history_model.dart';
@@ -37,7 +38,7 @@ class ReregisterTableGridView extends StatelessWidget {
               ? () => _confirmReregister(context, targetTable)
               : null,
           child: Card(
-            color: isAvailable ? Colors.green[50] : Colors.grey[300],
+            color: isAvailable ? Colors.green[100] : Colors.grey[300],
             child: Center(
               child: Text(
                 targetTable.tablename,
@@ -60,61 +61,69 @@ class ReregisterTableGridView extends StatelessWidget {
         title: const Text('정보 재등록'),
         content: Text(
           '${historyData.customerName}님의 정보를\n${targetTable.tablename}번 테이블로 재등록하시겠습니까?',
-          textAlign: TextAlign.center,
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소', style: TextStyle(color: Colors.black)),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade800,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(10),
-              ),
-            ),
-            onPressed: () async {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const Center(
-                  child: CircularProgressIndicator(),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('취소', style: TextStyle(color: Colors.white)),
                 ),
-              ); // 프로그레스바
-              try {
-                await HistoryApi().reRegisterTable(
-                  historyId: historyData.id,
-                  tableId: targetTable.id,
-                );
-                if (context.mounted) {
-                  Navigator.pop(context); // 프로그레스바 닫기
-                  Navigator.pop(context); // 다이얼로그 닫기
-                  Navigator.pop(context); // ReregisterScreen 닫기
-                  Navigator.pop(context); // HistoryBottomSheet 닫기
-                }
-              } catch (e) {
-                Navigator.pop(context); // 로딩바끄기
-                Navigator.pop(context); // 윈도우 끄기
-                print(e);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('재등록 실패: $e'),
-                      backgroundColor: Colors.red,
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text(
-              '확정',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
               ),
-            ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CupertinoActivityIndicator()),
+                    ); // 프로그레스바
+                    try {
+                      await HistoryApi().reRegisterTable(
+                        historyId: historyData.id,
+                        tableId: targetTable.id,
+                      );
+                      if (context.mounted) {
+                        Navigator.pop(context); // 프로그레스바 닫기
+                        Navigator.pop(context); // 다이얼로그 닫기
+                        Navigator.pop(context); // ReregisterScreen 닫기
+                        Navigator.pop(context); // HistoryBottomSheet 닫기
+                      }
+                    } catch (e) {
+                      Navigator.pop(context); // 로딩바끄기
+                      Navigator.pop(context); // 윈도우 끄기
+                      print(e);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('재등록 실패: $e'),
+                            backgroundColor: Colors.red,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text(
+                    '재등록',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
