@@ -108,10 +108,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
+            child: const Text('취소', style: TextStyle(color: Colors.black)),
           ),
           TextButton(
             onPressed: () async {
@@ -167,69 +164,75 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('$sectionName 섹션 삭제'),
-        content: const Text(
-          '섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.',
-        ),
+        content: const Text('섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(10),
-              ),
-            ),
-            onPressed: () async {
-              final navigator = Navigator.of(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-
-              showDialog(
-                context: dialogContext,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-
-              try {
-                final updatedSections = currentSections
-                    .where((section) => section != sectionName)
-                    .toList();
-
-                final toDeleteTables = _tables.where(
-                  (table) => table.section == sectionName,
-                );
-
-                await _updateSections(updatedSections, null, null);
-                for (final table in toDeleteTables) {
-                  await TableApi().deleteTable(tableId: table.id);
-                }
-
-                navigator.pop(); // 로딩창
-                navigator.pop(); // 확인창
-              } catch (e) {
-                navigator.pop();
-
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('섹션 삭제 실패: $e'),
-                    backgroundColor: Colors.red,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
                   ),
-                );
-              }
-            },
-            child: const Text(
-              '삭제',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
-            ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () async {
+                    final navigator = Navigator.of(dialogContext);
+                    final messenger = ScaffoldMessenger.of(context);
+
+                    showDialog(
+                      context: dialogContext,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+
+                    try {
+                      final updatedSections = currentSections
+                          .where((section) => section != sectionName)
+                          .toList();
+
+                      final toDeleteTables = _tables.where(
+                        (table) => table.section == sectionName,
+                      );
+
+                      await _updateSections(updatedSections, null, null);
+                      for (final table in toDeleteTables) {
+                        await TableApi().deleteTable(tableId: table.id);
+                      }
+
+                      navigator.pop(); // 로딩창
+                      navigator.pop(); // 확인창
+                    } catch (e) {
+                      navigator.pop();
+
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('섹션 삭제 실패: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    '삭제',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -248,83 +251,96 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         title: const Text('섹션 이름 수정'),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            hintText: '새 섹션 이름을 입력하세요',
-          ),
+          decoration: const InputDecoration(hintText: '새 섹션 이름을 입력하세요'),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade800,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(10),
-              ),
-            ),
-            onPressed: () async {
-              final newName = controller.text.trim();
-
-              if (newName.isEmpty || newName == currentName) return;
-
-              if (currentSections.contains(newName)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('이미 존재하는 섹션입니다.'),
-                    backgroundColor: Colors.red,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
                   ),
-                );
-                return;
-              }
-
-              final navigator = Navigator.of(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-
-              showDialog(
-                context: dialogContext,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-
-              try {
-                final updatedSections = currentSections
-                    .map(
-                      (section) => section == currentName ? newName : section,
-                    )
-                    .toList(); // 기존 섹션에서 바꿀 대상(currentName)찾아서 newName으로 변경.
-
-                final updatedTables = _tables
-                    .where((table) => table.section == currentName)
-                    .toList();
-
-                await _updateSections(updatedSections, updatedTables, newName);
-
-                navigator.pop(); // 로딩창
-                navigator.pop(); // 수정창
-              } catch (e) {
-                navigator.pop();
-
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('섹션 수정 실패: $e'),
-                    backgroundColor: Colors.red,
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-              }
-            },
-            child: const Text(
-              '수정',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    final newName = controller.text.trim();
+
+                    if (newName.isEmpty || newName == currentName) return;
+
+                    if (currentSections.contains(newName)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('이미 존재하는 섹션입니다.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    final navigator = Navigator.of(dialogContext);
+                    final messenger = ScaffoldMessenger.of(context);
+
+                    showDialog(
+                      context: dialogContext,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+
+                    try {
+                      final updatedSections = currentSections
+                          .map(
+                            (section) =>
+                                section == currentName ? newName : section,
+                          )
+                          .toList(); // 기존 섹션에서 바꿀 대상(currentName)찾아서 newName으로 변경.
+
+                      final updatedTables = _tables
+                          .where((table) => table.section == currentName)
+                          .toList();
+
+                      await _updateSections(
+                        updatedSections,
+                        updatedTables,
+                        newName,
+                      );
+
+                      navigator.pop(); // 로딩창
+                      navigator.pop(); // 수정창
+                    } catch (e) {
+                      navigator.pop();
+
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('섹션 수정 실패: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    '수정',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -335,85 +351,74 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    else {
+    } else {
       final company = _companyFuture;
-    if (company == null) {
-      return CompanyEntryScreen(userId: widget.userId);
-    }
+      if (company == null) {
+        return CompanyEntryScreen(userId: widget.userId);
+      }
 
-    final sections = _tables.map((table) => table.section).toSet().toList();
+      final sections = _tables.map((table) => table.section).toSet().toList();
 
-    sections.sort((a, b) => naturalSortCompare(a, b));
+      sections.sort((a, b) => naturalSortCompare(a, b));
 
-    return DefaultTabController(
-      key: ValueKey(sections.length),
-      length: sections.length + 1,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('매장 구성 관리'),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric( horizontal: 12.0),
-              child: Text('[토글]: 섹션/테이블 이름 변경\n[길게 누르기]: 섹션 삭제'),
-            )
-          ],
-          bottom: TabBar(
-            indicatorWeight: 4,
-            labelStyle: const TextStyle(fontSize: 16),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-            tabAlignment: TabAlignment.start,
-            isScrollable: true,
-            tabs: [
-              ...sections.map(
-                (section) => Tab(
-                  child: InkWell(
-                    onTap: () => _showRenameSectionDialog(
-                      section,
-                      sections,
-                    ),
-                    onLongPress: () => _confirmDeleteSection(
-                      section,
-                      sections,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 10,
+      return DefaultTabController(
+        key: ValueKey(sections.length),
+        length: sections.length + 1,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('매장 구성 관리'),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Text('[토글]: 섹션/테이블 이름 변경\n[길게 누르기]: 섹션 삭제'),
+              ),
+            ],
+            bottom: TabBar(
+              indicatorWeight: 4,
+              labelStyle: const TextStyle(fontSize: 16),
+              labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+              tabAlignment: TabAlignment.start,
+              isScrollable: true,
+              tabs: [
+                ...sections.map(
+                  (section) => Tab(
+                    child: InkWell(
+                      onTap: () => _showRenameSectionDialog(section, sections),
+                      onLongPress: () =>
+                          _confirmDeleteSection(section, sections),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                        child: Text(section),
                       ),
-                      child: Text(section),
                     ),
                   ),
                 ),
+                const Tab(icon: Icon(Icons.add, color: Colors.blue)),
+              ],
+              onTap: (index) {
+                if (index == sections.length) {
+                  _showAddSectionDialog(sections);
+                }
+              },
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              ...sections.map(
+                (section) => AdminTableGrid(
+                  companyId: widget.companyId,
+                  section: section,
+                  userId: widget.userId,
+                ),
               ),
-              const Tab(
-                icon: Icon(Icons.add, color: Colors.blue),
-              ),
+              const Center(child: Text('새 섹션을 추가하여 매장을 구성하세요.')),
             ],
-            onTap: (index) {
-              if (index == sections.length) {
-                _showAddSectionDialog(sections);
-              }
-            },
           ),
         ),
-        body: TabBarView(
-          children: [
-            ...sections.map(
-              (section) => AdminTableGrid(
-                companyId: widget.companyId,
-                section: section,
-                userId: widget.userId,
-              ),
-            ),
-            const Center(
-              child: Text('새 섹션을 추가하여 매장을 구성하세요.'),
-            ),
-          ],
-        ),
-      ),
-    );
-
+      );
     }
-      }
+  }
 }
