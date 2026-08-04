@@ -140,6 +140,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           primary: Colors.white,
           surface: Colors.black,
           onSurface: Colors.white,
+          secondary: Color(0xffecb88d)
         ),
         primaryColor: Colors.white,
         appBarTheme: const AppBarTheme(
