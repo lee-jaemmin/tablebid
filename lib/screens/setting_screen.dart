@@ -452,6 +452,18 @@ class _SettingScreenState extends State<SettingScreen> {
           const Divider(height: 1),
           ListTile(
             leading: const Icon(
+              Icons.confirmation_number,
+              size: 18,
+            ),
+            title: const Text(
+              '알림이 오지 않나요?'
+            ),
+            subtitle: const Text('토큰 다시 발급 받기'),
+            onTap: () => _reAssignToken(context, _currentUser),
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(
               Icons.logout,
               size: 18,
             ),
@@ -459,19 +471,7 @@ class _SettingScreenState extends State<SettingScreen> {
             onTap: () => _signOutAndNavigate(context),
           ),
           const Divider(height: 1),
-          ListTile(
-            leading: const Icon(
-              Icons.confirmation_number,
-              size: 18,
-            ),
-            title: const Text(
-              '알림이 오지 않나요?',
-              
-            ),
-            subtitle: const Text('토큰 다시 발급 받기'),
-            onTap: () => _reAssignToken(context, _currentUser),
-          ),
-          const Divider(height: 1),
+          
           ListTile(
             leading: const Icon(
               Icons.person_remove,
