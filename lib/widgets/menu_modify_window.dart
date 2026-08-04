@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tablebid/models/item_model.dart';
@@ -44,7 +45,7 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
     try {
       showDialog(
         context: context,
-        builder: (context) => Center(child: CircularProgressIndicator()),
+        builder: (context) => Center(child: CupertinoActivityIndicator()),
         barrierDismissible: false,
       );
       await ItemApi().updateItem(
@@ -53,7 +54,7 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
         itemPrice: int.parse(_priceController.text.replaceAll(',', '')),
         isActive: true,
       );
-      if(!mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -66,9 +67,7 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
       await widget.loadData();
     } catch (e) {
       print('❌ 메뉴 정보 수정 중 오류 발생 $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('메뉴 수정 중 오류 발생'),
           behavior: SnackBarBehavior.floating,
@@ -109,27 +108,29 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
           Row(
             children: [
               Expanded(
-                child: TextButton(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade800,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                    backgroundColor: Colors.white,
                   ),
                   onPressed: () async {
                     showDialog(
                       context: context,
                       builder: (context) =>
-                          Center(child: CircularProgressIndicator()),
+                          Center(child: CupertinoActivityIndicator()),
                     );
                     if (_nameController.text.isEmpty ||
                         _priceController.text.isEmpty) {
@@ -156,10 +157,7 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
                   },
                   child: const Text(
                     '수정',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.black),
                   ),
                 ),
               ),
