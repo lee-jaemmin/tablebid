@@ -41,12 +41,14 @@ class HistoryGridView extends StatelessWidget {
           tables[index].id,
         ),
         child: Card(
+          color: Colors.white,
           child: Center(
             child: Text(
               tables[index].tablename,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
           ),
@@ -132,9 +134,6 @@ class HistoryGridView extends StatelessWidget {
                           trailing: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green.shade800,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(10),
-                              ),
                             ),
                             onPressed: () => Navigator.push(
                               context,
