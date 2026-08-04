@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tablebid/constants/gaps.dart';
@@ -109,17 +110,20 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   void _subscribeToWebSocket(String companyId) {
     final service = WebsocketService.instance;
-    _webSocketEventSubscription ??= service.events.listen((event) {
-      if (!mounted || event.type != 'table_updated') return;
-      try {
-        final updatedTable = TableModel.fromJson(event.payload);
-        _applyTableUpdate(updatedTable);
-      } catch (e) {
-        print('테이블 실시간 업데이트 처리 실패: $e');
-      }
-    }, onError: (error) {
-      print('웹소켓 이벤트 처리 실패: $error');
-    });
+    _webSocketEventSubscription ??= service.events.listen(
+      (event) {
+        if (!mounted || event.type != 'table_updated') return;
+        try {
+          final updatedTable = TableModel.fromJson(event.payload);
+          _applyTableUpdate(updatedTable);
+        } catch (e) {
+          print('테이블 실시간 업데이트 처리 실패: $e');
+        }
+      },
+      onError: (error) {
+        print('웹소켓 이벤트 처리 실패: $error');
+      },
+    );
     service.connect(companyId);
   }
 
@@ -242,7 +246,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
-  Future<void> _syncTablesOnResume() async { // 화면 열면 바로 동기화하는 함수
+  Future<void> _syncTablesOnResume() async {
+    // 화면 열면 바로 동기화하는 함수
     try {
       final company = _company;
       if (company == null) return;
@@ -283,9 +288,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       }
     } catch (e) {
       print("로그아웃 오류: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')));
     }
   }
 
@@ -308,11 +313,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                minHeight: 12, // 두께를 도톰하게
-                backgroundColor: Colors.grey[50], // 튀지 않는 배경색
-                color: Colors.green, // 앱의 시그니처 테마 컬러 적용
-              ),
+              child: CupertinoActivityIndicator(),
             ),
           ),
         ),
@@ -337,6 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Scaffold(
         key: _scaffoldKey,
         endDrawer: Drawer(
+          backgroundColor: Color(0xFF2C2C2E),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 100.0),
             child: SingleChildScrollView(
@@ -393,9 +395,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => MenuScreen(
-                                  companyId: company.id,
-                                ),
+                                builder: (context) =>
+                                    MenuScreen(companyId: company.id),
                               ),
                             );
                           },
@@ -446,9 +447,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => SettingScreen(
-                                initialUser: currentUser,
-                              ),
+                              builder: (context) =>
+                                  SettingScreen(initialUser: currentUser),
                             ),
                           );
                         },
@@ -463,10 +463,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         appBar: AppBar(
           title: Text(company.name),
           actions: [
-            NotificationBell(
-              user: currentUser,
-              companyId: company.id,
-            ),
+            NotificationBell(user: currentUser, companyId: company.id),
             Padding(
               padding: const EdgeInsets.only(right: 20.0),
               child: GestureDetector(
@@ -480,9 +477,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               : TabBar(
                   indicatorWeight: 4,
                   labelStyle: const TextStyle(fontSize: 16),
-                  labelPadding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
                   tabAlignment: TabAlignment.start,
                   isScrollable: true,
                   tabs: sections.map((s) => Tab(text: s)).toList(),
@@ -547,7 +542,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               children: [
                 const Text(
                   '매장 초대 코드',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                  style: TextStyle(fontSize: 12, color: Colors.black),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -556,6 +551,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 3,
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -563,11 +559,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             const SizedBox(width: 30),
             Expanded(
               child: IconButton(
-                icon: const Icon(
-                  Icons.copy,
-                  size: 20,
-                  color: Colors.black87,
-                ),
+                icon: const Icon(Icons.copy, size: 20, color: Colors.black87),
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: inviteCode));
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -580,11 +572,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               child: IconButton(
                 constraints: const BoxConstraints(),
                 padding: EdgeInsets.zero,
-                icon: const Icon(
-                  Icons.refresh,
-                  size: 20,
-                  color: Colors.black,
-                ),
+                icon: const Icon(Icons.refresh, size: 20, color: Colors.black),
                 onPressed: () => _showReissueDialog(context, company.id),
               ),
             ),
@@ -604,10 +592,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
+            child: const Text('취소', style: TextStyle(color: Colors.black)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
