@@ -66,9 +66,7 @@ class _ReservationAlertState extends State<MenuWindow> {
       await widget.loadData();
     } catch (e) {
       print('❌ 메뉴 정보 전송 중 오류 발생');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('메뉴 정보 전송 중 오류 발생'),
           behavior: SnackBarBehavior.floating,
@@ -107,6 +105,7 @@ class _ReservationAlertState extends State<MenuWindow> {
                   children: widget.categories.map((category) {
                     final isSelected = category.id == _selectedCategoryId;
                     return ChoiceChip(
+                      selectedColor: Color(0xffecb88d),
                       label: Text(category.categoryName),
                       selected: isSelected,
                       onSelected: (_) {
@@ -125,18 +124,23 @@ class _ReservationAlertState extends State<MenuWindow> {
           Row(
             children: [
               Expanded(
-                child: TextButton(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade800,
+                    backgroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(10),
                     ),
@@ -144,7 +148,8 @@ class _ReservationAlertState extends State<MenuWindow> {
                   onPressed: () async {
                     showDialog(
                       context: context,
-                      builder: (context) => Center(child: CircularProgressIndicator()),
+                      builder: (context) =>
+                          Center(child: CircularProgressIndicator()),
                     );
                     if (_nameController.text.isEmpty ||
                         _priceController.text.isEmpty ||
@@ -173,7 +178,7 @@ class _ReservationAlertState extends State<MenuWindow> {
                   child: const Text(
                     '등록',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
