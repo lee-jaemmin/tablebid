@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
@@ -42,7 +43,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
     );
 
     try {
@@ -86,31 +87,52 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("취소", style: TextStyle(color: Colors.black)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final code = _inviteCodeController.text.trim();
-
-              if (code.length != 6) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('초대 코드는 6자리입니다. 6자리를 정확히 입력해주세요.'),
-                    duration: Duration(seconds: 2),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: Colors.red,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    "취소",
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-                return;
-              }
-              Navigator.pop(context); // 팝업 창 닫기
-              _joinCompanyWithCode(code);
-              print(">>>>>>>>>>>입력된 코드: ${_inviteCodeController.text}");
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-            child: const Text("입장하기"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 16),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    final code = _inviteCodeController.text.trim();
+
+                    if (code.length != 6) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('초대 코드는 6자리입니다. 6자리를 정확히 입력해주세요.'),
+                          duration: Duration(seconds: 2),
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+                    Navigator.pop(context); // 팝업 창 닫기
+                    _joinCompanyWithCode(code);
+                    print(">>>>>>>>>>>입력된 코드: ${_inviteCodeController.text}");
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  child: const Text(
+                    "입장하기",
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -119,10 +141,11 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
 
   /// [Func] 매장 생성 및 DB 등록 함수
   Future<void> _createCompany() async {
+
     final companyName = _companyNameController.text.trim();
-    final region = _addressController.text.trim();
+    final address = _addressController.text.trim();
     if (companyName.isEmpty) return;
-    if (region.isEmpty) return;
+    if (address.isEmpty) return;
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
@@ -133,13 +156,13 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
     );
 
     try {
       final company = await CompanyApi().createCompany(
         name: companyName,
-        region: region,
+        address: address,
       );
       await UserApi().updateUser(
         userId: widget.userId,
@@ -249,13 +272,14 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    side: BorderSide(
-                      color: Colors.white,
-                    ),
+                    side: BorderSide(color: Colors.white),
                     backgroundColor: Colors.transparent,
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text("취소", style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    "취소",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
               SizedBox(width: 16),
@@ -270,12 +294,12 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                           await _createCompany(); // 매장 생성 로직 실행
                         },
                   style: ElevatedButton.styleFrom(
-                    side: BorderSide(
-                      color: Colors.white,
-                    ),
-                    backgroundColor: Colors.white, foregroundColor: Colors.black),
+                    side: BorderSide(color: Colors.white),
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
                   child: _isLoading
-                      ? Center(child: CircularProgressIndicator())
+                      ? Center(child: CupertinoActivityIndicator(color: Colors.black26))
                       : Text('생성하기'),
                 ),
               ),
@@ -335,7 +359,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
     );
 
     try {
@@ -358,9 +382,9 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
       // 성공 시 로딩창 닫고 로그아웃 진행
       Navigator.pop(context);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')));
 
       // 기존에 만들어둔 로그아웃 함수 호출 (알아서 LoginScreen으로 이동함)
       await _handleLogout();
@@ -384,18 +408,18 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
           (route) => false,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')));
       }
     } catch (e) {
       if (!context.mounted) return;
 
       Navigator.pop(context); // 로딩창 닫기
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')));
     }
   }
 
@@ -437,7 +461,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
             children: [
               const SizedBox(height: 20),
               const Text(
-                "반갑습니다!\nGRID를 시작해볼까요?",
+                "반갑습니다!\nTABLE BID를 시작해볼까요?",
                 style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
@@ -451,10 +475,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               const SizedBox(height: 30),
               Text(
                 '사장님/매니저님이신가요?',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               _buildEntryCard(
@@ -466,10 +487,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               const SizedBox(height: 40),
               Text(
                 '직원이신가요?',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               _buildEntryCard(
@@ -482,15 +500,19 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: FilledButton(onPressed: () {}, child: Text('손님입니다', style: TextStyle(fontSize: 20),), style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      )
-                    ),),
+                    child: FilledButton(
+                      onPressed: () {},
+                      child: Text('손님입니다', style: TextStyle(fontSize: 20)),
+                      style: FilledButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
-              ),            
-              ],
+              ),
+            ],
           ),
         ),
       ),

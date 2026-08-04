@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/services/address_api.dart';
 
@@ -67,7 +68,7 @@ class _AddressScreenState extends State<AddressScreen> {
             const SizedBox(height: 16),
             if (_isLoading)
               const Expanded(
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(child: CupertinoActivityIndicator()),
               )
             else
               Expanded(
