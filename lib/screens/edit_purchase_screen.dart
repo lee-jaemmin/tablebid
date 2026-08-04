@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/log_model.dart';
 import 'package:tablebid/models/table_purchases_model.dart';
@@ -16,6 +17,7 @@ class EditPurchaseScreen extends StatefulWidget {
 class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   List<TablePurchasesModel> _purchases = []; // 이렇게 선언해놓고 initState에서 가져오는 게 정석
   List<LogModel> _logs = [];
+  bool _isLoading = true;
 
   void initState() {
     super.initState();
@@ -31,6 +33,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
     setState(() {
       _purchases = purchases;
       _logs = logs;
+      _isLoading = false;
     });
   }
 
@@ -43,31 +46,53 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
           title: Text('구매 취소 확인'),
           content: Text('${log.itemName} ${log.quantity}개 구매 기록을 취소하시겠습니까?'),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: Text('아니오'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, true),
-              child: Text('네'),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(color: Colors.white),
+                    ),
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    child: Text('아니오'),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    child: Text('네', style: TextStyle(color: Colors.black)),
+                  ),
+                ),
+              ],
             ),
           ],
         );
       },
     );
 
-    if(confirm != true) return; // 밖에 누르면 null이 올 수도 있음. true로 체크
+    if (confirm != true) return; // 밖에 누르면 null이 올 수도 있음. true로 체크
 
     print(
       'delete log id=${log.id}, itemId=${log.itemId}, name=${log.itemName}, 개수=${log.quantity}',
     );
-
+    showDialog(
+      context: context,
+      builder: (context) => const CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
     try {
       await LogApi().deleteLogAndPurchase(logId: log.id);
       if (!context.mounted) return;
       await _loadData();
+      Navigator.pop(context);
     } catch (e) {
       print(e);
+      Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('구매 내역 삭제 도중 오류 발생: $e')));
@@ -77,13 +102,11 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('구매 내역 삭제'),
-      ),
-      body: _logs.length == 0
-          ? Center(
-              child: Text('아직 구매 내역이 없습니다.'),
-            )
+      appBar: AppBar(title: const Text('구매 내역 삭제')),
+      body: _isLoading
+          ? Center(child: const CupertinoActivityIndicator())
+          : _logs.length == 0
+          ? Center(child: Text('아직 구매 내역이 없습니다.'))
           : ListView.builder(
               itemCount: _logs.length,
               itemBuilder: (context, index) {
