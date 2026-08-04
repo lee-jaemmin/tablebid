@@ -1,0 +1,31 @@
+group 'fr.g123k.flutterappbadge.flutterappbadger'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    namespace 'fr.g123k.flutterappbadger'
+    compileSdk 35
+
+    defaultConfig {
+        minSdk 21
+    }
+}
+
+dependencies {
+    implementation "me.leolin:ShortcutBadger:1.1.22@aar"
+}
