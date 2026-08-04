@@ -102,6 +102,9 @@ class TableCard extends StatelessWidget {
                         .map(
                           (text) => Text(
                             text,
+                            style: TextStyle(
+                              color: Colors.black,
+                            ),
                             textAlign: TextAlign.center,
                             maxLines: 1,
                              overflow: TextOverflow.ellipsis,
@@ -120,17 +123,14 @@ class TableCard extends StatelessWidget {
                     horizontal: 4,
                     vertical: 2,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                 
                   child: Text(
                     table.registeredAt != null
                         ? DateFormat('HH:mm').format(table.registeredAt!.toLocal())
                         : '등록 시간 없음.',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
+                      color: Colors.black,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -145,10 +145,6 @@ class TableCard extends StatelessWidget {
                     horizontal: 4,
                     vertical: 2,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
                   child: Text(
                     reservedAt != null
                         ? DateFormat(
@@ -156,7 +152,7 @@ class TableCard extends StatelessWidget {
                           ).format(reservedAt!.toLocal())
                         : '예약 시간 없음.',
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Colors.blue,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),
@@ -172,15 +168,12 @@ class TableCard extends StatelessWidget {
                     horizontal: 4,
                     vertical: 2,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.pink,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+             
                   child: Text(
-                    _getRemainingTimerText(table.timerEndAt, now),
+                    "⏰${_getRemainingTimerText(table.timerEndAt, now)}",
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
+                      color: Colors.red,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
