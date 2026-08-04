@@ -7,6 +7,7 @@ import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
 import 'package:tablebid/services/log_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
+import 'package:tablebid/widgets/purchase_item_chip.dart';
 
 class SelectedItem {
   final int itemId;
@@ -95,6 +96,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       print(e);
     }
   }
+
   Future<void> _addPurchase(ItemModel item) async {
     // 한 번 누를 때마다 실행.
     final selectedItem = SelectedItem(
@@ -120,33 +122,33 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   Future<void> _sendData(List<SelectedItem> items) async {
     try {
       showDialog(
-      context: context,
-      builder: (context) => Center(child: CircularProgressIndicator()),
-      barrierDismissible: false,
-    );
-    final batchId = DateTime.now().microsecondsSinceEpoch
-        .toString(); // 플러터에서 batch id 생성.
-
-    await Future.wait(
-      items.map(
-        (item) => LogApi().createLogAndPurchases(
-          tableId: widget.tableId,
-          itemId: item.itemId,
-          quantity: item.quantity,
-          userId: widget.userId,
-          batchId: batchId,
-        ),
-      ),
-    );
-    if(!mounted) return;
-    Navigator.pop(context);
-    } catch(e) {
-      print("❌구매 전송 중 오류: $e");
-      if(!mounted) return;
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('구매 데이터 전송 중 오류 발생'))
+        context: context,
+        builder: (context) => Center(child: CircularProgressIndicator()),
+        barrierDismissible: false,
       );
+      final batchId = DateTime.now().microsecondsSinceEpoch
+          .toString(); // 플러터에서 batch id 생성.
+
+      await Future.wait(
+        items.map(
+          (item) => LogApi().createLogAndPurchases(
+            tableId: widget.tableId,
+            itemId: item.itemId,
+            quantity: item.quantity,
+            userId: widget.userId,
+            batchId: batchId,
+          ),
+        ),
+      );
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      print("❌구매 전송 중 오류: $e");
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('구매 데이터 전송 중 오류 발생')));
     }
   }
 
@@ -159,7 +161,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedItems = _items.where((item) {
+    final categorySelectedItems = _items.where((item) {
       final keywords = _searchKeywords.trim().toLowerCase();
       final matchesCategory =
           (_selectedCategoryId == null ||
@@ -212,52 +214,59 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * .5, // 기기의 반
+                        width: MediaQuery.of(context).size.width * .35, // 기기의 반
                         child: ListView.builder(
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {
                             final category = _categories[index];
                             final isSelected =
                                 category.id == _selectedCategoryId;
-                            return ListTile(
-                              dense: true,
-                              selected: isSelected,
-                              selectedTileColor: Colors.green.shade50,
-                              title: Text(category.categoryName),
-                              onTap: () {
-                                // 현재 선택 카테고리
-                                setState(() {
-                                  _selectedCategoryId = category.id;
-                                });
-                              },
+                            return Material(
+                              color: Colors.transparent, 
+                              child: ListTile(
+                                dense: true,
+                                selected: isSelected,
+                                selectedTileColor: Color.fromARGB(
+                                  255,
+                                  112,
+                                  10,
+                                  10,
+                                ),
+                                title: Text(category.categoryName),
+                                onTap: () {
+                                  // 현재 선택 카테고리
+                                  setState(() {
+                                    _selectedCategoryId = category.id;
+                                  });
+                                },
+                              ),
                             );
                           },
                         ),
                       ),
                       const VerticalDivider(width: 1), // 세로선
                       Expanded(
-                        child: selectedItems.isEmpty
+                        child: categorySelectedItems.isEmpty
                             ? const Center(child: Text('등록된 메뉴가 없습니다.'))
-                            : ListView.separated(
+                            : SingleChildScrollView(
                                 padding: const EdgeInsets.all(12),
-                                itemCount: selectedItems.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 8),
-                                itemBuilder: (context, index) {
-                                  final item = selectedItems[index];
-                                  return ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      side: BorderSide(
-                                        color: Colors.grey.shade300,
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8
+                                  ,
+                                  children: categorySelectedItems.map((item) {
+                                    final purchaseIndex = _newPurchases.indexWhere((element) => element.itemId == item.id);
+                                    final quantity = purchaseIndex == -1 ? 0 : _newPurchases[purchaseIndex].quantity;
+                                    return PurchaseItemChip(
+                                      itemName: item.itemName,
+                                      isSelected: _newPurchases.any(
+                                        (purchase) => purchase.itemId == item.id,
                                       ),
-                                    ),
-                                    title: Text(item.itemName),
-                                    subtitle: Text(formatPrice(item.itemPrice)),
-                                    trailing: const Icon(Icons.add),
-                                    onTap: () => _addPurchase(item),
-                                  );
-                                },
+                                      onTap: () => _addPurchase(item),
+                                      quantity: quantity,
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                       ),
                     ],
@@ -278,9 +287,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Colors.grey,
-                          ),
+                          borderSide: const BorderSide(color: Colors.grey),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
@@ -324,10 +331,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   },
                   child: const Text(
                     '초기화',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
               ),
@@ -347,10 +351,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   },
                   child: const Text(
                     '구매 완료',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
               ),
@@ -391,21 +392,21 @@ class _PurchaseSummary extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
-      color: Colors.grey.shade100,
+      color: Theme.of(context).dialogTheme.backgroundColor,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('누적 구매 목록'),
+                Text('누적 구매 목록', style: TextStyle(color: Color(0xffecb88d), fontWeight: FontWeight.bold),),
                 const SizedBox(height: 6),
                 Text(
                   '총 가격: ${formatPrice(totalPrice)}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 if (existingPurchases.isEmpty)
-                  Text('아직 구매 내역이 없습니다.')
+                  SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
                 else
                   SizedBox(
                     height: 72,
@@ -428,11 +429,11 @@ class _PurchaseSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('최근 구매 목록'),
+                const Text('최근 구매 목록', style: TextStyle(color: Color(0xffecb88d), fontWeight: FontWeight.bold),),
                 const SizedBox(height: 6),
                 if (newPurchases.isEmpty)
                   latestLogs.isEmpty
-                      ? Text('아직 구매 내역이 없습니다.')
+                      ? SizedBox(height: 72, child: Text('아직 구매 내역이 없습니다.'))
                       : SizedBox(
                           height: 72,
                           child: ListView.builder(

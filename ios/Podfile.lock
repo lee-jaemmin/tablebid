@@ -1312,7 +1312,7 @@ PODS:
     - GoogleUtilities/Environment (~> 8.1)
     - GTMSessionFetcher/Core (< 6.0, >= 3.4)
   - Flutter (1.0.0)
-  - flutter_app_badger (1.3.0):
+  - flutter_app_badger (1.5.0):
     - Flutter
   - flutter_local_notifications (0.0.1):
     - Flutter
@@ -1594,7 +1594,7 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 3f5c2758484d32099d693f269f110d3249c3f7e3
   FirebaseStorage: 949f0a5a8d8a77fff68ec8733057dc76a0e08179
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  flutter_app_badger: 16b371e989d04cd265df85be2c3851b49cb68d18
+  flutter_app_badger: 8e809886e9c1012f46e4c01d5152ce3759ae9a0c
   flutter_local_notifications: a5a732f069baa862e728d839dd2ebb904737effb
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
   google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
