@@ -163,8 +163,6 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("직원 관리"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         elevation: 0.5,
       ),
       body: isLoading ? const Center(child: const CircularProgressIndicator())
