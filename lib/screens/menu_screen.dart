@@ -79,7 +79,7 @@ class _MenuScreenState extends State<MenuScreen> {
           SnackBar(
             content: Text('메뉴 비활성화: ${item.itemName}'),
             behavior: SnackBarBehavior.floating,
-            duration: Duration(milliseconds: 800),
+            duration: Duration(milliseconds: 1500),
           ),
         );
         await _loadData(forceRefresh: true);
@@ -180,7 +180,12 @@ class _MenuScreenState extends State<MenuScreen> {
                             return ListTile(
                               dense: true,
                               selected: isSelected,
-                              selectedTileColor: Colors.green.shade50,
+                              selectedTileColor: Color.fromARGB(
+                                  255,
+                                  112,
+                                  10,
+                                  10,
+                                ),
                               title: Text(category.categoryName),
                               onTap: () {
                                 setState(() {
@@ -215,7 +220,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     trailing: item.isActive
                                         ? const Icon(
                                             Icons.toggle_on,
-                                            color: Colors.green,
+                                            color: Colors.lightGreenAccent,
                                           )
                                         : const Icon(
                                             Icons.toggle_off,
