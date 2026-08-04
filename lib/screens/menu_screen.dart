@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
@@ -69,7 +70,7 @@ class _MenuScreenState extends State<MenuScreen> {
           context: context,
           barrierDismissible: false,
           builder: (context) => Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           ),
         );
         await ItemApi().updateItem(itemId: item.id, isActive: false);
@@ -157,7 +158,7 @@ class _MenuScreenState extends State<MenuScreen> {
       body: Stack(
         children: [
           if (_isLoading)
-            const Center(child: CircularProgressIndicator())
+            const Center(child: CupertinoActivityIndicator())
           else if (_errorMessage != null)
             Center(child: Text(_errorMessage!))
           else
