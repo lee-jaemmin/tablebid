@@ -253,6 +253,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                   10,
                                   10,
                                 ),
+                                // 버건디
                                 title: Text(category.categoryName),
                                 onTap: () {
                                   // 현재 선택 카테고리

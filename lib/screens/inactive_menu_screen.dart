@@ -128,7 +128,12 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
                             return ListTile(
                               dense: true,
                               selected: isSelected,
-                              selectedTileColor: Colors.green.shade50,
+                              selectedTileColor: Color.fromARGB(
+                                  255,
+                                  112,
+                                  10,
+                                  10,
+                                ),
                               title: Text(category.categoryName),
                               onTap: () {
                                 setState(() {
