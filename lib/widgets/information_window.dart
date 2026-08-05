@@ -154,7 +154,7 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: () => Navigator.pop(context, false),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
