@@ -93,7 +93,7 @@ class TableModel {
       purchaseSummary: (json['purchase_summary'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
       isReserved: json['is_reserved'],
       bidAvailable: json['bid_available'],
-      bidEndAt: _parseUtcDateTime(json['bid_end_at']),
+      bidEndAt: json['bid_end_at'] == null ? null : _parseUtcDateTime(json['bid_end_at']),
       leastBidPrice: json['least_bid_price'],
     );
   }
