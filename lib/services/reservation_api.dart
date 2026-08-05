@@ -34,36 +34,6 @@ class ReservationApi {
     );
   }
 
-  Future<ReservationModel> createReservation({
-    required DateTime reservationTime,
-    required String tableId,
-    required String customerName,
-    required String customerPhone,
-  }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/reservations');
-
-    final body = {
-      'reservation_time': reservationTime.toUtc().toIso8601String(),
-      'table_id': tableId,
-      'customer_name': customerName,
-      'customer_phone': customerPhone,
-    };
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(body),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return ReservationModel.fromJson(data);
-    }
-    throw Exception(
-      'Failed to create Reservation: ${response.statusCode} ${response.body}',
-    );
-  }
-
   Future<ReservationModel> updateReservation({
     required String reservationId,
     DateTime? reservationTime,
@@ -108,18 +78,19 @@ class ReservationApi {
   }
 
   Future<ReservationModel> registerReservation({
-    required DateTime reservationTime,
+    DateTime? reservationTime,
     required String tableId,
     required String customerName,
     required String customerPhone,
     List<SelectedItem>? items,
+    int? bidPrice,
   }) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/tables/${tableId}/register-reservation',
     );
 
     final body = {
-      'reservation_time': reservationTime.toUtc().toIso8601String(),
+      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
       'customer_phone': customerPhone,
       if (items != null)
@@ -147,6 +118,40 @@ class ReservationApi {
       'Failed to register Reservation: ${response.statusCode} ${response.body}',
     );
   }
+
+  Future<ReservationModel> createReservation({
+    DateTime? reservationTime,
+    required String tableId,
+    required String customerName,
+    required String customerPhone,
+    int? bidPrice,
+  }) async {
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/reservations',
+    );
+
+    final body = {
+      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
+      'customer_name': customerName,
+      'customer_phone': customerPhone,
+      if (bidPrice != null) 'bid_price': bidPrice,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return ReservationModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to register Reservation: ${response.statusCode} ${response.body}',
+    );
+  }
+
 
   Future<TableModel> reservationCheckIn({
     required int reservationId,
