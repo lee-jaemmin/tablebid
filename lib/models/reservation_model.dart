@@ -3,7 +3,7 @@ class ReservationModel {
   final String tableId;
   final String customerName;
   final String customerPhone;
-  final DateTime reservationTime;
+  final DateTime? reservationTime;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -12,7 +12,7 @@ class ReservationModel {
     required this.tableId,
     required this.customerName,
     required this.customerPhone,
-    required this.reservationTime,
+    this.reservationTime,
     required this.createdAt,
     this.updatedAt,
   });
@@ -23,7 +23,7 @@ class ReservationModel {
       tableId: json['table_id'],
       customerName: json['customer_name'],
       customerPhone: json['customer_phone'],
-      reservationTime: DateTime.parse(json['reservation_time']),
+      reservationTime: json['reservation_time'] == null ? null : DateTime.parse(json['reservation_time']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: json['updated_at'] == null
           ? null
