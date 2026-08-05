@@ -183,7 +183,7 @@ class _InformationWindowState extends State<InformationWindow> {
     if (confirmOut != true) return;
     showDialog(
       context: context,
-      builder: (context) => Center(child: CircularProgressIndicator()),
+      builder: (context) => Center(child: CupertinoActivityIndicator()),
       barrierDismissible: false,
     );
     await HistoryApi().tableOutAndCreateHistory(tableId: widget.table.id);
@@ -262,7 +262,7 @@ class _InformationWindowState extends State<InformationWindow> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
+        builder: (context) => const Center(child: CupertinoActivityIndicator()),
       );
       // 타이머 db로 보내기
       await TableApi().updateTable(
@@ -292,41 +292,59 @@ class _InformationWindowState extends State<InformationWindow> {
         title: const Text('타이머 해제'),
         content: const Text('타이머를 해제하시겠습니까?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext), // 아니오: 그냥 창 닫기
-            child: const Text('아니오', style: TextStyle(color: Colors.black)),
-          ),
-          TextButton(
-            onPressed: () async {
-              final messenger = ScaffoldMessenger.of(context);
-              final navigator = Navigator.of(context);
-
-              Navigator.pop(dialogContext); // 해제하시겠습니까? 창 닫기
-
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-
-              await TableApi().updateTable(
-                tableId: widget.table.id,
-                userId: widget.userId,
-                clearTimer: true,
-              );
-
-              navigator.pop(); // 로딩창 끄기
-              navigator.pop(); // info 내리기
-              messenger.showSnackBar(
-                SnackBar(
-                  content: Text("타이머가 해제되었습니다."),
-                  duration: Duration(seconds: 2),
-                  behavior: SnackBarBehavior.floating,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(
+                      color: Colors.white,
+                    )
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext), // 아니오: 그냥 창 닫기
+                  child: const Text('아니오', style: TextStyle(color: Colors.white)),
                 ),
-              );
-            },
-            child: const Text('예', style: TextStyle(color: Colors.red)),
+              ),
+              SizedBox(width: 12,),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final navigator = Navigator.of(context);
+                
+                    Navigator.pop(dialogContext); // 해제하시겠습니까? 창 닫기
+                
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CupertinoActivityIndicator()),
+                    );
+                
+                    await TableApi().updateTable(
+                      tableId: widget.table.id,
+                      userId: widget.userId,
+                      clearTimer: true,
+                    );
+                
+                    navigator.pop(); // 로딩창 끄기
+                    navigator.pop(); // info 내리기
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text("타이머가 해제되었습니다."),
+                        duration: Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  child: const Text('예', style: TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
           ),
         ],
       ),
