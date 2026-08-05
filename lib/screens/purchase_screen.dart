@@ -320,7 +320,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: const BorderSide(
-                            color: Colors.green,
+                            color:Color(0xffecb88d),
                             width: 2.0,
                           ),
                         ),
@@ -444,7 +444,7 @@ class _PurchaseSummary extends StatelessWidget {
                   SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
                 else
                   SizedBox(
-                    height: 72,
+                    height: 100,
                     child: ListView.builder(
                       itemCount: existingPurchases.length,
                       itemBuilder: (context, index) {
@@ -474,9 +474,9 @@ class _PurchaseSummary extends StatelessWidget {
                 const SizedBox(height: 6),
                 if (newPurchases.isEmpty)
                   latestLogs.isEmpty
-                      ? SizedBox(height: 72, child: Text('아직 구매 내역이 없습니다.'))
+                      ? SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
                       : SizedBox(
-                          height: 72,
+                          height: 100,
                           child: ListView.builder(
                             itemCount: latestLogs.length,
                             itemBuilder: (context, index) {
@@ -492,7 +492,7 @@ class _PurchaseSummary extends StatelessWidget {
                         )
                 else
                   SizedBox(
-                    height: 72,
+                    height: 100,
                     child: ListView.builder(
                       itemCount: newPurchases.length,
                       itemBuilder: (context, index) {
