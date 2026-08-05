@@ -298,15 +298,16 @@ class _InformationWindowState extends State<InformationWindow> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
-                    side: BorderSide(
-                      color: Colors.white,
-                    )
+                    side: BorderSide(color: Colors.white),
                   ),
                   onPressed: () => Navigator.pop(dialogContext), // 아니오: 그냥 창 닫기
-                  child: const Text('아니오', style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    '아니오',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-              SizedBox(width: 12,),
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -315,22 +316,22 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: () async {
                     final messenger = ScaffoldMessenger.of(context);
                     final navigator = Navigator.of(context);
-                
+
                     Navigator.pop(dialogContext); // 해제하시겠습니까? 창 닫기
-                
+
                     showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (context) =>
                           const Center(child: CupertinoActivityIndicator()),
                     );
-                
+
                     await TableApi().updateTable(
                       tableId: widget.table.id,
                       userId: widget.userId,
                       clearTimer: true,
                     );
-                
+
                     navigator.pop(); // 로딩창 끄기
                     navigator.pop(); // info 내리기
                     messenger.showSnackBar(
@@ -463,7 +464,7 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -498,13 +499,16 @@ class _InformationWindowState extends State<InformationWindow> {
                       ),
                     );
                   },
-                  child: const Text('이동', style: TextStyle(color: Colors.blue)),
+                  child: const Text('이동', style: TextStyle(color: Colors.lightBlue)),
                 ),
               ),
               Expanded(
                 child: TextButton(
                   onPressed: _registerTable,
-                  child: const Text('등록'),
+                  child: const Text(
+                    '등록',
+                    style: TextStyle(color: Color(0xffecb88d)),
+                  ),
                 ),
               ),
             ],
