@@ -6,6 +6,7 @@ import 'package:tablebid/models/log_model.dart';
 import 'package:tablebid/models/reservation_purchase_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
+import 'package:tablebid/widgets/purchase_item_chip.dart';
 
 class SelectedItem {
   final int itemId;
@@ -46,12 +47,21 @@ class _PurchaseScreenState extends State<ReservationPurchaseScreen> {
   int? _selectedCategoryId;
   bool _isLoading = true;
   String? _errorMessage;
+  late TextEditingController _searchController;
+  String _searchKeywords = '';
 
   @override
   void initState() {
     super.initState();
     print('userid: ${widget.userId}');
+    _searchController = TextEditingController();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData({bool forceRefresh = false}) async {
@@ -111,11 +121,24 @@ class _PurchaseScreenState extends State<ReservationPurchaseScreen> {
     });
   }
 
+  void emptyNewPurchases() {
+    setState(() {
+      _newPurchases.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final selectedItems = _items
-        .where((item) => item.categoryId == _selectedCategoryId)
-        .toList();
+    final categorySelectedItems = _items.where((item) {
+      final keywords = _searchKeywords.trim().toLowerCase();
+      final matchesCategory =
+          (_selectedCategoryId == null ||
+              item.categoryId == _selectedCategoryId) &&
+          keywords.isEmpty;
+      final matchesItem =
+          keywords.isNotEmpty && item.itemName.toLowerCase().contains(keywords);
+      return item.isActive && (matchesItem || matchesCategory);
+    }).toList()..sort((a, b) => a.itemName.compareTo(b.itemName));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.tableName} 구매내역'),
@@ -156,23 +179,31 @@ class _PurchaseScreenState extends State<ReservationPurchaseScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * .5, // 기기의 반
+                        width: MediaQuery.of(context).size.width * .35,
                         child: ListView.builder(
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {
                             final category = _categories[index];
                             final isSelected =
                                 category.id == _selectedCategoryId;
-                            return ListTile(
-                              dense: true,
-                              selected: isSelected,
-                              selectedTileColor: Colors.green.shade50,
-                              title: Text(category.categoryName),
-                              onTap: () {
-                                setState(() {
-                                  _selectedCategoryId = category.id;
-                                });
-                              },
+                            return Material(
+                              color: Colors.transparent,
+                              child: ListTile(
+                                dense: true,
+                                selected: isSelected,
+                                selectedTileColor: const Color.fromARGB(
+                                  255,
+                                  112,
+                                  10,
+                                  10,
+                                ),
+                                title: Text(category.categoryName),
+                                onTap: () {
+                                  setState(() {
+                                    _selectedCategoryId = category.id;
+                                  });
+                                },
+                              ),
                             );
                           },
                         ),
@@ -181,31 +212,66 @@ class _PurchaseScreenState extends State<ReservationPurchaseScreen> {
                       const VerticalDivider(width: 1),
 
                       Expanded(
-                        child: selectedItems.isEmpty
+                        child: categorySelectedItems.isEmpty
                             ? const Center(child: Text('등록된 메뉴가 없습니다.'))
-                            : ListView.separated(
+                            : SingleChildScrollView(
                                 padding: const EdgeInsets.all(12),
-                                itemCount: selectedItems.length,
-                                separatorBuilder: (_, __) =>
-                                    const SizedBox(height: 8),
-                                itemBuilder: (context, index) {
-                                  final item = selectedItems[index];
-                                  return ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      side: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    title: Text(item.itemName),
-                                    subtitle: Text(formatPrice(item.itemPrice)),
-                                    trailing: const Icon(Icons.add),
-                                    onTap: () => _addPurchase(item),
-                                  );
-                                },
+                                child: Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  children: categorySelectedItems.map((item) {
+                                    final purchaseIndex = _newPurchases
+                                        .indexWhere(
+                                          (purchase) =>
+                                              purchase.itemId == item.id,
+                                        );
+                                    final quantity = purchaseIndex == -1
+                                        ? 0
+                                        : _newPurchases[purchaseIndex].quantity;
+                                    return PurchaseItemChip(
+                                      itemName: item.itemName,
+                                      isSelected: purchaseIndex != -1,
+                                      quantity: quantity,
+                                      onTap: () => _addPurchase(item),
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                       ),
                     ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TapRegion(
+                    onTapOutside: (event) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: '메뉴 검색',
+                        suffixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.grey),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: Color(0xffecb88d),
+                            width: 2.0,
+                          ),
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchKeywords = value.trim();
+                        });
+                      },
+                    ),
                   ),
                 ),
               ],
@@ -215,24 +281,45 @@ class _PurchaseScreenState extends State<ReservationPurchaseScreen> {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(10),
-          child: FilledButton(
-            style: FilledButton.styleFrom(
-              minimumSize: const Size(double.infinity, 52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          child: Row(
+            children: [
+              Expanded(
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    side: const BorderSide(color: Colors.black),
+                    foregroundColor: Colors.black,
+                    backgroundColor: Colors.red,
+                    minimumSize: const Size(double.infinity, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: emptyNewPurchases,
+                  child: const Text(
+                    '초기화',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ),
               ),
-            ),
-            onPressed: () async {
-              if (!context.mounted) return;
-              Navigator.pop(context, _newPurchases);
-            },
-            child: const Text(
-              '구매 완료',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+              const SizedBox(width: 10),
+              Expanded(
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 52),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context, _newPurchases);
+                  },
+                  child: const Text(
+                    '구매 완료',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
@@ -258,24 +345,33 @@ class _PurchaseSummary extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
-      color: Colors.grey.shade100,
+      color: Theme.of(context).dialogTheme.backgroundColor,
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('누적 구매 목록'),
+                const Text(
+                  '누적 구매 목록',
+                  style: TextStyle(
+                    color: Color(0xffecb88d),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   '총 가격: ${formatPrice(totalPrice)}',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 if (existingPurchases.isEmpty)
-                  Text('아직 구매 내역이 없습니다.')
+                  const SizedBox(
+                    height: 100,
+                    child: Text('아직 구매 내역이 없습니다.'),
+                  )
                 else
                   SizedBox(
-                    height: 72,
+                    height: 100,
                     child: ListView.builder(
                       itemCount: existingPurchases.length,
                       itemBuilder: (context, index) {
@@ -295,13 +391,22 @@ class _PurchaseSummary extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('최근 구매 목록'),
+                const Text(
+                  '최근 구매 목록',
+                  style: TextStyle(
+                    color: Color(0xffecb88d),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 if (newPurchases.isEmpty)
-                  Text('아직 구매 내역이 없습니다.')
+                  const SizedBox(
+                    height: 100,
+                    child: Text('아직 구매 내역이 없습니다.'),
+                  )
                 else
                   SizedBox(
-                    height: 72,
+                    height: 100,
                     child: ListView.builder(
                       itemCount: newPurchases.length,
                       itemBuilder: (context, index) {
