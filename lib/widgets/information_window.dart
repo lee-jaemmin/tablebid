@@ -91,9 +91,7 @@ class _InformationWindowState extends State<InformationWindow> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) => Center(child: CupertinoActivityIndicator()),
     );
     try {
       final sendRegisterTime = widget.table.status == "available";
@@ -145,30 +143,38 @@ class _InformationWindowState extends State<InformationWindow> {
         title: const Text('아웃 확인'),
         content: Text('${widget.table.tablename} 테이블을 아웃 처리하시겠습니까?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(10),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
               ),
-            ),
-            onPressed: () {
-              Navigator.pop(context, true);
-            },
-            child: const Text(
-              '아웃 확정',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  child: const Text(
+                    '아웃 확정',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -392,9 +398,7 @@ class _InformationWindowState extends State<InformationWindow> {
                   i++
                 )
                   InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: '구매목록 ${i + 1}',
-                    ),
+                    decoration: InputDecoration(labelText: '구매목록 ${i + 1}'),
                     child: Text(
                       "${_purchaseList[i]}",
                       style: TextStyle(fontSize: 16),
@@ -448,10 +452,7 @@ class _InformationWindowState extends State<InformationWindow> {
               Expanded(
                 child: TextButton(
                   onPressed: _outTable,
-                  child: const Text(
-                    '아웃',
-                    style: TextStyle(color: Colors.red),
-                  ),
+                  child: const Text('아웃', style: TextStyle(color: Colors.red)),
                 ),
               ),
               Expanded(
@@ -479,12 +480,7 @@ class _InformationWindowState extends State<InformationWindow> {
                       ),
                     );
                   },
-                  child: const Text(
-                    '이동',
-                    style: TextStyle(
-                      color: Colors.blue,
-                    ),
-                  ),
+                  child: const Text('이동', style: TextStyle(color: Colors.blue)),
                 ),
               ),
               Expanded(
