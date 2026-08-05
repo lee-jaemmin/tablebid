@@ -475,7 +475,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           bottom: sections.isEmpty
               ? null
               : TabBar(
+                indicatorSize: TabBarIndicatorSize.tab,
                   indicatorWeight: 4,
+                  dividerColor: Colors.transparent,
                   labelStyle: const TextStyle(fontSize: 16),
                   labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
                   tabAlignment: TabAlignment.start,

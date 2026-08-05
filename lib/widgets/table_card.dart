@@ -86,6 +86,8 @@ class TableCard extends StatelessWidget {
                   children: [
                     Text(
                       table.tablename,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 16,
