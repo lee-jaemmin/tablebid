@@ -112,10 +112,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
       if (!mounted) return;
       navigator.pop();
       messenger.showSnackBar(
-        SnackBar(
-          content: Text('예약 등록 성공: ${widget.table.tablename}'),
-          behavior: SnackBarBehavior.floating,
-        ),
+        SnackBar(content: Text('예약 등록 성공: ${widget.table.tablename}')),
       );
     } catch (e) {
       print('❌ 예약 등록 중 오류 발생');
@@ -139,15 +136,6 @@ class _ReservationAlertState extends State<ReservationAlert> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(
-                  controller: _timeController,
-                  readOnly: true, // 키보드 안 올라오게 막기
-                  onTap: () => _selectReservationTime(context),
-                  decoration: const InputDecoration(
-                    labelText: '(필수) 예약 시간',
-                    suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
-                  ),
-                ),
                 TextField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: '(필수) 손님 이름'),
@@ -176,54 +164,63 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   ),
                 ),
                 TextField(
+                  controller: _timeController,
+                  readOnly: true, // 키보드 안 올라오게 막기
+                  onTap: () => _selectReservationTime(context),
+                  decoration: const InputDecoration(
+                    labelText: '예약 시간',
+                    suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
+                  ),
+                ),
+                TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: '비딩 가격'),
+                  decoration: InputDecoration(labelText: '비딩 제안가 (정확하게 입력)'),
                   inputFormatters: [PriceFormatters()],
                 ),
                 SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FilledButton.icon(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadiusGeometry.circular(8),
-                          ),
-                        ),
-                        onPressed: () async {
-                          _selectedItems =
-                              await Navigator.push<List<SelectedItem>>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReservationPurchaseScreen(
-                                        companyId: widget.companyId,
-                                        tableId: widget.table.id,
-                                        tableName: widget.table.tablename,
-                                        userId: widget.userId,
-                                      ),
-                                ),
-                              );
-                          if (_selectedItems!.isEmpty) return;
-                          int price = 0;
-                          for (final item in _selectedItems!) {
-                            price += item.unitPrice * item.quantity;
-                          }
-                          setState(() {
-                            _priceController.text = formatPrice(price);
-                          });
-                          // infowindow의 경우 총 가격 다시 불러오는 코드는 별도의 함수에 있었지만
-                          // 여기서는 그냥 이 부분에 작성.
-                        },
-                        icon: const Icon(Icons.receipt_long),
-                        label: const Text('예약 상품 입력'),
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: FilledButton.icon(
+                //         style: FilledButton.styleFrom(
+                //           backgroundColor: Colors.green,
+                //           foregroundColor: Colors.white,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadiusGeometry.circular(8),
+                //           ),
+                //         ),
+                //         onPressed: () async {
+                //           _selectedItems =
+                //               await Navigator.push<List<SelectedItem>>(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                   builder: (context) =>
+                //                       ReservationPurchaseScreen(
+                //                         companyId: widget.companyId,
+                //                         tableId: widget.table.id,
+                //                         tableName: widget.table.tablename,
+                //                         userId: widget.userId,
+                //                       ),
+                //                 ),
+                //               );
+                //           if (_selectedItems!.isEmpty) return;
+                //           int price = 0;
+                //           for (final item in _selectedItems!) {
+                //             price += item.unitPrice * item.quantity;
+                //           }
+                //           setState(() {
+                //             _priceController.text = formatPrice(price);
+                //           });
+                //           // infowindow의 경우 총 가격 다시 불러오는 코드는 별도의 함수에 있었지만
+                //           // 여기서는 그냥 이 부분에 작성.
+                //         },
+                //         icon: const Icon(Icons.receipt_long),
+                //         label: const Text('예약 상품 입력'),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 if (_errorText != null) ...[
                   const SizedBox(height: 12),
                   Align(alignment: Alignment.center, child: Text(_errorText!)),
@@ -257,8 +254,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
 
                   onPressed: () async {
                     if (_nameController.text.isEmpty ||
-                        _phoneController.text.isEmpty ||
-                        _timeController.text.isEmpty) {
+                        _phoneController.text.isEmpty) {
                       setState(() {
                         _errorText = "필수 정보를 모두 입력해주세요.";
                       });
@@ -288,9 +284,8 @@ class _ReservationAlertState extends State<ReservationAlert> {
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
+                          child: CupertinoActivityIndicator(
+                            color: Colors.black,
                           ),
                         )
                       : const Text('등록', style: TextStyle(color: Colors.black)),
