@@ -88,7 +88,7 @@ class TableCard extends StatelessWidget {
                       table.tablename,
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -130,7 +130,7 @@ class TableCard extends StatelessWidget {
                         : '등록 시간 없음.',
                     style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -173,7 +173,7 @@ class TableCard extends StatelessWidget {
                     "⏰${_getRemainingTimerText(table.timerEndAt, now)}",
                     style: const TextStyle(
                       color: Colors.red,
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
