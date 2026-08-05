@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:tablebid/models/user_model.dart';
@@ -47,9 +48,9 @@ class _SettingScreenState extends State<SettingScreen> {
       setState(() {
         _currentUser = updatedUser;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이름이 변경되었습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('이름이 변경되었습니다.')));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -114,9 +115,9 @@ class _SettingScreenState extends State<SettingScreen> {
       setState(() {
         _currentUser = updatedUser;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('테이블 카드 표시 설정이 변경되었습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('테이블 카드 표시 설정이 변경되었습니다.')));
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -201,9 +202,9 @@ class _SettingScreenState extends State<SettingScreen> {
       }
     } catch (e) {
       print("로그아웃 오류: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')));
     }
   }
 
@@ -211,9 +212,9 @@ class _SettingScreenState extends State<SettingScreen> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('user가 존재하지 않습니다')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('user가 존재하지 않습니다')));
       return;
     }
 
@@ -244,9 +245,9 @@ class _SettingScreenState extends State<SettingScreen> {
 
       Navigator.pop(context); // 로딩창 닫기
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')));
 
       Navigator.pushAndRemoveUntil(
         context,
@@ -273,18 +274,18 @@ class _SettingScreenState extends State<SettingScreen> {
           (route) => false,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')));
       }
     } catch (e) {
       if (!context.mounted) return;
 
       Navigator.pop(context); // 로딩창 닫기
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')));
     }
   }
 
@@ -387,30 +388,30 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Future<void> _reAssignToken(BuildContext context, UserModel user) async {
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+    );
     try {
       final uid = user.id;
       print('uid: $uid');
       final fcmtoken = await FirebaseMessaging.instance.getToken();
-      await FirebaseFirestore.instance.collection('users').doc(uid).set(
-        {
-          'fcmtoken': fcmtoken,
-        },
-        SetOptions(merge: true),
-      );
+      await FirebaseFirestore.instance.collection('users').doc(uid).set({
+        'fcmtoken': fcmtoken,
+      }, SetOptions(merge: true));
       await UserApi().updateUser(userId: uid, fcmToken: fcmtoken);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      if(!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('토큰 재발급 성공'),
           behavior: SnackBarBehavior.floating,
         ),
       );
     } catch (e) {
+      Navigator.pop(context);
       print('토큰 재발급 오류: $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('토큰 재발급 실패'),
           behavior: SnackBarBehavior.floating,
@@ -428,10 +429,7 @@ class _SettingScreenState extends State<SettingScreen> {
         .join(', ');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('설정'),
-        elevation: 0.5,
-      ),
+      appBar: AppBar(title: const Text('설정'), elevation: 0.5),
       body: ListView(
         children: [
           ListTile(
@@ -451,27 +449,19 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           const Divider(height: 1),
           ListTile(
-            leading: const Icon(
-              Icons.confirmation_number,
-              size: 18,
-            ),
-            title: const Text(
-              '알림이 오지 않나요?'
-            ),
+            leading: const Icon(Icons.confirmation_number, size: 18),
+            title: const Text('알림이 오지 않나요?'),
             subtitle: const Text('토큰 다시 발급 받기'),
             onTap: () => _reAssignToken(context, _currentUser),
           ),
           const Divider(height: 1),
           ListTile(
-            leading: const Icon(
-              Icons.logout,
-              size: 18,
-            ),
+            leading: const Icon(Icons.logout, size: 18),
             title: const Text('로그아웃'),
             onTap: () => _signOutAndNavigate(context),
           ),
           const Divider(height: 1),
-          
+
           ListTile(
             leading: const Icon(
               Icons.person_remove,
