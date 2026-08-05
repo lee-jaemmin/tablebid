@@ -163,9 +163,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                       onPressed: () {
                         final phoneNumber = _phoneController.text;
                         if (phoneNumber.isNotEmpty) {
-                          Clipboard.setData(
-                            ClipboardData(text: phoneNumber),
-                          );
+                          Clipboard.setData(ClipboardData(text: phoneNumber));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('번호 복사 완료'),
@@ -180,43 +178,55 @@ class _ReservationAlertState extends State<ReservationAlert> {
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: '비딩 가격'),
                   inputFormatters: [PriceFormatters()],
-                  decoration: const InputDecoration(labelText: '예약 금액'),
-                  readOnly: true,
                 ),
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    _selectedItems = await Navigator.push<List<SelectedItem>>(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReservationPurchaseScreen(
-                          companyId: widget.companyId,
-                          tableId: widget.table.id,
-                          tableName: widget.table.tablename,
-                          userId: widget.userId,
+                SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(8),
+                          ),
                         ),
+                        onPressed: () async {
+                          _selectedItems =
+                              await Navigator.push<List<SelectedItem>>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ReservationPurchaseScreen(
+                                        companyId: widget.companyId,
+                                        tableId: widget.table.id,
+                                        tableName: widget.table.tablename,
+                                        userId: widget.userId,
+                                      ),
+                                ),
+                              );
+                          if (_selectedItems!.isEmpty) return;
+                          int price = 0;
+                          for (final item in _selectedItems!) {
+                            price += item.unitPrice * item.quantity;
+                          }
+                          setState(() {
+                            _priceController.text = formatPrice(price);
+                          });
+                          // infowindow의 경우 총 가격 다시 불러오는 코드는 별도의 함수에 있었지만
+                          // 여기서는 그냥 이 부분에 작성.
+                        },
+                        icon: const Icon(Icons.receipt_long),
+                        label: const Text('예약 상품 입력'),
                       ),
-                    );
-                    if (_selectedItems!.isEmpty) return;
-                    int price = 0;
-                    for (final item in _selectedItems!) {
-                      price += item.unitPrice * item.quantity;
-                    }
-                    setState(() {
-                      _priceController.text = formatPrice(price);
-                    });
-                    // infowindow의 경우 총 가격 다시 불러오는 코드는 별도의 함수에 있었지만
-                    // 여기서는 그냥 이 부분에 작성.
-                  },
-                  icon: const Icon(Icons.receipt_long),
-                  label: const Text('구매내역 입력'),
+                    ),
+                  ],
                 ),
                 if (_errorText != null) ...[
                   const SizedBox(height: 12),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(_errorText!),
-                  ),
+                  Align(alignment: Alignment.center, child: Text(_errorText!)),
                 ],
               ],
             ),
@@ -226,21 +236,23 @@ class _ReservationAlertState extends State<ReservationAlert> {
           Row(
             children: [
               Expanded(
-                child: TextButton(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(color: Colors.white),
+                    backgroundColor: Colors.transparent,
+                  ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
+              SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade800,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(10),
-                    ),
+                    backgroundColor: Colors.white,
                   ),
 
                   onPressed: () async {
@@ -257,7 +269,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                       _isSubmitting = true;
                     });
                     try {
-                      await sendReservationData();                      
+                      await sendReservationData();
                     } catch (e) {
                       print('❌ 예약 등록 중 에러 발생: $e');
                       if (!mounted) return;
@@ -281,13 +293,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          '등록',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                      : const Text('등록', style: TextStyle(color: Colors.black)),
                 ),
               ),
             ],
