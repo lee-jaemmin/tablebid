@@ -2,9 +2,8 @@ class SetMenuModel {
   final int id;
   final String companyId;
   final String setName;
-  final String setPrice;
+  final int setPrice;
   final bool isActive;
-  final int categoryId;
 
   SetMenuModel({
     required this.id,
@@ -12,7 +11,6 @@ class SetMenuModel {
     required this.setName,
     required this.setPrice,
     required this.isActive,
-    required this.categoryId,
   });
 
   factory SetMenuModel.fromJson(Map<String, dynamic> json) {
@@ -22,7 +20,6 @@ class SetMenuModel {
       setName: json['set_name'],
       setPrice: json['set_price'],
       isActive: json['is_active'],
-      categoryId: json['category_id'],
     );
   }
 }
