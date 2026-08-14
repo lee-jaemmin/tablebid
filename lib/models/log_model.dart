@@ -1,7 +1,8 @@
 class LogModel {
   final int id;
   final String tableId;
-  final int itemId;
+  final int? itemId;
+  final int? setMenuId;
   final String itemName;
   final int quantity;
   final int unitPrice;
@@ -14,7 +15,8 @@ class LogModel {
   LogModel({
     required this.id,
     required this.tableId,
-    required this.itemId,
+    this.itemId,
+    this.setMenuId,
     required this.itemName,
     required this.quantity,
     required this.unitPrice,
@@ -29,6 +31,7 @@ class LogModel {
       id: json['id'],
       tableId: json['table_id'],
       itemId: json['item_id'],
+      setMenuId: json['set_menu_id'],
       itemName: json['item_name'],
       quantity: json['quantity'],
       unitPrice: json['unit_price'],
