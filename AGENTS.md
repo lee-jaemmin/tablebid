@@ -220,10 +220,10 @@ no unrelated code was modified
 If a verification command cannot run, explain why and provide the exact command the user should run.
 
 Response style
-Always respond in Korean unless the user explicitly asks for another language.
-Be concise.
-Start with what changed or what was found.
-Mention files changed.
-Mention verification results.
-Mention any meaningful risk or required follow-up.
-Do not give lengthy explanations for straightforward changes.
+- Always respond in Korean unless the user explicitly asks for another language.
+- Be concise and answer only what the user asked for.
+- For simple questions, give the direct answer and stop when the question has been answered.
+- Do not explain several steps ahead, optional background, future steps, or general best practices unless explicitly requested.
+- Let the user ask the next question instead of anticipating every possible next step.
+- Mention additional information only when it reveals an important error, risk, incompatibility, or decision the user needs to know now.
+- For code changes, start with what changed and mention changed files, verification results, and meaningful risks or follow-up.
