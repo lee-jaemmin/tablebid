@@ -1,9 +1,13 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
 import 'package:tablebid/models/log_model.dart';
+import 'package:tablebid/models/set_menu_items_model.dart';
+import 'package:tablebid/models/set_menu_model.dart';
 import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
 import 'package:tablebid/services/log_api.dart';
@@ -11,13 +15,17 @@ import 'package:tablebid/services/purchase_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/purchase_item_chip.dart';
 
+enum ProductType { item, setMenu }
+
 class SelectedItem {
+  final ProductType productType;
   final int itemId;
   final String itemName;
   int quantity;
   final int unitPrice;
 
   SelectedItem({
+    required this.productType,
     required this.itemId,
     required this.itemName,
     required this.quantity,
@@ -48,6 +56,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   List<SelectedItem> _newPurchases = []; // 이번에 고르는 애들
   List<LogModel> _logs = []; // 기존 구매 중 가장 최신
   List<TablePurchasesModel> _existedPurchase = []; // 누적
+  List<SetMenuModel> _setMenus = [];
+  List<SetMenuItemsModel> _setMenuItems = [];
   int? _selectedCategoryId;
   bool _isLoading = true;
   String? _errorMessage;
@@ -78,17 +88,30 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         widget.companyId,
         forceRefresh: forceRefresh,
       );
-      final categories =
-          menuCache.categories
-              .where((category) => category.isActive == true)
-              .toList()
-            ..sort((a, b) => a.categoryName.compareTo(b.categoryName));
+      final categories = <CategoryModel>[
+        CategoryModel(
+          id: -1,
+          categoryName: '세트 메뉴',
+          sortOrder: 0,
+          isActive: true,
+        ),
+        ...(menuCache.categories
+            .where((category) => category.isActive == true)
+            .toList()
+          ..sort((a, b) => a.categoryName.compareTo(b.categoryName))),
+      ];
       final items =
           menuCache.items.where((item) => item.isActive == true).toList()
             ..sort((a, b) => a.itemName.compareTo(b.itemName));
+      final setMenus = menuCache.setMenus
+          .where((setMenu) => setMenu.isActive == true)
+          .toList();
+      final setMenusItems = menuCache.setMenuItems.toList();
       setState(() {
         _categories = categories;
         _items = items;
+        _setMenus = setMenus;
+        _setMenuItems = setMenusItems;
         _isLoading = false;
       });
     } catch (e) {
@@ -118,9 +141,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     }
   }
 
-  Future<void> _addPurchase(ItemModel item) async {
+  // 단품
+  void _addPurchase(ItemModel item) {
     // 한 번 누를 때마다 실행.
     final selectedItem = SelectedItem(
+      productType: ProductType.item,
       itemId: item.id,
       itemName: item.itemName,
       quantity: 1,
@@ -129,7 +154,35 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
     setState(() {
       final index = _newPurchases.indexWhere(
-        (purchase) => purchase.itemId == selectedItem.itemId,
+        (purchase) =>
+            purchase.itemId == selectedItem.itemId &&
+            purchase.productType == ProductType.item,
+      ); // 있으면 그 인덱스, 없으면 -1 반환
+
+      if (index == -1) {
+        _newPurchases.add(selectedItem);
+      } else {
+        _newPurchases[index].quantity += 1;
+      }
+    });
+  }
+
+  // 세트
+  void _addSetMenuPurchase(SetMenuModel setMenu) {
+    // 한 번 누를 때마다 실행.
+    final selectedItem = SelectedItem(
+      productType: ProductType.setMenu,
+      itemId: setMenu.id,
+      itemName: setMenu.setName,
+      quantity: 1,
+      unitPrice: setMenu.setPrice,
+    );
+
+    setState(() {
+      final index = _newPurchases.indexWhere(
+        (purchase) =>
+            purchase.itemId == selectedItem.itemId &&
+            purchase.productType == ProductType.setMenu,
       ); // 있으면 그 인덱스, 없으면 -1 반환
 
       if (index == -1) {
@@ -148,18 +201,27 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         barrierDismissible: false,
       );
       final batchId = DateTime.now().microsecondsSinceEpoch
-          .toString(); // 플러터에서 batch id 생성.
-
+          .toString(); // 플러터에서 batch id 생성
       await Future.wait(
-        items.map(
-          (item) => LogApi().createLogAndPurchases(
-            tableId: widget.tableId,
-            itemId: item.itemId,
-            quantity: item.quantity,
-            userId: widget.userId,
-            batchId: batchId,
-          ),
-        ),
+        items.map((item) {
+          if (item.productType == ProductType.item) {
+            return LogApi().createLogAndPurchases(
+              tableId: widget.tableId,
+              itemId: item.itemId,
+              quantity: item.quantity,
+              userId: widget.userId,
+              batchId: batchId,
+            );
+          } else {
+            return LogApi().createLogAndPurchases(
+              tableId: widget.tableId,
+              setMenuId: item.itemId,
+              quantity: item.quantity,
+              userId: widget.userId,
+              batchId: batchId,
+            );
+          }
+        }),
       );
       if (!mounted) return;
       Navigator.pop(context);
@@ -182,13 +244,22 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isSetMenuSelected = _selectedCategoryId == -1;
+    final visibleSetMenuItems = _setMenus.where((setMenu) {
+      final keywords = _searchKeywords.trim().toLowerCase();
+      final matchesSetMenu =
+          isSetMenuSelected &&
+          keywords.isNotEmpty &&
+          setMenu.setName.toLowerCase().contains(keywords);
+      return keywords.isEmpty || matchesSetMenu;
+    }).toList();
     final categorySelectedItems = _items.where((item) {
       final keywords = _searchKeywords.trim().toLowerCase();
       final matchesCategory =
           (_selectedCategoryId == null ||
               item.categoryId == _selectedCategoryId) &&
           keywords.isEmpty;
-      // 검색어가 없고 카테고리는 아무것도 안골랐거나(처음) 현재 고른 카테고리와 아이템 카테고리가 일치하면 true
+      // (아무것도 안골랐거나(처음) 현재 고른 카테고리와 아이템 카테고리가 일치하고) 검색어가 없으면 true
       final matchesItem =
           keywords.isNotEmpty && item.itemName.toLowerCase().contains(keywords);
       // 검색어가 있고 이름이 일치하는 아이템이 있으면 true
@@ -268,7 +339,41 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       ),
                       const VerticalDivider(width: 1), // 세로선
                       Expanded(
-                        child: categorySelectedItems.isEmpty
+                        child: isSetMenuSelected
+                            ? visibleSetMenuItems.isEmpty
+                                  ? const Center(child: Text('등록된 메뉴가 없습니다.'))
+                                  : SingleChildScrollView(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: visibleSetMenuItems.map((
+                                          setMenu,
+                                        ) {
+                                          final purchaseIndex = _newPurchases
+                                              .indexWhere(
+                                                (element) =>
+                                                    element.itemId ==
+                                                    setMenu.id,
+                                              );
+                                          final quantity = purchaseIndex == -1
+                                              ? 0
+                                              : _newPurchases[purchaseIndex]
+                                                    .quantity;
+                                          return PurchaseItemChip(
+                                            itemName: setMenu.setName,
+                                            isSelected: _newPurchases.any(
+                                              (purchase) =>
+                                                  purchase.itemId == setMenu.id,
+                                            ),
+                                            onTap: () =>
+                                                _addSetMenuPurchase(setMenu),
+                                            quantity: quantity,
+                                          );
+                                        }).toList(),
+                                      ),
+                                    )
+                            : categorySelectedItems.isEmpty
                             ? const Center(child: Text('등록된 메뉴가 없습니다.'))
                             : SingleChildScrollView(
                                 padding: const EdgeInsets.all(12),
@@ -320,7 +425,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: const BorderSide(
-                            color:Color(0xffecb88d),
+                            color: Color(0xffecb88d),
                             width: 2.0,
                           ),
                         ),
@@ -371,7 +476,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    
                   ),
                   onPressed: () async {
                     await _sendData(_newPurchases);
