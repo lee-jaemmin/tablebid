@@ -528,48 +528,48 @@ class _PurchaseSummary extends StatelessWidget {
       color: Theme.of(context).dialogTheme.backgroundColor,
       child: Row(
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '누적 구매 목록',
-                  style: TextStyle(
-                    color: Color(0xffecb88d),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  '총 가격: ${formatPrice(totalPrice)}',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                if (existingPurchases.isEmpty)
-                  SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
-                else
-                  SizedBox(
-                    height: 100,
-                    child: ListView.builder(
-                      itemCount: existingPurchases.length,
-                      itemBuilder: (context, index) {
-                        final purchase = existingPurchases[index];
-                        return Text(
-                          '${purchase.itemName} ${purchase.quantity} = '
-                          '${formatPrice(purchase.unitPrice * purchase.quantity)}',
-                        );
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          const VerticalDivider(width: 16),
+          // Expanded(
+          //   child: Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Text(
+          //         '누적 구매 목록',
+          //         style: TextStyle(
+          //           color: Color(0xffecb88d),
+          //           fontWeight: FontWeight.bold,
+          //         ),
+          //       ),
+          //       const SizedBox(height: 6),
+          //       Text(
+          //         '총 가격: ${formatPrice(totalPrice)}',
+          //         style: TextStyle(fontWeight: FontWeight.bold),
+          //       ),
+          //       if (existingPurchases.isEmpty)
+          //         SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
+          //       else
+          //         SizedBox(
+          //           height: 100,
+          //           child: ListView.builder(
+          //             itemCount: existingPurchases.length,
+          //             itemBuilder: (context, index) {
+          //               final purchase = existingPurchases[index];
+          //               return Text(
+          //                 '${purchase.itemName} ${purchase.quantity} = '
+          //                 '${formatPrice(purchase.unitPrice * purchase.quantity)}',
+          //               );
+          //             },
+          //           ),
+          //         ),
+          //     ],
+          //   ),
+          // ),
+          // const VerticalDivider(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  '최근 구매 목록',
+                  '이번 구매 목록',
                   style: TextStyle(
                     color: Color(0xffecb88d),
                     fontWeight: FontWeight.bold,
@@ -578,9 +578,9 @@ class _PurchaseSummary extends StatelessWidget {
                 const SizedBox(height: 6),
                 if (newPurchases.isEmpty)
                   latestLogs.isEmpty
-                      ? SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
+                      ? SizedBox(height: 50, child: Text('아직 구매 내역이 없습니다.'))
                       : SizedBox(
-                          height: 100,
+                          height: 50,
                           child: ListView.builder(
                             itemCount: latestLogs.length,
                             itemBuilder: (context, index) {
@@ -596,7 +596,7 @@ class _PurchaseSummary extends StatelessWidget {
                         )
                 else
                   SizedBox(
-                    height: 100,
+                    height: 50,
                     child: ListView.builder(
                       itemCount: newPurchases.length,
                       itemBuilder: (context, index) {
