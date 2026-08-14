@@ -1,7 +1,5 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
@@ -12,6 +10,7 @@ import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
 import 'package:tablebid/services/log_api.dart';
 import 'package:tablebid/services/purchase_api.dart';
+import 'package:tablebid/widgets/mixer_selection_bottom_sheet.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/purchase_item_chip.dart';
 
@@ -193,6 +192,23 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
     });
   }
 
+  Future<void> _showMixerSelectionBottomSheet() async {
+    final selectedMixers = await showModalBottomSheet<List<ItemModel>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+      builder: (context) => MixerSelectionBottomSheet(
+        mixers: _items
+            .where((item) => item.isActive && item.itemPrice == 0)
+            .toList(),
+      ),
+    );
+    if (!mounted || selectedMixers == null) return;
+    for (final mixer in selectedMixers) {
+      _addPurchase(mixer);
+    }
+  }
+
   Future<void> _sendData(List<SelectedItem> items) async {
     try {
       showDialog(
@@ -366,8 +382,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                               (purchase) =>
                                                   purchase.itemId == setMenu.id,
                                             ),
-                                            onTap: () =>
-                                                _addSetMenuPurchase(setMenu),
+                                            onTap: () async {
+                                              _addSetMenuPurchase(setMenu);
+                                              await _showMixerSelectionBottomSheet();
+                                            },
                                             quantity: quantity,
                                           );
                                         }).toList(),
@@ -395,7 +413,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                         (purchase) =>
                                             purchase.itemId == item.id,
                                       ),
-                                      onTap: () => _addPurchase(item),
+                                      onTap: () async {
+                                        _addPurchase(item);
+                                        await _showMixerSelectionBottomSheet();
+                                      },
                                       quantity: quantity,
                                     );
                                   }).toList(),
