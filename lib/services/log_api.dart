@@ -21,7 +21,8 @@ class LogApi {
 
   Future<void> createLogAndPurchases({
     required String tableId,
-    required int itemId,
+     int? itemId,
+    int? setMenuId,
     required int quantity,
     required String userId,
     required String batchId,
@@ -30,7 +31,8 @@ class LogApi {
 
     final body = {
       'table_id': tableId,
-      'item_id': itemId,
+      if(itemId != null) 'item_id': itemId,
+      if(setMenuId != null) 'set_menu_id': setMenuId,
       'quantity': quantity,
       'user_id': userId,
       'batch_id': batchId,
