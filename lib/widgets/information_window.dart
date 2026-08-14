@@ -205,14 +205,25 @@ class _InformationWindowState extends State<InformationWindow> {
       ),
     );
 
-    if (selectedItems == null) return;
-    noPurchase = false;
-
-    final table = await TableApi().getTable(widget.table.id);
-
-    setState(() {
-      _totalPriceController.text = formatPrice(table.totalPrice);
-    });
+    if (selectedItems != null && selectedItems.isNotEmpty) {
+      noPurchase = false;
+    }
+    try {
+      final table = await TableApi().getTable(widget.table.id);
+      if (!mounted) return;
+      setState(() {
+        _totalPriceController.text = formatPrice(table.totalPrice);
+        _purchaseList = table.purchaseSummary ?? [];
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('구매 내역을 새로고침하지 못했습니다.'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> _showCupertinoTimerPicker(BuildContext context) async {
@@ -499,7 +510,10 @@ class _InformationWindowState extends State<InformationWindow> {
                       ),
                     );
                   },
-                  child: const Text('이동', style: TextStyle(color: Colors.lightBlue)),
+                  child: const Text(
+                    '이동',
+                    style: TextStyle(color: Colors.lightBlue),
+                  ),
                 ),
               ),
               Expanded(
