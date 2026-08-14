@@ -297,7 +297,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   ),
                 );
               },
-              child: Icon(Icons.edit),
+              child: Icon(Icons.receipt_long),
             ),
           ),
         ],
