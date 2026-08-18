@@ -41,6 +41,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
     _nameController = TextEditingController();
     _phoneController = TextEditingController();
     _priceController = TextEditingController();
+    _priceController.text = widget.table.leastBidPrice.toString();
 
     // 시간 초기화 로직
     _timeController = TextEditingController();
@@ -102,6 +103,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
     try {
       final navigator = Navigator.of(context);
       final messenger = ScaffoldMessenger.of(context);
+      if(_priceController.text.isNotEmpty) {
+        
+      }
       await ReservationApi().registerReservation(
         reservationTime: _selectedDateTime,
         tableId: widget.table.id,
