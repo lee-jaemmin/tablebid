@@ -25,7 +25,7 @@ class ReservationModel {
       tableId: json['table_id'],
       customerName: json['customer_name'],
       customerPhone: json['customer_phone'],
-      reservationTime: json['reservation_time'] == null ? null : DateTime.parse(json['reservation_time']),
+      reservationTime: json['reservation_time'] == null ? null : DateTime.parse(json['reservation_time']).toLocal(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: json['updated_at'] == null
           ? null
