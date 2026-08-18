@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/widgets/fixed_reservation_tile.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
 import 'package:intl/intl.dart';
@@ -82,7 +83,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     });
   }
 
-    Future<void> _showReservationModifyAlert(
+  Future<void> _showReservationModifyAlert(
     BuildContext context,
     TableModel table,
     int reservationId,
@@ -109,6 +110,202 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     setState(() {
       loadData();
     });
+  }
+
+  Future<void> _fixReservation(
+    BuildContext context,
+    TableModel table,
+    ReservationModel reservation,
+  ) async {
+    if (table.isReserved == true) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('예약 확정 불가'),
+          content: Text(
+            '${table.tablename}번 테이블의 예약이 이미 확정된 상황입니다.\n해당 예약을 취소해주세요.',
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(
+                        color: Colors.white,
+                      )
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('확인', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('예약 확정'),
+            content: Text(
+              '${table.tablename}번 테이블 예약을 이 예약으로 확정하시겠습니까?\n예약이 확정된 테이블은 더 이상 비딩을 받을 수 없습니다.',
+            ),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: BorderSide(color: Colors.white),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        '아니오',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        '예',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirm) return;
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
+    try {
+      print("ReservationId: ${reservation.id}");
+      await ReservationApi().updateReservation(reservationId: reservation.id, isFixed: true);
+    } catch (e) {
+      print('❌ 예약 확정 실패: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('예약 확정 중 오류 발생')));
+    }
+    Navigator.pop(context);
+    await loadData();
+  }
+
+  Future<void> _unfixReservation(
+    BuildContext context,
+    TableModel table,
+    ReservationModel reservation,
+  ) async {
+    if (table.isReserved == false) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('예약 확정 취소 불가'),
+          content: Text(
+            '${table.tablename}번 테이블에 확정된 예약이 없습니다.\n먼저 예약 확정을 해주세요.',
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(
+                        color: Colors.white,
+                      )
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('확인', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('예약 확정 취소'),
+            content: Text(
+              '${table.tablename}번 테이블에 확정된 이 예약을 취소하시겠습니까?\n예약이 취소된 테이블은 이제 비딩을 받을 수 있습니다.',
+            ),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: BorderSide(color: Colors.white),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        '아니오',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        '예',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirm) return;
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
+    try {
+      print("ReservationId: ${reservation.id}");
+      await ReservationApi().updateReservation(reservationId: reservation.id, isFixed: false);
+    } catch (e) {
+      print('❌ 예약 확정 취소 실패: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('예약 확정 취소 중 오류 발생')));
+    }
+    Navigator.pop(context);
+    await loadData();
   }
 
   Future<void> _admitReservation(
@@ -264,6 +461,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fixedReservationIndex = _reservations.indexWhere(
+      (reservation) => reservation.isFixed == true,
+    );
+    final fixedReservation = fixedReservationIndex == -1
+        ? null
+        : _reservations[fixedReservationIndex];
+    final List<ReservationModel> leftBidList = fixedReservationIndex == -1
+        ? _reservations
+        : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.table.tablename} 예약'),
@@ -273,10 +479,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
             child: Tooltip(
               message: "예약 추가",
               child: IconButton(
-                onPressed: () => _showReservationAlert(
-                  context,
-                  widget.table,
-                ),
+                onPressed: () => _showReservationAlert(context, widget.table),
                 icon: Icon(Icons.add),
               ),
             ),
@@ -287,82 +490,96 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           ? const Center(child: CupertinoActivityIndicator())
           : _reservations.isEmpty
           ? const Center(child: Text('예약 없음'))
-          : ListView.separated(
-              padding: const EdgeInsets.all(12),
-              itemCount: _reservations.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final reservation = _reservations[index];
-                // final purchases =
-                //     _resPurchasesByReservation[reservation.id] ?? [];
-                // final purchaseText = purchases
-                //     .map(
-                //       (purchase) => "${purchase.itemName} ${purchase.quantity}",
-                //     )
-                //     .join(', ');
-                // final resTotalPrice = purchases.fold<int>(
-                //   0,
-                //   (sum, item) => (sum += item.unitPrice * item.quantity),
-                // );
-                return GestureDetector(
-                  onTap: () => _showReservationModifyAlert(
-                    context,
-                    widget.table,
-                    reservation.id,
-                    reservation.reservationTime,
-                    reservation.customerName,
-                    reservation.customerPhone,
-                    reservation.bidPrice,
-                    // 이미 채워져 있는 값 보내기
-                  ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 8,
-                    ),
-                    title: Text(
-                      '${reservation.customerName} ${reservation.reservationTime == null ? '' : DateFormat('HH:mm').format(reservation.reservationTime!)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      '${reservation.customerPhone}\n${formatPrice(reservation.bidPrice!)}',
-                    ),
-                    // subtitle: Text(
-                    //   '${purchaseText} : ${formatPrice(resTotalPrice)}',
-                    // ),
-                    isThreeLine: true,
-                    trailing: Wrap(
-                      spacing: 4,
-                      children: [
-                        IconButton(
-                          tooltip: '입장',
-                          onPressed: () => _admitReservation(
-                            context,
-                            widget.table,
-                            reservation,
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  fixedReservation == null
+                      ? SizedBox.shrink()
+                      : FixedReservationTile(
+                          reservation: fixedReservation,
+                          onCheckIn: () => _admitReservation(context, widget.table, fixedReservation),
+                          onCancel: () => _unfixReservation(context, widget.table, fixedReservation),
+                        ),
+                  ListView.separated(
+                    shrinkWrap: true, // single~: 자식에게 무제한 높이 제공 -> Listview높이를 못 정해서 Render Error
+                    padding: const EdgeInsets.all(12),
+                    itemCount: leftBidList.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final reservation = _reservations[index];
+                      // final purchases =
+                      //     _resPurchasesByReservation[reservation.id] ?? [];
+                      // final purchaseText = purchases
+                      //     .map(
+                      //       (purchase) => "${purchase.itemName} ${purchase.quantity}",
+                      //     )
+                      //     .join(', ');
+                      // final resTotalPrice = purchases.fold<int>(
+                      //   0,
+                      //   (sum, item) => (sum += item.unitPrice * item.quantity),
+                      // );
+                      return GestureDetector(
+                        onTap: () => _showReservationModifyAlert(
+                          context,
+                          widget.table,
+                          reservation.id,
+                          reservation.reservationTime,
+                          reservation.customerName,
+                          reservation.customerPhone,
+                          reservation.bidPrice,
+                          // 이미 채워져 있는 값 보내기
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 8,
                           ),
-                          icon: const Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
+                          title: Text(
+                            '${reservation.customerName} ${reservation.reservationTime == null ? '' : DateFormat('HH:mm').format(reservation.reservationTime!)}',
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            '${reservation.customerPhone}\n${formatPrice(reservation.bidPrice!)}',
+                          ),
+                          // subtitle: Text(
+                          //   '${purchaseText} : ${formatPrice(resTotalPrice)}',
+                          // ),
+                          isThreeLine: true,
+                          trailing: Wrap(
+                            spacing: 4,
+                            children: [
+                              IconButton(
+                                tooltip: '입장',
+                                onPressed: () => _fixReservation(
+                                  context,
+                                  widget.table,
+                                  reservation,
+                                ),
+                                icon: const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                ),
+                              ),
+                              IconButton(
+                                tooltip: '취소',
+                                onPressed: () => _removeReservation(
+                                  context,
+                                  widget.table,
+                                  reservation,
+                                ),
+                                icon: const Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          tooltip: '취소',
-                          onPressed: () => _removeReservation(
-                            context,
-                            widget.table,
-                            reservation,
-                          ),
-                          icon: const Icon(
-                            Icons.remove_circle,
-                            color: Colors.red,
-                          ),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
-                );
-              },
+                ],
+              ),
             ),
     );
   }
