@@ -23,9 +23,18 @@ class FixedReservationTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '확정된 예약',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('확정된 예약', style: TextStyle(fontSize: 12),),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              minimumSize: const Size(60, 32),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusGeometry.circular(8)
+              )
+            ),
           ),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(
@@ -46,18 +55,12 @@ class FixedReservationTile extends StatelessWidget {
                 IconButton(
                   tooltip: '입장',
                   onPressed: onCheckIn,
-                  icon: const Icon(
-                    Icons.check_circle,
-                    color: Colors.green,
-                  ),
+                  icon: const Icon(Icons.check_circle, color: Colors.green),
                 ),
                 IconButton(
                   tooltip: '취소',
                   onPressed: onCancel,
-                  icon: const Icon(
-                    Icons.remove_circle,
-                    color: Colors.red,
-                  ),
+                  icon: const Icon(Icons.remove_circle, color: Colors.red),
                 ),
               ],
             ),
