@@ -19,7 +19,7 @@ class ReservationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool hasReservation;
-    if (table.isReserved == true) {
+    if (table.hasReservations == true) {
       hasReservation = true;
     } else {
       hasReservation = false;
