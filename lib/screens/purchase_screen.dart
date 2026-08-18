@@ -415,6 +415,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                       ),
                                       onTap: () async {
                                         _addPurchase(item);
+                                        _selectedCategoryId == 5 || _selectedCategoryId == 10 || _selectedCategoryId == 11 ? null : 
                                         await _showMixerSelectionBottomSheet();
                                       },
                                       quantity: quantity,
