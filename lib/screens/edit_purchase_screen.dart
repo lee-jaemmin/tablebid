@@ -1,9 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/log_model.dart';
-import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/services/log_api.dart';
-import 'package:tablebid/services/purchase_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
 class EditPurchaseScreen extends StatefulWidget {
@@ -15,7 +13,6 @@ class EditPurchaseScreen extends StatefulWidget {
 }
 
 class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
-  List<TablePurchasesModel> _purchases = []; // 이렇게 선언해놓고 initState에서 가져오는 게 정석
   List<LogModel> _logs = [];
   bool _isLoading = true;
 
@@ -25,13 +22,11 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   }
 
   Future<void> _loadData() async {
-    final purchases = await PurchaseApi().getPurchases(widget.tableId);
     final logs = await LogApi().getLogs(widget.tableId);
 
     if (!context.mounted) return;
 
     setState(() {
-      _purchases = purchases;
       _logs = logs;
       _isLoading = false;
     });
