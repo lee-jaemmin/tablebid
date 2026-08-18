@@ -108,6 +108,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
         customerName: _nameController.text,
         customerPhone: _phoneController.text,
         items: _selectedItems,
+        bidPrice: int.tryParse(_phoneController.text),
       );
       if (!mounted) return;
       navigator.pop();
@@ -168,14 +169,14 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   readOnly: true, // 키보드 안 올라오게 막기
                   onTap: () => _selectReservationTime(context),
                   decoration: const InputDecoration(
-                    labelText: '예약 시간',
+                    labelText: '(필수) 예약 시간',
                     suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
                   ),
                 ),
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: '비딩 제안가 (정확하게 입력)'),
+                  decoration: InputDecoration(labelText: '비딩 제안가 (단위: 원)'),
                   inputFormatters: [PriceFormatters()],
                 ),
                 SizedBox(height: 12),
@@ -223,7 +224,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                 // ),
                 if (_errorText != null) ...[
                   const SizedBox(height: 12),
-                  Align(alignment: Alignment.center, child: Text(_errorText!)),
+                  Align(alignment: Alignment.center, child: Text(_errorText!, style: TextStyle(color: Colors.redAccent),)),
                 ],
               ],
             ),
@@ -254,7 +255,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
 
                   onPressed: () async {
                     if (_nameController.text.isEmpty ||
-                        _phoneController.text.isEmpty) {
+                        _phoneController.text.isEmpty ||
+                        _timeController.text.isEmpty ||
+                        _priceController.text.isEmpty) {
                       setState(() {
                         _errorText = "필수 정보를 모두 입력해주세요.";
                       });
