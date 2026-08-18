@@ -72,6 +72,12 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     BuildContext context,
     TableModel table,
   ) async {
+    if(_tableReserved == true) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.'), behavior: SnackBarBehavior.floating,));
+      return;
+    }
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => ReservationAlert(
@@ -491,7 +497,9 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
             child: Tooltip(
               message: "예약 추가",
               child: IconButton(
-                onPressed: () => _showReservationAlert(context, widget.table),
+                onPressed: () {
+                  _showReservationAlert(context, widget.table);
+                  },
                 icon: Icon(Icons.add),
               ),
             ),
@@ -523,7 +531,24 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                         ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12,12,12,0),
-                    child: ElevatedButton(
+                    child: _tableReserved ? 
+                      ElevatedButton(
+                      onPressed: () {},
+                      child: Text('비딩 불가', style: TextStyle(fontSize: 12,)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                        minimumSize: const Size(60, 32),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(8),
+                        ),
+                      ),
+                    )
+                    : ElevatedButton(
                       onPressed: () {},
                       child: Text('비딩 중', style: TextStyle(fontSize: 12,)),
                       style: ElevatedButton.styleFrom(
