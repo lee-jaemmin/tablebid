@@ -35,19 +35,21 @@ class ReservationApi {
   }
 
   Future<ReservationModel> updateReservation({
-    required String reservationId,
+    required int reservationId,
     DateTime? reservationTime,
     String? customerName,
     String? customerPhone,
     int? bidPrice,
+    bool? isFixed,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
     final body = {
-      if (reservationTime != null) 'reservation_time': reservationTime,
+      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       if (customerName != null) 'customer_name': customerName,
       if (customerPhone != null) 'customer_phone': customerPhone,
-      if (customerPhone != null) 'bid_price': bidPrice,
+      if (bidPrice != null) 'bid_price': bidPrice,
+      if (isFixed != null) 'is_fixed': isFixed,
     };
 
     final response = await http.patch(
@@ -86,6 +88,7 @@ class ReservationApi {
     required String customerPhone,
     List<SelectedItem>? items,
     int? bidPrice,
+    bool? isFixed,
   }) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/tables/${tableId}/register-reservation',
@@ -105,6 +108,7 @@ class ReservationApi {
       //       )
       //       .toList(), //json(map)들의 리스트가 간다.
       'bid_price': bidPrice,
+      'is_fixed': isFixed,
     };
 
     final response = await http.post(
