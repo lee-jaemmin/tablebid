@@ -88,7 +88,6 @@ class ReservationApi {
     required String customerPhone,
     List<SelectedItem>? items,
     int? bidPrice,
-    bool? isFixed,
   }) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/tables/${tableId}/register-reservation',
@@ -108,7 +107,6 @@ class ReservationApi {
       //       )
       //       .toList(), //json(map)들의 리스트가 간다.
       'bid_price': bidPrice,
-      'is_fixed': isFixed,
     };
 
     final response = await http.post(
