@@ -157,6 +157,11 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         false;
 
     if (!confirm) return;
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
     try {
       print("ReservationId: ${reservation.id}");
       await ReservationApi().reservationCheckIn(reservationId: reservation.id);
@@ -166,6 +171,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('입장 처리 중 오류 발생')));
     }
+    Navigator.pop(context);
     await loadData();
   }
 
@@ -205,10 +211,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text(
                         '네',
-                        style: TextStyle(
-                          color: Colors.black,
-                          
-                        ),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -220,6 +223,11 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         false;
 
     if (!confirm) return;
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
     try {
       await ReservationApi().deleteReservation(reservationId: reservation.id);
     } catch (e) {
@@ -228,6 +236,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('예약 삭제 중 오류 발생')));
     }
+    Navigator.pop(context);
     await loadData();
   }
 
