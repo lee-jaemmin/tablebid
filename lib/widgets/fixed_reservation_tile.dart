@@ -18,7 +18,7 @@ class FixedReservationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue.withValues(alpha: 0.12),
+      color: Colors.blue.withValues(alpha: 0.16),
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
