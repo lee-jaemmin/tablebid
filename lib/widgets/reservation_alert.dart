@@ -108,7 +108,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
         customerName: _nameController.text,
         customerPhone: _phoneController.text,
         items: _selectedItems,
-        bidPrice: int.tryParse(_phoneController.text),
+        bidPrice: int.tryParse(_priceController.text.replaceAll(',', '')),
       );
       if (!mounted) return;
       navigator.pop();

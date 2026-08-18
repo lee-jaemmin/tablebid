@@ -39,6 +39,7 @@ class ReservationApi {
     DateTime? reservationTime,
     String? customerName,
     String? customerPhone,
+    int? bidPrice,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
@@ -46,6 +47,7 @@ class ReservationApi {
       if (reservationTime != null) 'reservation_time': reservationTime,
       if (customerName != null) 'customer_name': customerName,
       if (customerPhone != null) 'customer_phone': customerPhone,
+      if (customerPhone != null) 'bid_price': bidPrice,
     };
 
     final response = await http.patch(
@@ -93,15 +95,16 @@ class ReservationApi {
       if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
       'customer_phone': customerPhone,
-      if (items != null)
-        'purchases': items
-            .map(
-              (item) => {
-                'item_id': item.itemId,
-                'quantity': item.quantity,
-              },
-            )
-            .toList(), //json(map)들의 리스트가 간다.
+      // if (items != null)
+      //   'purchases': items
+      //       .map(
+      //         (item) => {
+      //           'item_id': item.itemId,
+      //           'quantity': item.quantity,
+      //         },
+      //       )
+      //       .toList(), //json(map)들의 리스트가 간다.
+      'bid_price': bidPrice,
     };
 
     final response = await http.post(
