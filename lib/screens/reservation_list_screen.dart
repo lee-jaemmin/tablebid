@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/reservation_model.dart';
-import 'package:tablebid/models/reservation_purchase_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
-import 'package:tablebid/services/reservation_purchase_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
+import 'package:intl/intl.dart';
+// import 'package:tablebid/services/reservation_purchase_api.dart';
+// import 'package:tablebid/models/reservation_purchase_model.dart';
 
 class ReservationListScreen extends StatefulWidget {
   final String companyId;
@@ -64,16 +65,25 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   Future<void> _showReservationAlert(
     BuildContext context,
     TableModel table,
+    DateTime? reservationTime,
+    String? customerName,
+    String? phoneNumber,
+    int? bidPrice,
   ) async {
-    await showDialog(
+    bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => ReservationAlert(
         companyId: widget.companyId,
         table: table,
         userId: widget.userId,
+        reservationTime: reservationTime,
+        customerName: customerName,
+        phonenumber: phoneNumber,
+        bidPrice: bidPrice,
       ),
     );
-    if(!mounted) return;
+    if (confirm == false) return;
+    if (!mounted) return;
     setState(() {
       loadData();
     });
@@ -117,12 +127,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
-                        side: BorderSide(
-                          color: Colors.white,
-                        )
+                        side: BorderSide(color: Colors.white),
                       ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text('아니오', style: TextStyle(color: Colors.white)),
+                      child: const Text(
+                        '아니오',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                   SizedBox(width: 12),
@@ -134,9 +145,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text(
                         '입장',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
@@ -172,25 +181,38 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
             title: const Text('예약 취소'),
             content: const Text('예약을 취소하시겠습니까?'),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('아니오', style: TextStyle(color: Colors.black)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: BorderSide(color: Colors.white),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        '아니오',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                ),
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text(
-                  '네',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        '네',
+                        style: TextStyle(
+                          color: Colors.black,
+                          
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -220,7 +242,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
             child: Tooltip(
               message: "예약 추가",
               child: IconButton(
-                onPressed: () => _showReservationAlert(context, widget.table),
+                onPressed: () => _showReservationAlert(
+                  context,
+                  widget.table,
+                  null,
+                  null,
+                  null,
+                  null,
+                ),
                 icon: Icon(Icons.add),
               ),
             ),
@@ -248,48 +277,60 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 //   0,
                 //   (sum, item) => (sum += item.unitPrice * item.quantity),
                 // );
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 8,
+                return GestureDetector(
+                  onTap: () => _showReservationAlert(
+                    context,
+                    widget.table,
+                    reservation.reservationTime,
+                    reservation.customerName,
+                    reservation.customerPhone,
+                    reservation.bidPrice,
                   ),
-                  title: Text(
-                    '${reservation.customerName}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text('${reservation.customerPhone}\n${formatPrice(reservation.bidPrice!)}'),
-                  // subtitle: Text(
-                  //   '${purchaseText} : ${formatPrice(resTotalPrice)}',
-                  // ),
-                  isThreeLine: true,
-                  trailing: Wrap(
-                    spacing: 4,
-                    children: [
-                      IconButton(
-                        tooltip: '입장',
-                        onPressed: () => _admitReservation(
-                          context,
-                          widget.table,
-                          reservation,
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 8,
+                    ),
+                    title: Text(
+                      '${reservation.customerName} ${reservation.reservationTime == null ? '' : DateFormat('HH:mm').format(reservation.reservationTime!)}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      '${reservation.customerPhone}\n${formatPrice(reservation.bidPrice!)}',
+                    ),
+                    // subtitle: Text(
+                    //   '${purchaseText} : ${formatPrice(resTotalPrice)}',
+                    // ),
+                    isThreeLine: true,
+                    trailing: Wrap(
+                      spacing: 4,
+                      children: [
+                        IconButton(
+                          tooltip: '입장',
+                          onPressed: () => _admitReservation(
+                            context,
+                            widget.table,
+                            reservation,
+                          ),
+                          icon: const Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                          ),
                         ),
-                        icon: const Icon(
-                          Icons.check_circle,
-                          color: Colors.green,
+                        IconButton(
+                          tooltip: '취소',
+                          onPressed: () => _removeReservation(
+                            context,
+                            widget.table,
+                            reservation,
+                          ),
+                          icon: const Icon(
+                            Icons.remove_circle,
+                            color: Colors.red,
+                          ),
                         ),
-                      ),
-                      IconButton(
-                        tooltip: '취소',
-                        onPressed: () => _removeReservation(
-                          context,
-                          widget.table,
-                          reservation,
-                        ),
-                        icon: const Icon(
-                          Icons.remove_circle,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               },

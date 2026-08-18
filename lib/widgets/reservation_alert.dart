@@ -6,17 +6,26 @@ import 'package:tablebid/screens/reservation_purchase_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
+import 'package:intl/intl.dart';
 
 class ReservationAlert extends StatefulWidget {
   final String companyId;
   final TableModel table;
   final String userId;
+  final DateTime? reservationTime;
+  final String? customerName;
+  final String? phonenumber;
+  final int? bidPrice;
 
   const ReservationAlert({
     super.key,
     required this.companyId,
     required this.table,
     required this.userId,
+    this.reservationTime,
+    this.customerName,
+    this.phonenumber,
+    this.bidPrice, 
   });
 
   @override
@@ -41,10 +50,18 @@ class _ReservationAlertState extends State<ReservationAlert> {
     _nameController = TextEditingController();
     _phoneController = TextEditingController();
     _priceController = TextEditingController();
-    _priceController.text = widget.table.leastBidPrice.toString();
+    _timeController = TextEditingController();
+    if(widget.reservationTime != null) _timeController.text = DateFormat("HH:mm").format(widget.reservationTime!);
+    if(widget.customerName != null) _nameController.text = widget.customerName!;
+    if(widget.phonenumber != null) _phoneController.text = widget.phonenumber!;
+    if(widget.bidPrice == null) {
+      _priceController.text = widget.table.leastBidPrice.toString();
+    } else {
+      _priceController.text = formatPrice(widget.bidPrice!).toString();
+    }
 
     // 시간 초기화 로직
-    _timeController = TextEditingController();
+    
     DateTime now = DateTime.now();
     _selectedDateTime = now;
 
@@ -243,7 +260,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                     side: BorderSide(color: Colors.white),
                     backgroundColor: Colors.transparent,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => Navigator.pop(context, false),
                   child: const Text(
                     '취소',
                     style: TextStyle(color: Colors.white),
