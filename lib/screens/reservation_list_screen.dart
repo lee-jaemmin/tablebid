@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/reservation_purchase_model.dart';
@@ -25,7 +26,7 @@ class ReservationListScreen extends StatefulWidget {
 
 class _ReservationListScreenState extends State<ReservationListScreen> {
   List<ReservationModel> _reservations = [];
-  Map<int, List<ReservationPurchaseModel>> _resPurchasesByReservation = {};
+  // Map<int, List<ReservationPurchaseModel>> _resPurchasesByReservation = {};
   bool _isLoading = false;
 
   @override
@@ -43,18 +44,18 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       widget.table.id,
     );
 
-    final Map<int, List<ReservationPurchaseModel>> purchasesMap = {};
-    for (final reservation in reservations) {
-      final purchases = await ReservationPurchaseApi()
-          .getResPurchasesByReservation(reservation.id);
-      purchasesMap[reservation.id] = purchases;
-    }
+    // final Map<int, List<ReservationPurchaseModel>> purchasesMap = {};
+    // for (final reservation in reservations) {
+    //   final purchases = await ReservationPurchaseApi()
+    //       .getResPurchasesByReservation(reservation.id);
+    //   purchasesMap[reservation.id] = purchases;
+    // }
 
     if (!mounted) return;
 
     setState(() {
       _reservations = reservations;
-      _resPurchasesByReservation = purchasesMap;
+      // _resPurchasesByReservation = purchasesMap;
       _isLoading = false;
     });
   }
@@ -71,6 +72,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         userId: widget.userId,
       ),
     );
+    if(!mounted) return;
+    setState(() {
+      loadData();
+    });
   }
 
   Future<void> _admitReservation(
@@ -105,25 +110,36 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
               '${table.tablename}번 테이블에 ${reservation.customerName} 손님을 등록할까요?',
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('아니오', style: TextStyle(color: Colors.black)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade800,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusGeometry.circular(10),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: BorderSide(
+                          color: Colors.white,
+                        )
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('아니오', style: TextStyle(color: Colors.white)),
+                    ),
                   ),
-                ),
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text(
-                  '입장',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        '입장',
+                        style: TextStyle(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
@@ -157,10 +173,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text(
-                  '아니오',
-                  style: TextStyle(color: Colors.black),
-                ),
+                child: const Text('아니오', style: TextStyle(color: Colors.black)),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -200,9 +213,21 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.table.tablename} 예약'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Tooltip(
+              message: "예약 추가",
+              child: IconButton(
+                onPressed: () => _showReservationAlert(context, widget.table),
+                icon: Icon(Icons.add),
+              ),
+            ),
+          ),
+        ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CupertinoActivityIndicator())
           : _reservations.isEmpty
           ? const Center(child: Text('예약 없음'))
           : ListView.separated(
@@ -211,29 +236,30 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
               separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final reservation = _reservations[index];
-                final purchases =
-                    _resPurchasesByReservation[reservation.id] ?? [];
-                final purchaseText = purchases
-                    .map(
-                      (purchase) => "${purchase.itemName} ${purchase.quantity}",
-                    )
-                    .join(', ');
-                final resTotalPrice = purchases.fold<int>(
-                  0,
-                  (sum, item) => (sum += item.unitPrice * item.quantity),
-                );
+                // final purchases =
+                //     _resPurchasesByReservation[reservation.id] ?? [];
+                // final purchaseText = purchases
+                //     .map(
+                //       (purchase) => "${purchase.itemName} ${purchase.quantity}",
+                //     )
+                //     .join(', ');
+                // final resTotalPrice = purchases.fold<int>(
+                //   0,
+                //   (sum, item) => (sum += item.unitPrice * item.quantity),
+                // );
                 return ListTile(
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 4,
                     vertical: 8,
                   ),
                   title: Text(
-                    '${reservation.customerName} / ${reservation.customerPhone}',
+                    '${reservation.customerName}',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
-                    '${purchaseText} : ${formatPrice(resTotalPrice)}',
-                  ),
+                  subtitle: Text('${reservation.customerPhone}\n${formatPrice(reservation.bidPrice!)}'),
+                  // subtitle: Text(
+                  //   '${purchaseText} : ${formatPrice(resTotalPrice)}',
+                  // ),
                   isThreeLine: true,
                   trailing: Wrap(
                     spacing: 4,
