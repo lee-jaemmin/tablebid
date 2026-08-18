@@ -1,0 +1,337 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/screens/reservation_purchase_screen.dart';
+import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/widgets/phonenumber_formatter.dart';
+import 'package:tablebid/widgets/price_formatter.dart';
+import 'package:intl/intl.dart';
+
+class ReservationModifyAlert extends StatefulWidget {
+  final String companyId;
+  final TableModel table;
+  final int reservationId;
+  final String userId;
+  final DateTime? reservationTime;
+  final String? customerName;
+  final String? phonenumber;
+  final int? bidPrice;
+
+  const ReservationModifyAlert({
+    super.key,
+    required this.companyId,
+    required this.table,
+    required this.reservationId,
+    required this.userId,
+    this.reservationTime,
+    this.customerName,
+    this.phonenumber,
+    this.bidPrice,
+  });
+
+  @override
+  State<ReservationModifyAlert> createState() => _ReservationAlertState();
+}
+
+class _ReservationAlertState extends State<ReservationModifyAlert> {
+  late TextEditingController _nameController;
+  late TextEditingController _phoneController;
+  late TextEditingController _priceController;
+
+  // 예약 시간용 컨트롤러 및 변수 추가
+  late TextEditingController _timeController;
+  late DateTime _selectedDateTime;
+  List<SelectedItem>? _selectedItems;
+  String? _errorText;
+  bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _priceController = TextEditingController();
+    _timeController = TextEditingController();
+    if (widget.reservationTime != null)
+      _timeController.text = DateFormat(
+        "HH:mm",
+      ).format(widget.reservationTime!);
+    if (widget.customerName != null)
+      _nameController.text = widget.customerName!;
+    if (widget.phonenumber != null) _phoneController.text = widget.phonenumber!;
+    if (widget.bidPrice == null) {
+      _priceController.text = widget.table.leastBidPrice.toString();
+    } else {
+      _priceController.text = formatPrice(widget.bidPrice!).toString();
+    }
+
+    // 시간 초기화 로직
+
+    DateTime now = DateTime.now();
+    _selectedDateTime = now;
+
+    _selectedDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      (now.minute / 5).round() * 5,
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _phoneController.dispose();
+    _priceController.dispose();
+    _timeController.dispose();
+    super.dispose();
+  }
+
+  // 하단에서 올라오는 쿠퍼티노 타임 피커
+  Future<void> _selectReservationTime(BuildContext context) async {
+    DateTime tempDateTime = _selectedDateTime;
+    FocusScope.of(context).unfocus();
+
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.time,
+              initialDateTime: tempDateTime,
+              use24hFormat: true,
+              minuteInterval: 5,
+              onDateTimeChanged: (DateTime newDateTime) {
+                setState(() {
+                  tempDateTime = newDateTime;
+                  _selectedDateTime = tempDateTime;
+                  _timeController.text =
+                      "${newDateTime.hour.toString().padLeft(2, '0')}:${newDateTime.minute.toString().padLeft(2, '0')}";
+                });
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> updateReservationData({
+    required int reservationId,
+  }) async {
+    try {
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
+      await ReservationApi().updateReservation(
+        reservationId: reservationId,
+        reservationTime: _selectedDateTime,
+        customerName: _nameController.text,
+        customerPhone: _phoneController.text,
+        bidPrice: int.tryParse(_priceController.text.replaceAll(',', '')),
+      );
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text('예약 등록 성공: ${widget.table.tablename}')),
+      );
+    } catch (e) {
+      print('❌ 예약 등록 중 오류 발생');
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('예약 등록 중 오류 발생')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: AlertDialog(
+        title: Text('${widget.table.tablename} 예약 수정'),
+        content: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: '(필수) 손님 이름'),
+                ),
+                TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [PhoneNumberFormatter()],
+                  decoration: InputDecoration(
+                    labelText: '(필수) 손님 번호',
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.copy, size: 20),
+                      onPressed: () {
+                        final phoneNumber = _phoneController.text;
+                        if (phoneNumber.isNotEmpty) {
+                          Clipboard.setData(ClipboardData(text: phoneNumber));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('번호 복사 완료'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                TextField(
+                  controller: _timeController,
+                  readOnly: true, // 키보드 안 올라오게 막기
+                  onTap: () => _selectReservationTime(context),
+                  decoration: const InputDecoration(
+                    labelText: '(필수) 예약 시간',
+                    suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
+                  ),
+                ),
+                TextField(
+                  controller: _priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(labelText: '비딩 제안가 (단위: 원)'),
+                  inputFormatters: [PriceFormatters()],
+                ),
+                SizedBox(height: 12),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: FilledButton.icon(
+                //         style: FilledButton.styleFrom(
+                //           backgroundColor: Colors.green,
+                //           foregroundColor: Colors.white,
+                //           shape: RoundedRectangleBorder(
+                //             borderRadius: BorderRadiusGeometry.circular(8),
+                //           ),
+                //         ),
+                //         onPressed: () async {
+                //           _selectedItems =
+                //               await Navigator.push<List<SelectedItem>>(
+                //                 context,
+                //                 MaterialPageRoute(
+                //                   builder: (context) =>
+                //                       ReservationPurchaseScreen(
+                //                         companyId: widget.companyId,
+                //                         tableId: widget.table.id,
+                //                         tableName: widget.table.tablename,
+                //                         userId: widget.userId,
+                //                       ),
+                //                 ),
+                //               );
+                //           if (_selectedItems!.isEmpty) return;
+                //           int price = 0;
+                //           for (final item in _selectedItems!) {
+                //             price += item.unitPrice * item.quantity;
+                //           }
+                //           setState(() {
+                //             _priceController.text = formatPrice(price);
+                //           });
+                //           // infowindow의 경우 총 가격 다시 불러오는 코드는 별도의 함수에 있었지만
+                //           // 여기서는 그냥 이 부분에 작성.
+                //         },
+                //         icon: const Icon(Icons.receipt_long),
+                //         label: const Text('예약 상품 입력'),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                if (_errorText != null) ...[
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      _errorText!,
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    side: BorderSide(color: Colors.white),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+
+                  onPressed: () async {
+                    if (_nameController.text.isEmpty ||
+                        _phoneController.text.isEmpty ||
+                        _timeController.text.isEmpty ||
+                        _priceController.text.isEmpty) {
+                      setState(() {
+                        _errorText = "필수 정보를 모두 입력해주세요.";
+                      });
+                      return;
+                    }
+                    if (_isSubmitting) return;
+                    setState(() {
+                      _isSubmitting = true;
+                    });
+                    try {
+                      await updateReservationData(
+                        reservationId: widget.reservationId,
+
+                      );
+                    } catch (e) {
+                      print('❌ 예약 수정 중 에러 발생: $e');
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('예약 수정 중 에러 발생')));
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          _isSubmitting = false;
+                        });
+                      }
+                    }
+                  },
+                  child: _isSubmitting
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CupertinoActivityIndicator(
+                            color: Colors.black,
+                          ),
+                        )
+                      : const Text('수정', style: TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
