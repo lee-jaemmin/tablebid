@@ -7,6 +7,7 @@ class ReservationModel {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final int? bidPrice;
+  final bool? isFixed;
 
   ReservationModel({
     required this.id,
@@ -17,6 +18,7 @@ class ReservationModel {
     required this.createdAt,
     this.updatedAt,
     this.bidPrice,
+    this.isFixed,
   });
 
   factory ReservationModel.fromJson(Map<String, dynamic> json) {
@@ -30,7 +32,8 @@ class ReservationModel {
       updatedAt: json['updated_at'] == null
           ? null
           : DateTime.parse(json['updated_at']),
-      bidPrice: json['bid_price']
+      bidPrice: json['bid_price'],
+      isFixed: json['is_fixed'],
     );
   }
 }
