@@ -6,6 +6,7 @@ import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
 import 'package:intl/intl.dart';
+import 'package:tablebid/widgets/reservation_modify_alert.dart';
 // import 'package:tablebid/services/reservation_purchase_api.dart';
 // import 'package:tablebid/models/reservation_purchase_model.dart';
 
@@ -65,10 +66,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   Future<void> _showReservationAlert(
     BuildContext context,
     TableModel table,
-    DateTime? reservationTime,
-    String? customerName,
-    String? phoneNumber,
-    int? bidPrice,
   ) async {
     bool? confirm = await showDialog<bool>(
       context: context,
@@ -76,9 +73,34 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         companyId: widget.companyId,
         table: table,
         userId: widget.userId,
-        reservationTime: reservationTime,
+      ),
+    );
+    if (confirm == false) return;
+    if (!mounted) return;
+    setState(() {
+      loadData();
+    });
+  }
+
+    Future<void> _showReservationModifyAlert(
+    BuildContext context,
+    TableModel table,
+    int reservationId,
+    DateTime? reservationTime,
+    String? customerName,
+    String? phonenumber,
+    int? bidPrice,
+  ) async {
+    bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => ReservationModifyAlert(
+        companyId: widget.companyId,
+        table: table,
+        reservationId: reservationId,
         customerName: customerName,
-        phonenumber: phoneNumber,
+        userId: widget.userId,
+        reservationTime: reservationTime,
+        phonenumber: phonenumber,
         bidPrice: bidPrice,
       ),
     );
@@ -254,10 +276,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 onPressed: () => _showReservationAlert(
                   context,
                   widget.table,
-                  null,
-                  null,
-                  null,
-                  null,
                 ),
                 icon: Icon(Icons.add),
               ),
@@ -287,13 +305,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 //   (sum, item) => (sum += item.unitPrice * item.quantity),
                 // );
                 return GestureDetector(
-                  onTap: () => _showReservationAlert(
+                  onTap: () => _showReservationModifyAlert(
                     context,
                     widget.table,
+                    reservation.id,
                     reservation.reservationTime,
                     reservation.customerName,
                     reservation.customerPhone,
                     reservation.bidPrice,
+                    // 이미 채워져 있는 값 보내기
                   ),
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
