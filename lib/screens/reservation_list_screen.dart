@@ -43,6 +43,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     final reservations = await ReservationApi().getReservationsByTable(
       widget.table.id,
     );
+    reservations.sort((a, b) => (b.bidPrice!).compareTo(a.bidPrice!));
 
     // final Map<int, List<ReservationPurchaseModel>> purchasesMap = {};
     // for (final reservation in reservations) {
