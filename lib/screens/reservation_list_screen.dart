@@ -31,6 +31,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   List<ReservationModel> _reservations = [];
   // Map<int, List<ReservationPurchaseModel>> _resPurchasesByReservation = {};
   bool _isLoading = false;
+  bool _tableReserved = false;
 
   @override
   void initState() {
@@ -61,6 +62,9 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       _reservations = reservations;
       // _resPurchasesByReservation = purchasesMap;
       _isLoading = false;
+      _tableReserved = _reservations.any(
+        (reservation) => reservation.isFixed == true,
+      );
     });
   }
 
@@ -117,13 +121,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     TableModel table,
     ReservationModel reservation,
   ) async {
-    if (table.isReserved == true) {
+    if (_tableReserved == true) {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('예약 확정 불가'),
           content: Text(
-            '${table.tablename}번 테이블의 예약이 이미 확정된 상황입니다.\n해당 예약을 취소해주세요.',
+            '${table.tablename}번 테이블의 확정된 예약이 이미 존재합니다.\n해당 예약을 취소해주세요.',
           ),
           actions: [
             Row(
@@ -132,12 +136,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
-                      side: BorderSide(
-                        color: Colors.white,
-                      )
+                      side: BorderSide(color: Colors.white),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('확인', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -199,7 +204,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     );
     try {
       print("ReservationId: ${reservation.id}");
-      await ReservationApi().updateReservation(reservationId: reservation.id, isFixed: true);
+      await ReservationApi().updateReservation(
+        reservationId: reservation.id,
+        isFixed: true,
+      );
     } catch (e) {
       print('❌ 예약 확정 실패: $e');
       ScaffoldMessenger.of(
@@ -215,7 +223,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     TableModel table,
     ReservationModel reservation,
   ) async {
-    if (table.isReserved == false) {
+    if (reservation.isFixed == false) {
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -230,12 +238,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.transparent,
-                      side: BorderSide(
-                        color: Colors.white,
-                      )
+                      side: BorderSide(color: Colors.white),
                     ),
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('확인', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -297,7 +306,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     );
     try {
       print("ReservationId: ${reservation.id}");
-      await ReservationApi().updateReservation(reservationId: reservation.id, isFixed: false);
+      await ReservationApi().updateReservation(
+        reservationId: reservation.id,
+        isFixed: false,
+      );
     } catch (e) {
       print('❌ 예약 확정 취소 실패: $e');
       ScaffoldMessenger.of(
@@ -492,21 +504,50 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           ? const Center(child: Text('예약 없음'))
           : SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   fixedReservation == null
                       ? SizedBox.shrink()
                       : FixedReservationTile(
                           reservation: fixedReservation,
-                          onCheckIn: () => _admitReservation(context, widget.table, fixedReservation),
-                          onCancel: () => _unfixReservation(context, widget.table, fixedReservation),
+                          onCheckIn: () => _admitReservation(
+                            context,
+                            widget.table,
+                            fixedReservation,
+                          ),
+                          onCancel: () => _unfixReservation(
+                            context,
+                            widget.table,
+                            fixedReservation,
+                          ),
                         ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12,12,12,0),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      child: Text('비딩 중', style: TextStyle(fontSize: 12,)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(229, 255, 153, 0),
+                        minimumSize: const Size(60, 32),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
                   ListView.separated(
-                    shrinkWrap: true, // single~: 자식에게 무제한 높이 제공 -> Listview높이를 못 정해서 Render Error
+                    shrinkWrap:
+                        true, // single~: 자식에게 무제한 높이 제공 -> Listview높이를 못 정해서 Render Error
                     padding: const EdgeInsets.all(12),
                     itemCount: leftBidList.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
-                      final reservation = _reservations[index];
+                      final reservation = leftBidList[index];
                       // final purchases =
                       //     _resPurchasesByReservation[reservation.id] ?? [];
                       // final purchaseText = purchases
