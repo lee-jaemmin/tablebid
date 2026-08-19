@@ -73,9 +73,13 @@ class _MixerSelectionBottomSheetState extends State<MixerSelectionBottomSheet> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () => Navigator.pop(context, <ItemModel>[]),
+                        onPressed: () {
+                          setState(() {
+                            _selectedMixerQuantities.clear();
+                          });
+                        },
                         child: const Text(
-                          '선택 안함',
+                          '다시 선택',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
