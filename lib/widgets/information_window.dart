@@ -463,7 +463,7 @@ class _InformationWindowState extends State<InformationWindow> {
                     children: [
                       Icon(Icons.receipt_long),
                       SizedBox(width: 8),
-                      const Text('구매내역 입력'),
+                      const Text('구매 내역 입력'),
                     ],
                   ),
                   onPressed: _openPurchaseScreen,
