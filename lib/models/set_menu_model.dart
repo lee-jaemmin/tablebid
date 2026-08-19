@@ -22,7 +22,7 @@ class SetMenuModel {
       setName: json['set_name'],
       setPrice: json['set_price'],
       isActive: json['is_active'],
-      hasMixer: json['has_mixer']
+      hasMixer: json['has_mixer'] ?? true
     );
   }
 }

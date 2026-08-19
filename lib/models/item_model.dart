@@ -27,7 +27,7 @@ class ItemModel {
       itemName: json['item_name'],
       itemPrice: json['item_price'],
       isActive: json['is_active'],
-      hasMixer: json['has_mixer'],
+      hasMixer: json['has_mixer'] ?? true,
       companyId: json['company_id'],
       categoryId: json['category_id'],
       createdAt: json['created_at'] == null ? null : DateTime.parse(json['created_at']),
