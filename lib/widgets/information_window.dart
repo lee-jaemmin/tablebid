@@ -457,11 +457,23 @@ class _InformationWindowState extends State<InformationWindow> {
                   keyboardType: TextInputType.multiline,
                 ),
                 const SizedBox(height: 12),
-
-                OutlinedButton.icon(
+                ElevatedButton(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.receipt_long),
+                      SizedBox(width: 8),
+                      const Text('구매내역 입력'),
+                    ],
+                  ),
                   onPressed: _openPurchaseScreen,
-                  icon: const Icon(Icons.receipt_long),
-                  label: const Text('구매내역 입력'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF904E55),
+                    side: BorderSide(
+                      color: Color.fromARGB(255, 112, 10, 10),
+                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12))
+                  ),
                 ),
               ],
             ),
