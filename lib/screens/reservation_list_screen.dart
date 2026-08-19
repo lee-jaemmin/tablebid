@@ -493,7 +493,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         title: Text('${widget.table.tablename} 예약'),
         actions: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.fromLTRB(12,12,4,12),
             child: Tooltip(
               message: "예약 추가",
               child: IconButton(
@@ -501,6 +501,18 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   _showReservationAlert(context, widget.table);
                   },
                 icon: Icon(Icons.add),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(4,12,12,12),
+            child: Tooltip(
+              message: "새로 고침",
+              child: IconButton(
+                onPressed: () {
+                  loadData();  
+                },
+                icon: Icon(Icons.refresh),
               ),
             ),
           ),
