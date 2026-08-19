@@ -34,7 +34,7 @@ class PurchaseItemChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [Text(itemName), SizedBox(width: 2), quantity == 0 ? Text("") : Text('$quantity')],
+            children: [Text(itemName), SizedBox(width: 4), quantity == 0 ? Text("") : Text('$quantity')],
           ),
         ),
       ),
