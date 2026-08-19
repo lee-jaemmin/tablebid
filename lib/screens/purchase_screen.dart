@@ -269,7 +269,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         .toList();
     final searchedProducts = ([...matchedSetMenus, ...matchedItems]);
     final isSetMenuSelected = _selectedCategoryId == -1;
-    final categorySelectedItems = _items.where((item)=>item.categoryId == _selectedCategoryId).toList()..sort((a, b) => a.itemName.compareTo(b.itemName));
+    final categorySelectedItems =
+        _items.where((item) => item.categoryId == _selectedCategoryId).toList()
+          ..sort((a, b) => a.itemName.compareTo(b.itemName));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.tableName} 구매내역'),
@@ -414,13 +416,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                       child: Wrap(
                                         spacing: 8,
                                         runSpacing: 8,
-                                        children: _setMenus.map((
-                                          setMenu,
-                                        ) {
+                                        children: _setMenus.map((setMenu) {
                                           final purchaseIndex = _newPurchases
                                               .indexWhere(
                                                 (element) =>
-                                                    element.itemId == setMenu.id,
+                                                    element.itemId ==
+                                                    setMenu.id,
                                               );
                                           final quantity = purchaseIndex == -1
                                               ? 0
