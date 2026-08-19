@@ -377,7 +377,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                               ),
                                               onTap: () async {
                                                 _addSetMenuPurchase(setMenu);
-                                                await _showMixerSelectionBottomSheet();
+                                                setMenu.hasMixer
+                                                    ? await _showMixerSelectionBottomSheet()
+                                                    : null;
                                               },
                                               quantity: quantity,
                                             );
@@ -400,7 +402,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                               ),
                                               onTap: () async {
                                                 _addPurchase(item);
-                                                await _showMixerSelectionBottomSheet();
+                                                item.hasMixer
+                                                    ? await _showMixerSelectionBottomSheet()
+                                                    : null;
                                               },
                                               quantity: quantity,
                                             );
@@ -435,12 +439,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                             ),
                                             onTap: () async {
                                               _addSetMenuPurchase(setMenu);
-                                              _selectedCategoryId == 5 ||
-                                                      _selectedCategoryId ==
-                                                          10 ||
-                                                      _selectedCategoryId == 11
-                                                  ? null
-                                                  : await _showMixerSelectionBottomSheet();
+                                              setMenu.hasMixer
+                                                  ? await _showMixerSelectionBottomSheet()
+                                                  : null;
                                             },
                                             quantity: quantity,
                                           );
@@ -469,11 +470,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                       ),
                                       onTap: () async {
                                         _addPurchase(item);
-                                        _selectedCategoryId == 5 ||
-                                                _selectedCategoryId == 10 ||
-                                                _selectedCategoryId == 11
-                                            ? null
-                                            : await _showMixerSelectionBottomSheet();
+                                        item.hasMixer
+                                            ? await _showMixerSelectionBottomSheet()
+                                            : null;
                                       },
                                       quantity: quantity,
                                     );
