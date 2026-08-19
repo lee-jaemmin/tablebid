@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/notification_screen.dart';
+import 'package:tablebid/services/user_api.dart';
 
 class NotificationBell extends StatefulWidget {
   final UserModel user;
@@ -26,6 +27,7 @@ class _NotificationBellState extends State<NotificationBell> {
           _isPushOn = !_isPushOn;
           widget.user.isPushOn = _isPushOn;
         });
+        await UserApi().updateUser(userId: widget.user.id, isPushOn: _isPushOn);
       },
       //  길게 누르기: 히스토리 화면으로 이동
       onLongPress: () {
@@ -41,7 +43,7 @@ class _NotificationBellState extends State<NotificationBell> {
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Icon(
           _isPushOn ? Icons.notifications_active : Icons.notifications_off,
-          color: _isPushOn ? Colors.black : Colors.grey, // 켜지면 검은색, 꺼지면 회색
+          color: _isPushOn ? Colors.white : Colors.white, // 켜지면 검은색, 꺼지면 회색
         ),
       ),
     );
