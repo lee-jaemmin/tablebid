@@ -154,8 +154,8 @@ class TableCard extends StatelessWidget {
                           ).format(reservedAt!.toLocal())
                         : '예약 시간 없음.',
                     style: const TextStyle(
-                      color: Colors.blue,
-                      fontSize: 10,
+                      color: Colors.indigo,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
