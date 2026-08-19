@@ -45,7 +45,7 @@ class _MenuScreenState extends State<MenuScreen> {
         widget.companyId,
         forceRefresh: forceRefresh,
       );
-       final categories = <CategoryModel>[
+      final categories = <CategoryModel>[
         CategoryModel(
           id: -1,
           categoryName: '세트 메뉴',
@@ -85,9 +85,7 @@ class _MenuScreenState extends State<MenuScreen> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => Center(
-            child: CupertinoActivityIndicator(),
-          ),
+          builder: (context) => Center(child: CupertinoActivityIndicator()),
         );
         await ItemApi().updateItem(itemId: item.id, isActive: false);
         if (!mounted) return;
@@ -112,18 +110,20 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
-    Future<void> modifySetMenu(SetMenuModel setMenu) async {
+  Future<void> modifySetMenu(SetMenuModel setMenu) async {
     if (setMenu.isActive) {
       // 이제 끌거야.
       try {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => Center(
-            child: CupertinoActivityIndicator(),
-          ),
+          builder: (context) => Center(child: CupertinoActivityIndicator()),
         );
-        await SetMenuApi().updateSetMenu(companyId: widget.companyId, setMenuId: setMenu.id, isActive: false);
+        await SetMenuApi().updateSetMenu(
+          companyId: widget.companyId,
+          setMenuId: setMenu.id,
+          isActive: false,
+        );
         if (!mounted) return;
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -168,10 +168,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   ),
                 );
               },
-              icon: Icon(
-                Icons.add,
-                size: 30,
-              ),
+              icon: Icon(Icons.add, size: 30),
             ),
           ),
           Padding(
@@ -180,16 +177,13 @@ class _MenuScreenState extends State<MenuScreen> {
               onPressed: () async {
                 final result = await showDialog<InactiveMenuResult>(
                   context: context,
-                  builder: (context) => InactiveMenuScreen(
-                    companyId: widget.companyId,
-                  ),
+                  builder: (context) =>
+                      InactiveMenuScreen(companyId: widget.companyId),
                 );
                 if (result?.changed == true) {
                   await _loadData(forceRefresh: true);
                   if (!mounted) return;
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('메뉴 활성화: ${result?.itemName}'),
                       behavior: SnackBarBehavior.floating,
@@ -197,10 +191,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   );
                 }
               },
-              icon: Icon(
-                Icons.lock,
-                size: 30,
-              ),
+              icon: Icon(Icons.lock, size: 30),
             ),
           ),
         ],
@@ -232,11 +223,11 @@ class _MenuScreenState extends State<MenuScreen> {
                               dense: true,
                               selected: isSelected,
                               selectedTileColor: Color.fromARGB(
-                                  255,
-                                  112,
-                                  10,
-                                  10,
-                                ),
+                                255,
+                                112,
+                                10,
+                                10,
+                              ),
                               title: Text(category.categoryName),
                               onTap: () {
                                 setState(() {
@@ -249,53 +240,58 @@ class _MenuScreenState extends State<MenuScreen> {
                       ),
                       const VerticalDivider(width: 1), // 세로 선
                       Expanded(
-                        child: _selectedCategoryId == -1 
-                        ? _setMenus.isEmpty
-                          ? const Center(child: Text('등록된 메뉴가 없습니다.'))
-                          : ListView.separated(
-                                padding: EdgeInsets.all(10),
-                                itemCount: _setMenus.length,
-                                separatorBuilder: (_, __) {
-                                  return const SizedBox(height: 8);
-                                },
-                                itemBuilder: (context, index) {
-                                  final setMenu = _setMenus[index];
-                                  return ListTile(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                      side: BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                    ),
-                                    title: Text(setMenu.setName),
-                                    subtitle: Text(formatPrice(setMenu.setPrice)),
-                                    trailing: setMenu.isActive
-                                        ? const Icon(
-                                            Icons.toggle_on,
-                                            color: Colors.lightGreenAccent,
-                                          )
-                                        : const Icon(
-                                            Icons.toggle_off,
-                                            color: Colors.grey,
+                        child: _selectedCategoryId == -1
+                            ? _setMenus.isEmpty
+                                  ? const Center(child: Text('등록된 메뉴가 없습니다.'))
+                                  : ListView.separated(
+                                      padding: EdgeInsets.all(10),
+                                      itemCount: _setMenus.length,
+                                      separatorBuilder: (_, __) {
+                                        return const SizedBox(height: 8);
+                                      },
+                                      itemBuilder: (context, index) {
+                                        final setMenu = _setMenus[index];
+                                        return ListTile(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
+                                            side: BorderSide(
+                                              color: Colors.grey.shade300,
+                                            ),
                                           ),
-                                    onTap: () async {
-                                      modifySetMenu(setMenu);
-                                    },
-                                    onLongPress: () async {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => SetMenuModifyWindow(
-                                          companyId: widget.companyId,
-                                          setMenu: setMenu,
-                                          loadData: _loadData,
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              )
-                        : 
-                        selectedItems.isEmpty
+                                          title: Text(setMenu.setName),
+                                          subtitle: Text(
+                                            formatPrice(setMenu.setPrice),
+                                          ),
+                                          trailing: setMenu.isActive
+                                              ? const Icon(
+                                                  Icons.toggle_on,
+                                                  color:
+                                                      Colors.lightGreenAccent,
+                                                )
+                                              : const Icon(
+                                                  Icons.toggle_off,
+                                                  color: Colors.grey,
+                                                ),
+                                          onTap: () async {
+                                            modifySetMenu(setMenu);
+                                          },
+                                          onLongPress: () async {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  SetMenuModifyWindow(
+                                                    companyId: widget.companyId,
+                                                    setMenu: setMenu,
+                                                    loadData: _loadData,
+                                                  ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    )
+                            : selectedItems.isEmpty
                             ? const Center(child: Text('등록된 메뉴가 없습니다.'))
                             : ListView.separated(
                                 padding: EdgeInsets.all(10),
