@@ -4,6 +4,7 @@ class SetMenuModel {
   final String setName;
   final int setPrice;
   final bool isActive;
+  final bool hasMixer;
 
   SetMenuModel({
     required this.id,
@@ -11,6 +12,7 @@ class SetMenuModel {
     required this.setName,
     required this.setPrice,
     required this.isActive,
+    required this.hasMixer
   });
 
   factory SetMenuModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class SetMenuModel {
       setName: json['set_name'],
       setPrice: json['set_price'],
       isActive: json['is_active'],
+      hasMixer: json['has_mixer']
     );
   }
 }

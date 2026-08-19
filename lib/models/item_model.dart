@@ -3,6 +3,7 @@ class ItemModel {
   final String itemName;
   final int itemPrice;
   final bool isActive;
+  final bool hasMixer;
   final String companyId;
   final int categoryId;
   final DateTime? createdAt;
@@ -13,6 +14,7 @@ class ItemModel {
     required this.itemName,
     required this.itemPrice,
     required this.isActive,
+    required this.hasMixer,
     required this.companyId,
     required this.categoryId,
     this.createdAt,
@@ -25,6 +27,7 @@ class ItemModel {
       itemName: json['item_name'],
       itemPrice: json['item_price'],
       isActive: json['is_active'],
+      hasMixer: json['has_mixer'],
       companyId: json['company_id'],
       categoryId: json['category_id'],
       createdAt: json['created_at'] == null ? null : DateTime.parse(json['created_at']),
