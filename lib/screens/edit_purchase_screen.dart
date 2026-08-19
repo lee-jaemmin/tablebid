@@ -97,7 +97,7 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('구매 내역 삭제')),
+      appBar: AppBar(title: const Text('구매 내역 관리')),
       body: _isLoading
           ? Center(child: const CupertinoActivityIndicator())
           : _logs.length == 0
