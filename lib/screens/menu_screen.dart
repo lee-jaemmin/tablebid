@@ -28,7 +28,6 @@ class _MenuScreenState extends State<MenuScreen> {
   bool _isLoading = true;
   String? _errorMessage;
   List<SetMenuModel> _setMenus = [];
-  List<SetMenuItemsModel> _setMenuItems = [];
 
   @override
   void initState() {
@@ -64,12 +63,10 @@ class _MenuScreenState extends State<MenuScreen> {
       final setMenus = menuCache.setMenus
           .where((setMenu) => setMenu.isActive == true)
           .toList();
-      final setMenusItems = menuCache.setMenuItems.toList();
       setState(() {
         _categories = categories;
         _items = items;
         _setMenus = setMenus;
-        _setMenuItems = setMenusItems;
         _isLoading = false;
       });
     } catch (e) {
