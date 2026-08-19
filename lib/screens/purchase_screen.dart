@@ -260,27 +260,16 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final keywords = _searchKeywords.trim().toLowerCase();
+    final matchedItems = _items
+        .where((item) => item.itemName.toLowerCase().contains(keywords))
+        .toList();
+    final matchedSetMenus = _setMenus
+        .where((setMenu) => setMenu.setName.toLowerCase().contains(keywords))
+        .toList();
+    final searchedProducts = ([...matchedSetMenus, ...matchedItems]);
     final isSetMenuSelected = _selectedCategoryId == -1;
-    final visibleSetMenuItems = _setMenus.where((setMenu) {
-      final keywords = _searchKeywords.trim().toLowerCase();
-      final matchesSetMenu =
-          isSetMenuSelected &&
-          keywords.isNotEmpty &&
-          setMenu.setName.toLowerCase().contains(keywords);
-      return keywords.isEmpty || matchesSetMenu;
-    }).toList();
-    final categorySelectedItems = _items.where((item) {
-      final keywords = _searchKeywords.trim().toLowerCase();
-      final matchesCategory =
-          (_selectedCategoryId == null ||
-              item.categoryId == _selectedCategoryId) &&
-          keywords.isEmpty;
-      // (아무것도 안골랐거나(처음) 현재 고른 카테고리와 아이템 카테고리가 일치하고) 검색어가 없으면 true
-      final matchesItem =
-          keywords.isNotEmpty && item.itemName.toLowerCase().contains(keywords);
-      // 검색어가 있고 이름이 일치하는 아이템이 있으면 true
-      return item.isActive && (matchesItem || matchesCategory);
-    }).toList()..sort((a, b) => a.itemName.compareTo(b.itemName));
+    final categorySelectedItems = _items.where((item)=>item.categoryId == _selectedCategoryId).toList()..sort((a, b) => a.itemName.compareTo(b.itemName));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.tableName} 구매내역'),
@@ -305,7 +294,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       body: Stack(
         children: [
           if (_isLoading)
-            const Center(child: CircularProgressIndicator())
+            const Center(child: CupertinoActivityIndicator())
           else if (_errorMessage != null)
             Center(child: Text(_errorMessage!))
           else
@@ -355,22 +344,83 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       ),
                       const VerticalDivider(width: 1), // 세로선
                       Expanded(
-                        child: isSetMenuSelected
-                            ? visibleSetMenuItems.isEmpty
+                        child: _searchController.text.isNotEmpty
+                            ? searchedProducts.isEmpty
+                                  ? const Center(
+                                      child: Text('검색어와 일치하는 상품이 없습니다.'),
+                                    )
+                                  : SingleChildScrollView(
+                                      padding: const EdgeInsets.all(12),
+                                      child: Wrap(
+                                        spacing: 8,
+                                        runSpacing: 8,
+                                        children: [
+                                          ...matchedSetMenus.map((setMenu) {
+                                            final purchaseIndex = _newPurchases
+                                                .indexWhere(
+                                                  (element) =>
+                                                      element.itemId ==
+                                                      setMenu.id,
+                                                );
+                                            final quantity = purchaseIndex == -1
+                                                ? 0
+                                                : _newPurchases[purchaseIndex]
+                                                      .quantity;
+                                            return PurchaseItemChip(
+                                              itemName: setMenu.setName,
+                                              isSelected: _newPurchases.any(
+                                                (purchase) =>
+                                                    purchase.itemId ==
+                                                    setMenu.id,
+                                              ),
+                                              onTap: () async {
+                                                _addSetMenuPurchase(setMenu);
+                                                await _showMixerSelectionBottomSheet();
+                                              },
+                                              quantity: quantity,
+                                            );
+                                          }),
+                                          ...matchedItems.map((item) {
+                                            final purchaseIndex = _newPurchases
+                                                .indexWhere(
+                                                  (element) =>
+                                                      element.itemId == item.id,
+                                                );
+                                            final quantity = purchaseIndex == -1
+                                                ? 0
+                                                : _newPurchases[purchaseIndex]
+                                                      .quantity;
+                                            return PurchaseItemChip(
+                                              itemName: item.itemName,
+                                              isSelected: _newPurchases.any(
+                                                (purchase) =>
+                                                    purchase.itemId == item.id,
+                                              ),
+                                              onTap: () async {
+                                                _addPurchase(item);
+                                                await _showMixerSelectionBottomSheet();
+                                              },
+                                              quantity: quantity,
+                                            );
+                                          }),
+                                        ],
+                                      ),
+                                    )
+                            : isSetMenuSelected
+                            ? _setMenus.isEmpty
                                   ? const Center(child: Text('등록된 메뉴가 없습니다.'))
                                   : SingleChildScrollView(
                                       padding: const EdgeInsets.all(12),
                                       child: Wrap(
                                         spacing: 8,
                                         runSpacing: 8,
-                                        children: visibleSetMenuItems.map((
+                                        children: _setMenus.map((
                                           setMenu,
                                         ) {
                                           final purchaseIndex = _newPurchases
                                               .indexWhere(
                                                 (element) =>
-                                                    element.itemId ==
-                                                    setMenu.id,
+                                                    element.itemId == setMenu.id,
                                               );
                                           final quantity = purchaseIndex == -1
                                               ? 0
@@ -384,15 +434,18 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                             ),
                                             onTap: () async {
                                               _addSetMenuPurchase(setMenu);
-                                              await _showMixerSelectionBottomSheet();
+                                              _selectedCategoryId == 5 ||
+                                                      _selectedCategoryId ==
+                                                          10 ||
+                                                      _selectedCategoryId == 11
+                                                  ? null
+                                                  : await _showMixerSelectionBottomSheet();
                                             },
                                             quantity: quantity,
                                           );
                                         }).toList(),
                                       ),
                                     )
-                            : categorySelectedItems.isEmpty
-                            ? const Center(child: Text('등록된 메뉴가 없습니다.'))
                             : SingleChildScrollView(
                                 padding: const EdgeInsets.all(12),
                                 child: Wrap(
@@ -415,8 +468,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                       ),
                                       onTap: () async {
                                         _addPurchase(item);
-                                        _selectedCategoryId == 5 || _selectedCategoryId == 10 || _selectedCategoryId == 11 ? null : 
-                                        await _showMixerSelectionBottomSheet();
+                                        _selectedCategoryId == 5 ||
+                                                _selectedCategoryId == 10 ||
+                                                _selectedCategoryId == 11
+                                            ? null
+                                            : await _showMixerSelectionBottomSheet();
                                       },
                                       quantity: quantity,
                                     );
@@ -530,11 +586,6 @@ class _PurchaseSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final totalPrice = existingPurchases.fold<int>(
-      0,
-      (sum, purchase) => sum + purchase.totalPrice,
-    );
-
     final sortedLogs = [...logs]
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
