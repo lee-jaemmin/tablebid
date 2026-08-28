@@ -56,6 +56,7 @@ class ItemApi {
     String? itemName,
     int? itemPrice,
     bool? isActive,
+    bool? hasMixer,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/items/$itemId');
 

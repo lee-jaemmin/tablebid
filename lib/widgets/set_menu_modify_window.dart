@@ -24,12 +24,14 @@ class SetMenuModifyWindow extends StatefulWidget {
 class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
+  late bool _hasMixer;
   
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.setMenu.setName;
     _priceController.text = NumberFormat('#,###').format(widget.setMenu.setPrice);
+    _hasMixer = widget.setMenu.hasMixer;
   }
 
   @override
@@ -53,6 +55,7 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
         setName: _nameController.text,
         setPrice: int.parse(_priceController.text.replaceAll(',', '')),
         isActive: true,
+        hasMixer: _hasMixer,
       );
       if (!mounted) return;
       Navigator.pop(context);
@@ -98,6 +101,33 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                   keyboardType: TextInputType.number,
                   inputFormatters: [PriceFormatters()],
                   decoration: const InputDecoration(labelText: '가격 (원)'),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text('믹서 여부', style: TextStyle(fontSize: 16)),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _hasMixer = !_hasMixer;
+                          });
+                        },
+                        child: _hasMixer
+                            ? Icon(
+                                Icons.toggle_on,
+                                size: 48,
+                                color: Colors.green,
+                              )
+                            : Icon(
+                                Icons.toggle_off,
+                                size: 48,
+                                color: Colors.grey,
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 10),
               ],
