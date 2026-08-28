@@ -60,57 +60,66 @@ class MoveTableGridView extends StatelessWidget {
           '${fromTable.tablename}의 정보를 ${targetTable.tablename}으로 이동하시겠습니까?',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade800,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(10),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
-            ),
-            onPressed: () async {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-              try {
-                await TableApi().moveTable(fromTableId: fromTable.id, toTableId: targetTable.id);
-                if (context.mounted) {
-                  Navigator.pop(context); // 프로그레스바 닫기
-                  Navigator.pop(context); // 다이얼로그 닫기
-                  Navigator.pop(context); // 이동 화면 닫기
-                  Navigator.pop(context); // 인포윈도우 닫기
-                }
-              } catch (e) {
-                print(e);
-                if (context.mounted) {
-                  Navigator.pop(context); // 프로그레스바 닫기
-                  Navigator.pop(context); // 다이얼로그 닫기
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('이동 중 오류 발생: $e'),
-                      backgroundColor: Colors.red,
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+                    try {
+                      await TableApi().moveTable(fromTableId: fromTable.id, toTableId: targetTable.id);
+                      if (context.mounted) {
+                        Navigator.pop(context); // 프로그레스바 닫기
+                        Navigator.pop(context); // 다이얼로그 닫기
+                        Navigator.pop(context); // 이동 화면 닫기
+                        Navigator.pop(context); // 인포윈도우 닫기
+                      }
+                    } catch (e) {
+                      print(e);
+                      if (context.mounted) {
+                        Navigator.pop(context); // 프로그레스바 닫기
+                        Navigator.pop(context); // 다이얼로그 닫기
+                
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('이동 중 오류 발생: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text(
+                    '이동 확정',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
-                  );
-                }
-              }
-            },
-            child: const Text(
-              '이동 확정',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ],
       ),
