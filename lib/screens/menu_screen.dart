@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
-import 'package:tablebid/models/set_menu_items_model.dart';
 import 'package:tablebid/models/set_menu_model.dart';
 import 'package:tablebid/screens/inactive_menu_screen.dart';
 import 'package:tablebid/services/item_api.dart';
@@ -284,7 +283,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                                   SetMenuModifyWindow(
                                                     companyId: widget.companyId,
                                                     setMenu: setMenu,
-                                                    loadData: _loadData,
+                                                    loadData: () => _loadData(forceRefresh: true),
                                                   ),
                                             );
                                           },
@@ -327,7 +326,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                         context: context,
                                         builder: (context) => MenuModifyWindow(
                                           companyId: widget.companyId,
-                                          loadData: _loadData,
+                                          loadData: () => _loadData(forceRefresh: true),
                                           item: item,
                                         ),
                                       );
