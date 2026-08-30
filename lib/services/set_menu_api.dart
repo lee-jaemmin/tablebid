@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tablebid/models/set_menu_model.dart';
+import 'package:tablebid/screens/set_menu_create_screen.dart';
 import 'package:tablebid/services/api_client.dart';
 
 class SetMenuApi {
@@ -35,6 +36,43 @@ class SetMenuApi {
     }
     throw Exception(
       'Failed to modify Set Menu: ${response.statusCode} ${response.body}'
+    );
+  }
+
+  Future<SetMenuModel> createSetMenu({
+    required String companyId,
+    required String setName,
+    required int setPrice,
+    required bool isActive,
+    required bool hasMixer,
+    required final List<SelectedComponents> components,
+  }) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/set-menus');
+
+    final body = {
+      'company_id': companyId,
+      'set_name': setName,
+      'set_price': setPrice,
+      'is_active': isActive,
+      'has_mixer': hasMixer,
+      'items': components.map((component)=> {
+        "item_id": component.itemId,
+        "quantity": component.quantity,
+      }).toList() // toList: Iterable(map) => JSON 배열
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return SetMenuModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to create set menu: ${response.statusCode} ${response.body}',
     );
   }
 }
