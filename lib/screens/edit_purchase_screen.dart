@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tablebid/models/log_model.dart';
 import 'package:tablebid/services/log_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -106,23 +107,30 @@ class _EditPurchaseScreenState extends State<EditPurchaseScreen> {
               itemCount: _logs.length,
               itemBuilder: (context, index) {
                 final log = _logs[index];
-                return ListTile(
-                  title: Text(log.itemName),
-                  subtitle: Text('수량: ${log.quantity}'),
-                  trailing: Text(
-                    formatPrice(log.quantity * log.unitPrice),
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  leading: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: IconButton(
-                      onPressed: () async {
-                        _modifyLogsAndPurchases(log);
-                      },
-                      icon: Icon(Icons.delete_rounded),
-                      color: Colors.red,
+                final isNewBatch = index == 0 || _logs[index - 1].batchId != log.batchId;
+                return Column(
+                  children: [
+                    isNewBatch ? Divider() : SizedBox.shrink(),
+                    ListTile(
+                      isThreeLine: true,
+                      title: Text(log.itemName),
+                      subtitle: Text('수량: ${log.quantity}\n${DateFormat("MM/dd HH:mm").format(log.createdAt)}'),
+                      trailing: Text(
+                        formatPrice(log.quantity * log.unitPrice),
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      leading: Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          onPressed: () async {
+                            _modifyLogsAndPurchases(log);
+                          },
+                          icon: Icon(Icons.delete_rounded),
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 );
               },
             ),
