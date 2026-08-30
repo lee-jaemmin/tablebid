@@ -190,7 +190,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   );
                 }
               },
-              icon: Icon(Icons.lock, size: 30),
+              icon: Icon(Icons.visibility_off, size: 24),
             ),
           ),
         ],
