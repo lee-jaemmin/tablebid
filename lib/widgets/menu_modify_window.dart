@@ -103,29 +103,26 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
                   decoration: const InputDecoration(labelText: '가격 (원)'),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Text('믹서 여부', style: TextStyle(fontSize: 16)),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _hasMixer = !_hasMixer;
-                          });
-                        },
-                        child: _hasMixer
-                            ? Icon(
-                                Icons.toggle_on,
-                                size: 48,
-                                color: Colors.green,
-                              )
-                            : Icon(
-                                Icons.toggle_off,
-                                size: 48,
-                                color: Colors.grey,
-                              ),
-                      ),
+                    Text('믹서 여부', style: TextStyle(fontSize: 16)),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _hasMixer = !_hasMixer;
+                        });
+                      },
+                      child: _hasMixer
+                          ? Icon(
+                              Icons.toggle_on,
+                              size: 48,
+                              color: Colors.green,
+                            )
+                          : Icon(
+                              Icons.toggle_off,
+                              size: 48,
+                              color: Colors.grey,
+                            ),
                     ),
                   ],
                 ),
