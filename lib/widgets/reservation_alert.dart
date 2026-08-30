@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_purchase_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
@@ -126,13 +127,35 @@ class _ReservationAlertState extends State<ReservationAlert> {
     }
   }
 
+    Future<void> _onBidButtonTap() async {
+    bool bidAvailable = widget.table.bidAvailable;
+    try {
+      await TableApi().updateTable(tableId: widget.table.id, bidAvailable: !bidAvailable);
+    } catch (e) {
+      print('테이블 비드 가능 여부 변경 중 오류 발생: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('비딩 on/off 변경 중 오류 발생'), behavior: SnackBarBehavior.floating)
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: AlertDialog(
-        title: Text('${widget.table.tablename} 예약 등록'),
+        title: Row(
+          children: [
+            Expanded(child: Text('${widget.table.tablename} 예약 등록')),
+             InkWell(
+              onTap: (){},
+              child: widget.table.timerStartedAt == null
+                  ? Icon(Icons.timer)
+                  : Icon(Icons.timer_off),
+            ),
+          ],
+        ),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: SingleChildScrollView(
