@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/category_model.dart';
+import 'package:tablebid/screens/set_menu_create_screen.dart';
 import 'package:tablebid/services/item_api.dart';
+import 'package:tablebid/services/set_menu_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
 class MenuWindow extends StatefulWidget {
@@ -23,6 +26,8 @@ class _ReservationAlertState extends State<MenuWindow> {
   late TextEditingController _nameController;
   late TextEditingController _priceController;
   int? _selectedCategoryId;
+  bool _hasMixer = true;
+  List<SelectedComponents> _selectedComponents = [];
 
   @override
   void initState() {
@@ -43,15 +48,57 @@ class _ReservationAlertState extends State<MenuWindow> {
     try {
       showDialog(
         context: context,
-        builder: (context) => Center(child: CircularProgressIndicator()),
+        builder: (context) => Center(child: CupertinoActivityIndicator()),
         barrierDismissible: false,
       );
+
       await ItemApi().createItem(
         itemName: _nameController.text,
         itemPrice: int.parse(_priceController.text.replaceAll(',', '')),
         categoryId: _selectedCategoryId!,
         companyId: widget.companyId,
         isActive: true,
+      );
+      if (!mounted) return;
+      Navigator.pop(context); //윈도우 끄기
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('메뉴 등록 성공: ${_nameController.text}'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      if (!mounted) return;
+      Navigator.pop(context); //윈도우 끄기
+      await widget.loadData();
+    } catch (e) {
+      print('❌ 메뉴 정보 전송 중 오류 발생');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('메뉴 정보 전송 중 오류 발생'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  Future<void> sendSetMenuData(
+    List<SelectedComponents> selectedComponents,
+  ) async {
+    print('MenuName: ${_nameController.text}');
+    try {
+      showDialog(
+        context: context,
+        builder: (context) => Center(child: CupertinoActivityIndicator()),
+        barrierDismissible: false,
+      );
+
+      await SetMenuApi().createSetMenu(
+        setName: _nameController.text,
+        setPrice: int.parse(_priceController.text.replaceAll(',', '')),
+        companyId: widget.companyId,
+        isActive: true,
+        hasMixer: _hasMixer,
+        components: selectedComponents,
       );
       if (!mounted) return;
       Navigator.pop(context); //윈도우 끄기
@@ -98,6 +145,26 @@ class _ReservationAlertState extends State<MenuWindow> {
                   inputFormatters: [PriceFormatters()],
                   decoration: const InputDecoration(labelText: '가격'),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('믹서 여부', style: TextStyle(fontSize: 16)),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _hasMixer = !_hasMixer;
+                        });
+                      },
+                      child: _hasMixer
+                          ? Icon(Icons.toggle_on, size: 48, color: Colors.green)
+                          : Icon(
+                              Icons.toggle_off,
+                              size: 48,
+                              color: Colors.grey,
+                            ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
@@ -108,10 +175,22 @@ class _ReservationAlertState extends State<MenuWindow> {
                       selectedColor: Color(0xffecb88d),
                       label: Text(category.categoryName),
                       selected: isSelected,
-                      onSelected: (_) {
+                      onSelected: (_) async {
                         setState(() {
                           _selectedCategoryId = category.id;
                         });
+                        if (_selectedCategoryId == -1) {
+                          final selectedComponents = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SetMenuCreateScreens(
+                                companyId: widget.companyId,
+                              ),
+                            ),
+                          );
+                          if (selectedComponents == null) return;
+                          _selectedComponents = selectedComponents;
+                        }
                       },
                     );
                   }).toList(),
@@ -141,16 +220,8 @@ class _ReservationAlertState extends State<MenuWindow> {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(10),
-                    ),
                   ),
                   onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) =>
-                          Center(child: CircularProgressIndicator()),
-                    );
                     if (_nameController.text.isEmpty ||
                         _priceController.text.isEmpty ||
                         _selectedCategoryId == null) {
@@ -166,7 +237,16 @@ class _ReservationAlertState extends State<MenuWindow> {
                       return;
                     }
                     try {
-                      sendMenuData();
+                      if (_selectedCategoryId == -1) {
+                        if (_selectedComponents.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('세트 구성품을 선택해주세요.')),
+                          );
+                        }
+                        await sendSetMenuData(_selectedComponents!);
+                      } else {
+                        await sendMenuData();
+                      }
                     } catch (e) {
                       print('❌ 메뉴 등록 중 에러 발생: $e');
                       ScaffoldMessenger.of(
