@@ -315,7 +315,7 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                     Navigator.pop(context, _selectedComponents);
                   },
                   child: const Text(
-                    '구매 완료',
+                    '선택 완료',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                 ),
