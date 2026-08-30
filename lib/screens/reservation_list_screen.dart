@@ -546,7 +546,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                     child: _tableReserved ? 
                       ElevatedButton(
                       onPressed: () {},
-                      child: Text('비딩 불가', style: TextStyle(fontSize: 12,)),
+                      child: Text('비딩 마감', style: TextStyle(fontSize: 12,)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey,
                         minimumSize: const Size(60, 32),
