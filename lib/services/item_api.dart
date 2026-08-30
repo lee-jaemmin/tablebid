@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/models/item_model.dart';
@@ -64,6 +65,7 @@ class ItemApi {
       if (itemName != null) 'item_name': itemName,
       if (itemPrice != null) 'item_price': itemPrice,
       if (isActive != null) 'is_active': isActive,
+      if(hasMixer != null) 'has_mixer': hasMixer,
     };
 
     final response = await http.patch(
