@@ -163,7 +163,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   builder: (context) => MenuWindow(
                     companyId: widget.companyId,
                     categories: _categories,
-                    loadData: _loadData,
+                    loadData: () =>_loadData(forceRefresh: true),
                   ),
                 );
               },
