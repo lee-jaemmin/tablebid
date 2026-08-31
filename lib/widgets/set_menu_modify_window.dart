@@ -28,6 +28,7 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
   late bool _hasMixer;
   late String _components;
   bool _isLoading = true;
+  List<SelectedComponents>? _selectedComponents;
 
   @override
   void initState() {
@@ -76,6 +77,7 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
         setPrice: int.parse(_priceController.text.replaceAll(',', '')),
         isActive: true,
         hasMixer: _hasMixer,
+        components: _selectedComponents
       );
       if (!mounted) return;
       Navigator.pop(context);
@@ -150,19 +152,44 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                       ),
                       InputDecorator(
                         decoration: InputDecoration(labelText: '구성품'),
-                        child: Text(_components),
+                        child: Text(
+                          (_selectedComponents == null || _selectedComponents!.isEmpty)
+                          ? _components
+                          : _selectedComponents!.map((component)=>'${component.itemName} ${component.quantity}'
+                          ).join(', ')
+                          ),
                       ),
                       SizedBox(height: 10),
                       ElevatedButton(
-                        onPressed: () => Navigator.push(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF904E55),
+                    side: BorderSide(
+                      color: Color.fromARGB(255, 112, 10, 10),
+                    ),
+                        ),
+                        onPressed: () async {
+                          final newComponents = await Navigator.push<List<SelectedComponents>>(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SetMenuCreateScreens(
                               companyId: widget.companyId,
                             ),
                           ),
+                        );
+                        if(!mounted && newComponents == null || newComponents!.isEmpty) return;
+                        setState(() {
+                          _selectedComponents = newComponents;
+                          loadData();
+                        });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.edit),
+                            SizedBox(width: 8),
+                            Text('구성품 수정하기'),
+                          ],
                         ),
-                        child: Text('구성품 수정하기'),
                       ),
                     ],
                   ),
