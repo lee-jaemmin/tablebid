@@ -141,6 +141,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   ? ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(12),
+                        ),
                       ),
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
@@ -218,6 +221,10 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   : ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(12),
+                        ),
+    
                       ),
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
