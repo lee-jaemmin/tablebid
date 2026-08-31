@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_list_screen.dart';
@@ -19,6 +20,13 @@ class ReservationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool hasReservation;
+    bool bidAvailable;
+
+    if (table.bidAvailable == true) {
+      bidAvailable = true;
+    } else {
+      bidAvailable = false;
+    }
     if (table.hasReservations == true && table.reservedAt != null) {
       hasReservation = true;
     } else {
@@ -26,7 +34,11 @@ class ReservationCard extends StatelessWidget {
     }
     return Card(
       // 예약이 있으면 하늘색, 없으면 하얀색 계열
-      color: hasReservation ? Colors.blue[300] : Colors.grey[100],
+      color: bidAvailable
+      ? hasReservation
+          ? Color.fromARGB(229, 255, 153, 0)
+          : Colors.grey[100]
+      : Colors.grey[500],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
         onTap: () {
@@ -63,26 +75,26 @@ class ReservationCard extends StatelessWidget {
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                  color: Colors.black
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 8),
-              if (hasReservation)
+              bidAvailable ? 
+              hasReservation ? 
                 Text(
-                  DateFormat(
-                    'HH:mm',
-                  ).format(table.reservedAt!.toLocal()),
+                  DateFormat('HH:mm').format(table.reservedAt!.toLocal()),
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
                 )
-              else
+              :
                 const Text(
                   '예약 없음',
                   style: TextStyle(fontSize: 12, color: Colors.black),
-                ),
+                )
+                : Text('경매 불가', style: TextStyle(color: Colors.black, fontSize: 12),)
             ],
           ),
         ),
