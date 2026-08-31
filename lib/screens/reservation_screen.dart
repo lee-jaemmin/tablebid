@@ -27,6 +27,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   StreamSubscription<WebSocketEvent>? _webSocketEventSubscription;
   bool isLoading = true;
   bool _hasLoadError = false;
+  bool _isEditingMode = false;
 
   @override
   void initState() {
@@ -67,41 +68,44 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   void _subscribeToWebSocket() {
     final service = WebsocketService.instance;
-    _webSocketEventSubscription = service.events.listen((event) {
-      if (!mounted) return;
-      try {
-        if (event.type == 'reservation_created') {
-          final reservation = ReservationModel.fromJson(event.payload);
-          setState(() {
-            final index = _tables.indexWhere(
-              (table) => table.id == reservation.tableId,
-            );
-            if (index != -1) {
-              _tables[index].isReserved = true;
-            }
-          });
+    _webSocketEventSubscription = service.events.listen(
+      (event) {
+        if (!mounted) return;
+        try {
+          if (event.type == 'reservation_created') {
+            final reservation = ReservationModel.fromJson(event.payload);
+            setState(() {
+              final index = _tables.indexWhere(
+                (table) => table.id == reservation.tableId,
+              );
+              if (index != -1) {
+                _tables[index].isReserved = true;
+              }
+            });
+          }
+          if (event.type == 'table_updated') {
+            final updatedTable = TableModel.fromJson(event.payload);
+            setState(() {
+              final index = _tables.indexWhere(
+                (table) => table.id == updatedTable.id,
+              );
+              if (index != -1) {
+                _tables[index] = updatedTable;
+              }
+            });
+          }
+          if (event.type == 'reservation_updated' ||
+              event.type == 'reservation_deleted') {
+            _loadTables(widget.companyId, showErrorState: false);
+          }
+        } catch (e) {
+          print('예약 실시간 업데이트 처리 실패: $e');
         }
-        if (event.type == 'table_updated') {
-          final updatedTable = TableModel.fromJson(event.payload);
-          setState(() {
-            final index = _tables.indexWhere(
-              (table) => table.id == updatedTable.id,
-            );
-            if (index != -1) {
-              _tables[index] = updatedTable;
-            }
-          });
-        }
-        if (event.type == 'reservation_updated' ||
-            event.type == 'reservation_deleted') {
-          _loadTables(widget.companyId, showErrorState: false);
-        }
-      } catch (e) {
-        print('예약 실시간 업데이트 처리 실패: $e');
-      }
-    }, onError: (error) {
-      print('웹소켓 이벤트 처리 실패: $error');
-    });
+      },
+      onError: (error) {
+        print('웹소켓 이벤트 처리 실패: $error');
+      },
+    );
     service.connect(widget.companyId);
   }
 
@@ -118,7 +122,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
     }
     if (_hasLoadError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('예약 관리')),
+        appBar: AppBar(
+          title: const Text('예약 관리'),
+        ),
         body: Center(
           child: ElevatedButton(
             onPressed: () {
@@ -147,16 +153,32 @@ class _ReservationScreenState extends State<ReservationScreen> {
       length: sections.length,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('예약 관리'),
+          title: !_isEditingMode ? const Text('예약 관리') : const Text('경매 시작가 변경'),
+           actions: [
+            Padding(
+              padding: EdgeInsets.all(8),
+              child: !_isEditingMode ? 
+              IconButton(onPressed: () => setState(() {
+                _isEditingMode = !_isEditingMode;
+              }),
+              icon: Icon(Icons.settings, color: Colors.white,))
+              : GestureDetector(
+                onTap: () => setState(() {
+                _isEditingMode = !_isEditingMode;
+              }),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text('완료', style: TextStyle(fontSize: 16,),),
+                ))
+            ),
+          ],
           bottom: sections.isEmpty
               ? null
               : TabBar(
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorWeight: 4,
                   labelStyle: const TextStyle(fontSize: 16),
-                  labelPadding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                  ),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
                   tabAlignment: TabAlignment.start,
                   isScrollable: true,
                   tabs: sections.map((s) => Tab(text: s)).toList(),
@@ -173,6 +195,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     companyId: widget.companyId,
                     tables: sectionTables,
                     userId: widget.userId,
+                    isEditingMode: _isEditingMode,
                   );
                 }).toList(),
               ),
