@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tablebid/models/set_menu_model.dart';
+import 'package:tablebid/screens/set_menu_create_screen.dart';
 import 'package:tablebid/services/set_menu_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
@@ -25,12 +26,14 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   late bool _hasMixer;
-  
+
   @override
   void initState() {
     super.initState();
     _nameController.text = widget.setMenu.setName;
-    _priceController.text = NumberFormat('#,###').format(widget.setMenu.setPrice);
+    _priceController.text = NumberFormat(
+      '#,###',
+    ).format(widget.setMenu.setPrice);
     _hasMixer = widget.setMenu.hasMixer;
   }
 
@@ -113,16 +116,22 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                         });
                       },
                       child: _hasMixer
-                          ? Icon(
-                              Icons.toggle_on,
-                              size: 48,
-                              color: Colors.green,
-                            )
+                          ? Icon(Icons.toggle_on, size: 48, color: Colors.green)
                           : Icon(
                               Icons.toggle_off,
                               size: 48,
                               color: Colors.grey,
                             ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              SetMenuCreateScreens(companyId: widget.companyId ),
+                        ),
+                      ),
+                      child: Text('구성품 수정하기'),
                     ),
                   ],
                 ),
