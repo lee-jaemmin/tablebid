@@ -7,11 +7,13 @@ class ReservationGridView extends StatelessWidget {
   final String companyId;
   final List<TableModel> tables;
   final String userId;
+  final bool isEditingMode;
 
   ReservationGridView({
     required this.companyId,
     required this.tables,
     required this.userId,
+    required this.isEditingMode, 
   });
 
   @override
@@ -42,6 +44,7 @@ class ReservationGridView extends StatelessWidget {
           companyId: companyId,
           table: table,
           userId: userId,
+          isEditingMode: isEditingMode,
         );
       },
     );
