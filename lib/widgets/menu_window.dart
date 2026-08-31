@@ -189,12 +189,28 @@ class _ReservationAlertState extends State<MenuWindow> {
                             ),
                           );
                           if (selectedComponents == null) return;
-                          _selectedComponents = selectedComponents;
+                          setState(() {
+                            _selectedComponents = selectedComponents;  
+                          });
+                          
                         }
                       },
                     );
                   }).toList(),
                 ),
+                _selectedComponents.isNotEmpty
+                    ? InputDecorator(
+                        decoration: InputDecoration(labelText: '구성품'),
+                        child: Text(
+                          _selectedComponents
+                              .map(
+                                (component) =>
+                                    ('${component.itemName} ${component.quantity}'),
+                              )
+                              .join(', '),
+                        ),
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
@@ -226,7 +242,6 @@ class _ReservationAlertState extends State<MenuWindow> {
                         _priceController.text.isEmpty ||
                         _selectedCategoryId == null) {
                       if (!mounted) return;
-                      Navigator.of(context).pop(); // 로딩원
                       Navigator.of(context).pop(); // 팝업
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -243,7 +258,7 @@ class _ReservationAlertState extends State<MenuWindow> {
                             SnackBar(content: Text('세트 구성품을 선택해주세요.')),
                           );
                         }
-                        await sendSetMenuData(_selectedComponents!);
+                        await sendSetMenuData(_selectedComponents);
                       } else {
                         await sendMenuData();
                       }
