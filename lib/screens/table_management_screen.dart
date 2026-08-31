@@ -106,53 +106,73 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('취소', style: TextStyle(color: Colors.black)),
-          ),
-          TextButton(
-            onPressed: () async {
-              final newSection = controller.text.trim();
-
-              if (newSection.isEmpty) return;
-
-              if (currentSections.contains(newSection)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('이미 존재하는 섹션입니다.'),
-                    backgroundColor: Colors.red,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
                   ),
-                );
-                return;
-              }
-
-              final navigator = Navigator.of(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-
-              showDialog(
-                context: dialogContext,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-              try {
-                final updatedSections = [...currentSections, newSection];
-                await _updateSections(updatedSections, null, newSection);
-
-                navigator.pop(); // 로딩창
-                navigator.pop(); // 입력창
-              } catch (e) {
-                navigator.pop();
-                print('>>>>>>>>>>>>>>> e: $e');
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('섹션 추가 실패: $e'),
-                    backgroundColor: Colors.red,
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
                   ),
-                );
-              }
-            },
-            child: const Text('추가'),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () async {
+                    final newSection = controller.text.trim();
+
+                    if (newSection.isEmpty) return;
+
+                    if (currentSections.contains(newSection)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('이미 존재하는 섹션입니다.'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
+                    final navigator = Navigator.of(dialogContext);
+                    final messenger = ScaffoldMessenger.of(context);
+
+                    showDialog(
+                      context: dialogContext,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+                    try {
+                      final updatedSections = [...currentSections, newSection];
+                      await _updateSections(updatedSections, null, newSection);
+
+                      navigator.pop(); // 로딩창
+                      navigator.pop(); // 입력창
+                    } catch (e) {
+                      navigator.pop();
+                      print('>>>>>>>>>>>>>>> e: $e');
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('섹션 추가 실패: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('추가'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -370,10 +390,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text('[토글]: 섹션/테이블 이름 변경\n[길게 누르기]: 섹션 삭제'),
+                child: Text('클릭: 섹션/테이블 이름 변경\n길게 누르기: 섹션 삭제'),
               ),
             ],
             bottom: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
               indicatorWeight: 4,
               labelStyle: const TextStyle(fontSize: 16),
               labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
