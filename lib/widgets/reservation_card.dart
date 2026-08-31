@@ -1,7 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_list_screen.dart';
+import 'package:tablebid/widgets/bid_price_alert.dart';
+import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
 import 'package:intl/intl.dart'; // DateTime포맷팅용
 
@@ -9,39 +10,42 @@ class ReservationCard extends StatelessWidget {
   final String companyId;
   final TableModel table;
   final String userId;
+  final bool isEditingMode;
 
   ReservationCard({
     super.key,
     required this.companyId,
     required this.table,
     required this.userId,
+    required this.isEditingMode,
   });
 
   @override
   Widget build(BuildContext context) {
-    bool hasReservation;
-    bool bidAvailable;
+    bool hasReservation = table.hasReservations == true;
+    bool bidAvailable = table.bidAvailable == true;
+    bool isReserved = table.isReserved == true;
 
-    if (table.bidAvailable == true) {
-      bidAvailable = true;
-    } else {
-      bidAvailable = false;
-    }
-    if (table.hasReservations == true && table.reservedAt != null) {
-      hasReservation = true;
-    } else {
-      hasReservation = false;
-    }
     return Card(
-      // 예약이 있으면 하늘색, 없으면 하얀색 계열
+      // 예약이 있으면 노랑, 없으면 하양
       color: bidAvailable
-      ? hasReservation
-          ? Color.fromARGB(229, 255, 153, 0)
-          : Colors.grey[100]
-      : Colors.grey[500],
+          ? isReserved
+                ? Colors.green.shade200
+                : hasReservation
+                ? Color.fromARGB(229, 255, 153, 0)
+                : Colors.grey[100]
+          : Colors.grey[500],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
         onTap: () {
+          if (isEditingMode) {
+            showDialog(
+              context: context,
+              builder: (context) =>
+                  BidPriceAlert(companyId: companyId, table: table),
+            );
+            return;
+          }
           if (!hasReservation) {
             showDialog(
               context: context,
@@ -79,22 +83,34 @@ class ReservationCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              bidAvailable ? 
-              hasReservation ? 
-                Text(
-                  DateFormat('HH:mm').format(table.reservedAt!.toLocal()),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                )
-              :
-                const Text(
-                  '예약 없음',
-                  style: TextStyle(fontSize: 12, color: Colors.black),
-                )
-                : Text('경매 불가', style: TextStyle(color: Colors.black, fontSize: 12),)
+              isEditingMode ?
+              Text('${formatPrice(table.leastBidPrice!)}', style: TextStyle(color: Colors.black),)
+              : bidAvailable
+                  ? isReserved
+                        ? Text(
+                            DateFormat(
+                              'HH:mm',
+                            ).format(table.reservedAt!.toLocal()),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          )
+                        : hasReservation ?
+                        const Text(
+                            '비딩 중',
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          ) 
+                          :
+                        const Text(
+                            '예약 없음',
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          )
+                  : Text(
+                      '경매 불가',
+                      style: TextStyle(color: Colors.black, fontSize: 12),
+                    ),
             ],
           ),
         ),
