@@ -188,7 +188,7 @@ class _ReservationAlertState extends State<MenuWindow> {
                               ),
                             ),
                           );
-                          if (selectedComponents == null) return;
+                          if (!mounted || selectedComponents == null) return;
                           setState(() {
                             _selectedComponents = selectedComponents;  
                           });
