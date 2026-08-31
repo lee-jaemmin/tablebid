@@ -13,6 +13,7 @@ class SetMenuApi {
     String? setName,
     int? setPrice,
     bool? hasMixer,
+    List<SelectedComponents>? components,
   }) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/companies/${companyId}/set-menus/${setMenuId}',
@@ -22,6 +23,10 @@ class SetMenuApi {
       if (setName != null) 'set_name': setName,
       if (setPrice != null) 'set_price': setPrice,
       if (hasMixer != null) 'has_mixer': hasMixer,
+      if (components != null) 'items': components.map((elem)=>{
+        "item_id": elem.itemId,
+        "quantity": elem.quantity,
+      }).toList()
     };
 
     final response = await http.patch(
