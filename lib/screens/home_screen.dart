@@ -83,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final company = result[0] as CompanyModel;
       final tables = result[1] as List<TableModel>;
       setState(() {
-        _setTables(tables);
         _company = company;
+        _setTables(tables);
         _currentUser = user;
         _isLoading = false;
       });
@@ -164,6 +164,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void _rebuildSections() {
     final temporarySectionMap = <String, List<ValueNotifier<TableModel>>>{};
 
+    for (final section in _company?.sections ?? <String>[]) {
+      final name = section.trim();
+      if (name.isEmpty) continue;
+      temporarySectionMap.putIfAbsent(name, () => []);
+    }
+
     for (final table in _tablesById.values) {
       final section = table.section.trim();
       if (section.isEmpty) continue;
@@ -232,8 +238,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final company = result[0] as CompanyModel;
       final tables = result[1] as List<TableModel>;
       setState(() {
-        _setTables(tables);
         _company = company;
+        _setTables(tables);
         _refreshCount++;
       });
 
@@ -381,9 +387,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         SidebarMenu(
                           icon: Icons.table_bar,
                           name: '테이블 배치 관리',
-                          onTapFunc: () {
+                          onTapFunc: () async {
                             Navigator.pop(context);
-                            Navigator.push(
+                            if (!context.mounted) return;
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => TableManagementScreen(
@@ -392,6 +399,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                             );
+                            if (!mounted) return;
+                            await _refreshHomeData();
                           },
                         ),
                         Gaps.v20(context),
