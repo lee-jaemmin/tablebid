@@ -26,6 +26,8 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _priceController = TextEditingController();
   late bool _hasMixer;
+  late String _components;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -35,6 +37,21 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
       '#,###',
     ).format(widget.setMenu.setPrice);
     _hasMixer = widget.setMenu.hasMixer;
+    loadData();
+  }
+
+  Future<void> loadData() async {
+    try {
+      final components = await SetMenuApi().getSetMenuItemsBySetMenu(
+        setMenuId: widget.setMenu.id,
+      );
+      setState(() {
+        _components = components;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -84,123 +101,134 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: AlertDialog(
-        title: Text('메뉴 수정'),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: '메뉴 이름'),
-                ),
-                TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [PriceFormatters()],
-                  decoration: const InputDecoration(labelText: '가격 (원)'),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('믹서 여부', style: TextStyle(fontSize: 16)),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _hasMixer = !_hasMixer;
-                        });
-                      },
-                      child: _hasMixer
-                          ? Icon(Icons.toggle_on, size: 48, color: Colors.green)
-                          : Icon(
-                              Icons.toggle_off,
-                              size: 48,
-                              color: Colors.grey,
+    return _isLoading
+        ? Center(child: CupertinoActivityIndicator())
+        : GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: AlertDialog(
+              title: Text('메뉴 수정'),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(labelText: '메뉴 이름'),
+                      ),
+                      TextField(
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [PriceFormatters()],
+                        decoration: const InputDecoration(labelText: '가격 (원)'),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('믹서 여부', style: TextStyle(fontSize: 16)),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _hasMixer = !_hasMixer;
+                              });
+                            },
+                            child: _hasMixer
+                                ? Icon(
+                                    Icons.toggle_on,
+                                    size: 48,
+                                    color: Colors.green,
+                                  )
+                                : Icon(
+                                    Icons.toggle_off,
+                                    size: 48,
+                                    color: Colors.grey,
+                                  ),
+                          ),
+                        ],
+                      ),
+                      InputDecorator(
+                        decoration: InputDecoration(labelText: '구성품'),
+                        child: Text(_components),
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SetMenuCreateScreens(
+                              companyId: widget.companyId,
                             ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              SetMenuCreateScreens(companyId: widget.companyId ),
+                          ),
+                        ),
+                        child: Text('구성품 수정하기'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          side: BorderSide(color: Colors.white),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      child: Text('구성품 수정하기'),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                Center(child: CupertinoActivityIndicator()),
+                          );
+                          if (_nameController.text.isEmpty ||
+                              _priceController.text.isEmpty) {
+                            if (!mounted) return;
+                            Navigator.of(context).pop(); // 로딩원
+                            Navigator.of(context).pop(); // 팝업
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('정보를 모두 입력해주세요.'),
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            return;
+                          }
+                          try {
+                            sendMenuData();
+                          } catch (e) {
+                            print('❌ 메뉴 등록 중 에러 발생: $e');
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('메뉴 등록 중 에러 발생')),
+                            );
+                          }
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          '수정',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
               ],
             ),
-          ),
-        ),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-                  onPressed: () async {
-                    showDialog(
-                      context: context,
-                      builder: (context) =>
-                          Center(child: CupertinoActivityIndicator()),
-                    );
-                    if (_nameController.text.isEmpty ||
-                        _priceController.text.isEmpty) {
-                      if (!mounted) return;
-                      Navigator.of(context).pop(); // 로딩원
-                      Navigator.of(context).pop(); // 팝업
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('정보를 모두 입력해주세요.'),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                      return;
-                    }
-                    try {
-                      sendMenuData();
-                    } catch (e) {
-                      print('❌ 메뉴 등록 중 에러 발생: $e');
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text('메뉴 등록 중 에러 발생')));
-                    }
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    '수정',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+          );
   }
 }
