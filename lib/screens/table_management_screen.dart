@@ -27,6 +27,7 @@ class TableManagementScreen extends StatefulWidget {
 class _TableManagementScreenState extends State<TableManagementScreen> {
   Future<CompanyModel>? _companyFuture;
   List<TableModel> _tables = [];
+  List<String> _sections = [];
   bool _isLoading = true;
 
   @override
@@ -38,10 +39,12 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
   Future<void> _loadData() async {
     try {
       final fetchTables = await TableApi().getTables(widget.companyId);
+      final company = await CompanyApi().getCompany(widget.companyId);
       if (!mounted) return;
       setState(() {
-        _companyFuture = CompanyApi().getCompany(widget.companyId);
+        _companyFuture = Future.value(company);
         _tables = fetchTables;
+        _sections = company.sections;
         _isLoading = false;
       });
     } catch (e) {
@@ -55,8 +58,9 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
   Future<void> _updateSections(
     List<String> sections,
     List<TableModel>? tables,
-    String? newName,
-  ) async {
+    String? newName, {
+    bool createTables = true,
+  }) async {
     try {
       await CompanyApi().updateCompany(
         companyId: widget.companyId,
@@ -72,7 +76,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           );
           i += 1;
         }
-      } else {
+      } else if (createTables) {
         if (newName != null) {
           for (int i = 0; i < 10; i++) {
             await TableApi().createTable(
@@ -90,6 +94,49 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('오류 발생')));
     }
+  }
+
+  Future<bool?> _showSectionAddOptions(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (optionDialogContext) => AlertDialog(
+        title: const Text('섹션 추가 옵션'),
+        content: const Text(
+          '섹션에 해당하는 테이블도 같이 만들까요?\n이 작업에는 약 20초 정도가 소요됩니다.\n섹션만 만들 시 모든 테이블을 직접 생성하셔야합니다.',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                  onPressed: () => Navigator.pop(optionDialogContext, false),
+                  child: const Text(
+                    '섹션만 만들기',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () => Navigator.pop(optionDialogContext, true),
+                  child: const Text('예'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   void _showAddSectionDialog(List<String> currentSections) {
@@ -143,6 +190,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                       return;
                     }
 
+                    final createTables = await _showSectionAddOptions(
+                      dialogContext,
+                    );
+                    if (createTables == null || !dialogContext.mounted) return;
+
                     final navigator = Navigator.of(dialogContext);
                     final messenger = ScaffoldMessenger.of(context);
 
@@ -154,7 +206,12 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     );
                     try {
                       final updatedSections = [...currentSections, newSection];
-                      await _updateSections(updatedSections, null, newSection);
+                      await _updateSections(
+                        updatedSections,
+                        null,
+                        newSection,
+                        createTables: createTables,
+                      );
 
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 입력창
@@ -377,7 +434,10 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         return CompanyEntryScreen(userId: widget.userId);
       }
 
-      final sections = _tables.map((table) => table.section).toSet().toList();
+      final sections = {
+        ..._sections,
+        ..._tables.map((table) => table.section),
+      }.where((section) => section.isNotEmpty).toList();
 
       sections.sort((a, b) => naturalSortCompare(a, b));
 
