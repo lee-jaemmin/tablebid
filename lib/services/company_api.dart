@@ -48,6 +48,7 @@ class CompanyApi {
     String? name,
     String? region,
     List<String>? sections,
+    String? floorImageUrl
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId');
 
@@ -55,6 +56,7 @@ class CompanyApi {
       if (name != null) 'name': name,
       if (region != null) 'region': region,
       if (sections != null) 'sections': sections,
+      if (floorImageUrl != null) 'floor_image_url': floorImageUrl,
     };
 
     final response = await http.patch(

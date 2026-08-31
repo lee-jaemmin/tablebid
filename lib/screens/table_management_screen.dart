@@ -103,7 +103,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         title: const Text('섹션 추가 옵션'),
         content: const Text(
           '섹션에 해당하는 테이블도 같이 만들까요?\n이 작업에는 약 20초 정도가 소요됩니다.\n섹션만 만들 시 모든 테이블을 직접 생성하셔야합니다.',
-          style: TextStyle(fontSize: 16),
+          style: TextStyle(fontSize: 16 ),
         ),
         actions: [
           Row(
