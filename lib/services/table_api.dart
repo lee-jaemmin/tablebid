@@ -102,7 +102,7 @@ class TableApi {
           'timer_alert_sent_at': timerAlertSentAt.toUtc().toIso8601String(),
       },
       if (bidEndAt != null) 'bid_end_at': bidEndAt.toUtc().toIso8601String(),
-      if (bidAvailable != null) 'bid_avaiable': bidAvailable,
+      if (bidAvailable != null) 'bid_available': bidAvailable,
       if (leastBidPrice != null) 'least_bid_price': leastBidPrice,
     };
     final response = await http.patch(
