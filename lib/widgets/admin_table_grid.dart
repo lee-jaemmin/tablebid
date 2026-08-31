@@ -54,55 +54,69 @@ class _AdminTableGridState extends State<AdminTableGrid> {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(
-              '취소',
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              final tablename = controller.text.trim();
-
-              if (tablename.isEmpty) return;
-
-              final navigator = Navigator.of(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-
-              showDialog(
-                context: dialogContext,
-                barrierDismissible: false,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
-              );
-
-              try {
-                await TableApi().createTable(
-                  tablename: tablename,
-                  section: widget.section,
-                  companyId: widget.companyId,
-                );
-
-                navigator.pop(); // 로딩창
-                navigator.pop(); // 테이블 추가 팝업
-
-                _reloadTables(); // 명시적으로 재로딩 하는 부분.
-              } catch (e) {
-                navigator.pop(); // 로딩창
-
-                messenger.showSnackBar(
-                  SnackBar(
-                    content: Text('테이블 추가 실패: $e'),
-                    backgroundColor: Colors.red,
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
                   ),
-                );
-              }
-            },
-            child: const Text(
-              '추가',
-              style: TextStyle(color: Colors.blue),
-            ),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () async {
+                    final tablename = controller.text.trim();
+
+                    if (tablename.isEmpty) return;
+
+                    final navigator = Navigator.of(dialogContext);
+                    final messenger = ScaffoldMessenger.of(context);
+
+                    showDialog(
+                      context: dialogContext,
+                      barrierDismissible: false,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+
+                    try {
+                      await TableApi().createTable(
+                        tablename: tablename,
+                        section: widget.section,
+                        companyId: widget.companyId,
+                      );
+
+                      navigator.pop(); // 로딩창
+                      navigator.pop(); // 테이블 추가 팝업
+
+                      _reloadTables(); // 명시적으로 재로딩 하는 부분.
+                    } catch (e) {
+                      navigator.pop(); // 로딩창
+
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('테이블 추가 실패: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('추가'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
