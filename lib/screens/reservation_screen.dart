@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/reservation_model.dart';
@@ -113,7 +114,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(body: const Center(child: CircularProgressIndicator()));
+      return Scaffold(body: const Center(child: CupertinoActivityIndicator()));
     }
     if (_hasLoadError) {
       return Scaffold(
@@ -150,6 +151,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           bottom: sections.isEmpty
               ? null
               : TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
                   indicatorWeight: 4,
                   labelStyle: const TextStyle(fontSize: 16),
                   labelPadding: const EdgeInsets.symmetric(
