@@ -46,7 +46,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
     _priceController.text = widget.table.leastBidPrice.toString();
 
     // 시간 초기화 로직
-    
+
     DateTime now = DateTime.now();
     _selectedDateTime = now;
 
@@ -127,18 +127,6 @@ class _ReservationAlertState extends State<ReservationAlert> {
     }
   }
 
-    Future<void> _onBidButtonTap() async {
-    bool bidAvailable = widget.table.bidAvailable;
-    try {
-      await TableApi().updateTable(tableId: widget.table.id, bidAvailable: !bidAvailable);
-    } catch (e) {
-      print('테이블 비드 가능 여부 변경 중 오류 발생: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('비딩 on/off 변경 중 오류 발생'), behavior: SnackBarBehavior.floating)
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -148,11 +136,164 @@ class _ReservationAlertState extends State<ReservationAlert> {
         title: Row(
           children: [
             Expanded(child: Text('${widget.table.tablename} 예약 등록')),
-             InkWell(
-              onTap: (){},
-              child: widget.table.timerStartedAt == null
-                  ? Icon(Icons.timer)
-                  : Icon(Icons.timer_off),
+            InkWell(
+              child: widget.table.bidAvailable
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) {
+                            return AlertDialog(
+                              title: Text('경매(비딩) 기능 끄기'),
+                              content: Text(
+                                '${widget.table.tablename}번 테이블의 경매 기능을 off 하시겠습니까?',
+                              ),
+                              actions: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          "취소",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          side: BorderSide(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context, true),
+                                        child: const Text(
+                                          '예',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          side: BorderSide(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (confirm != true) return;
+                        // 로딩바
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const CupertinoActivityIndicator(),
+                          barrierDismissible: false,
+                        );
+                        try {
+                          await TableApi().updateTable(
+                            tableId: widget.table.id,
+                            bidAvailable: false,
+                          );
+                        } catch (e) {
+                          Navigator.pop(context);
+                          print('경매 끄는 중 에러: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('경매 기능 끄는 중 오류 발생: $e'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                        Navigator.pop(context); // 로딩바
+                        Navigator.pop(context); // 윈도우
+                      },
+                      child: Text('경매 끄기'),
+                    )
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (dialogContext) {
+                            return AlertDialog(
+                              title: Text('경매(비딩) 기능 켜기'),
+                              content: Text(
+                                '${widget.table.tablename}번 테이블의 경매 기능을 on 하시겠습니까?',
+                              ),
+                              actions: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text(
+                                          "취소",
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          side: BorderSide(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Expanded(
+
+                                      child: ElevatedButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: const Text(
+                                          '예',
+                                          style: TextStyle(color: Colors.black),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          side: BorderSide(color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (confirm != true) return;
+                        // 로딩바
+                        showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const CupertinoActivityIndicator(),
+                          barrierDismissible: false,
+                        );
+                        try {
+                          await TableApi().updateTable(
+                            tableId: widget.table.id,
+                            bidAvailable: true,
+                          );
+                        } catch (e) {
+                          Navigator.pop(context);
+                          print('경매 키는 중 에러: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('경매 기능 키는 중 오류 발생: $e'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                        Navigator.pop(context); // 로딩바
+                        Navigator.pop(context); // 윈도우
+                      },
+                      child: Text('경매 켜기'),
+                    ),
             ),
           ],
         ),
@@ -249,7 +390,13 @@ class _ReservationAlertState extends State<ReservationAlert> {
                 // ),
                 if (_errorText != null) ...[
                   const SizedBox(height: 12),
-                  Align(alignment: Alignment.center, child: Text(_errorText!, style: TextStyle(color: Colors.redAccent),)),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      _errorText!,
+                      style: TextStyle(color: Colors.redAccent),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -279,6 +426,16 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   ),
 
                   onPressed: () async {
+                    if (widget.table.bidAvailable == false) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('경매 기능을 먼저 켜주세요'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      return;
+                    }
                     if (_nameController.text.isEmpty ||
                         _phoneController.text.isEmpty ||
                         _timeController.text.isEmpty ||
