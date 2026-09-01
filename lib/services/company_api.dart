@@ -18,15 +18,25 @@ class CompanyApi {
     );
   }
 
+  Future<List<CompanyModel>> getCompanies() async {
+    final url = Uri.parse('${ApiClient.baseUrl}/companies');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => CompanyModel.fromJson(json)).toList();
+    }
+    throw Exception(
+      'Failed to get Companies: ${response.statusCode} ${response.body}',
+    );
+  }
+
   Future<CompanyModel> createCompany({
     required String name,
     required String address,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/companies');
-    final body = {
-      'name': name,
-      'address': address,
-    };
+    final body = {'name': name, 'address': address};
 
     final response = await http.post(
       url,
@@ -72,16 +82,12 @@ class CompanyApi {
     );
   }
 
-  Future<CompanyModel> regenerateInviteCode({
-    required String companyId,
-  }) async {
+  Future<CompanyModel> regenerateInviteCode({required String companyId}) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/companies/$companyId/regenerate-invite-code',
     );
 
-    final response = await http.patch(
-      url,
-    );
+    final response = await http.patch(url);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
