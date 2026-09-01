@@ -66,6 +66,9 @@ class MoveTableGridView extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
+                    side: BorderSide(
+                      color: Colors.white,
+                    )
                   ),
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
