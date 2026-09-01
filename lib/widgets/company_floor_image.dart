@@ -227,6 +227,10 @@ class _CompanyFloorImageState extends State<CompanyFloorImage> {
             if (widget.canAdd) ...[
               SizedBox(height: 12),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black
+                ),
                 onPressed: _pickAndUpload,
                 child: const Text('+ 이미지 추가하기'),
               ),
