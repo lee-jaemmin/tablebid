@@ -69,9 +69,13 @@ class ReservationApi {
 
   Future<void> deleteReservation({
     required int reservationId,
+    String? idToken,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
-    final response = await http.delete(url);
+    final response = await http.delete(
+      url,
+      headers: {if (idToken != null) 'Authorization': 'Bearer $idToken'},
+    );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
       return;
@@ -88,6 +92,7 @@ class ReservationApi {
     required String customerPhone,
     List<SelectedItem>? items,
     int? bidPrice,
+    String? idToken,
   }) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/tables/${tableId}/register-reservation',
@@ -111,7 +116,10 @@ class ReservationApi {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        if (idToken != null) 'Authorization': 'Bearer $idToken',
+      },
       body: jsonEncode(body),
     );
 
