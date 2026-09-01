@@ -21,12 +21,16 @@ class CompanyFloorImage extends StatefulWidget {
   State<CompanyFloorImage> createState() => _CompanyFloorImageState();
 }
 
-class _CompanyFloorImageState extends State<CompanyFloorImage> {
+class _CompanyFloorImageState extends State<CompanyFloorImage>
+    with AutomaticKeepAliveClientMixin {
   String? _imageUrl;
   String? _loadedPath;
   String? _errorMessage;
   bool _isLoading = false;
   bool _isUploading = false;
+
+  @override
+  bool get wantKeepAlive => true;
 
   String? _normalizedPath(String? path) {
     final value = path?.trim();
@@ -214,6 +218,7 @@ class _CompanyFloorImageState extends State<CompanyFloorImage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isUploading) {
       return const Center(child: CircularProgressIndicator());
     }
