@@ -57,6 +57,7 @@ class TableApi {
     DateTime? bidEndAt,
     bool? bidAvailable,
     int? leastBidPrice,
+    String? offerProducts,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId');
     final currentTable = await getTable(tableId);
@@ -104,7 +105,8 @@ class TableApi {
       if (bidEndAt != null) 'bid_end_at': bidEndAt.toUtc().toIso8601String(),
       if (bidAvailable != null) 'bid_available': bidAvailable,
       if (leastBidPrice != null) 'least_bid_price': leastBidPrice,
-    };
+      if (offerProducts != null) 'offer_products': offerProducts,
+    }; 
     final response = await http.patch(
       url,
       headers: {'Content-Type': 'application/json'},
