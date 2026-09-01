@@ -7,6 +7,7 @@ import 'package:tablebid/services/company_api.dart';
 import 'package:tablebid/services/table_api.dart';
 
 import 'package:tablebid/widgets/admin_table_grid.dart';
+import 'package:tablebid/widgets/company_floor_image.dart';
 
 /// 섹션 관리는 여기서 함.
 
@@ -25,7 +26,7 @@ class TableManagementScreen extends StatefulWidget {
 }
 
 class _TableManagementScreenState extends State<TableManagementScreen> {
-  Future<CompanyModel>? _companyFuture;
+  CompanyModel? _company;
   List<TableModel> _tables = [];
   List<String> _sections = [];
   bool _isLoading = true;
@@ -42,7 +43,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       final company = await CompanyApi().getCompany(widget.companyId);
       if (!mounted) return;
       setState(() {
-        _companyFuture = Future.value(company);
+        _company = company;
         _tables = fetchTables;
         _sections = company.sections;
         _isLoading = false;
@@ -429,7 +430,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     if (_isLoading) {
       return Scaffold(body: Center(child: CircularProgressIndicator()));
     } else {
-      final company = _companyFuture;
+      final company = _company;
       if (company == null) {
         return CompanyEntryScreen(userId: widget.userId);
       }
@@ -443,7 +444,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
       return DefaultTabController(
         key: ValueKey(sections.length),
-        length: sections.length + 1,
+        length: sections.length + 2,
         child: Scaffold(
           appBar: AppBar(
             title: const Text('매장 구성 관리'),
@@ -461,6 +462,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
               tabAlignment: TabAlignment.start,
               isScrollable: true,
               tabs: [
+                const Tab(text: '전체'),
                 ...sections.map(
                   (section) => Tab(
                     child: InkWell(
@@ -480,7 +482,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                 const Tab(icon: Icon(Icons.add, color: Colors.blue)),
               ],
               onTap: (index) {
-                if (index == sections.length) {
+                if (index == sections.length + 1) {
                   _showAddSectionDialog(sections);
                 }
               },
@@ -488,6 +490,17 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           ),
           body: TabBarView(
             children: [
+              CompanyFloorImage(
+                company: company,
+                canAdd: true,
+                canReplace: true,
+                onCompanyUpdated: (updatedCompany) {
+                  setState(() {
+                    _company = updatedCompany;
+                    _sections = updatedCompany.sections;
+                  });
+                },
+              ),
               ...sections.map(
                 (section) => AdminTableGrid(
                   companyId: widget.companyId,

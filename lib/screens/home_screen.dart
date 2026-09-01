@@ -25,6 +25,7 @@ import 'package:tablebid/widgets/invite_code_card.dart';
 import 'package:tablebid/widgets/notification_bell.dart';
 import 'package:tablebid/widgets/sidebar_menu.dart';
 import 'package:tablebid/widgets/table_gridview.dart';
+import 'package:tablebid/widgets/company_floor_image.dart';
 
 /// FirebaseAuth.instance.currentUser로 UID 획득
 /// -> Firestore에서 해당 UID 문서 조회
@@ -338,10 +339,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
 
     final sections = _sections;
+    final canManageFloorImage =
+        currentUser.role == 'owner' || currentUser.role == 'admin';
 
     return DefaultTabController(
       key: ValueKey(sections.length),
-      length: sections.length,
+      length: sections.length + 1,
       child: Scaffold(
         key: _scaffoldKey,
         endDrawer: Drawer(
@@ -489,36 +492,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ],
-          bottom: sections.isEmpty
-              ? null
-              : TabBar(
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 4,
-                  dividerColor: Colors.transparent,
-                  labelStyle: const TextStyle(fontSize: 16),
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  tabs: sections.map((s) => Tab(text: s)).toList(),
-                ),
+          bottom: TabBar(
+            indicatorSize: TabBarIndicatorSize.tab,
+            indicatorWeight: 4,
+            dividerColor: Colors.transparent,
+            labelStyle: const TextStyle(fontSize: 16),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+            tabAlignment: TabAlignment.start,
+            isScrollable: true,
+            tabs: [
+              const Tab(text: '전체'),
+              ...sections.map((s) => Tab(text: s)),
+            ],
+          ),
         ),
-        body: sections.isEmpty
-            ? RefreshIndicator(
-                onRefresh: _refreshHomeData,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: const [
-                    SizedBox(
-                      height: 500,
-                      child: Center(
-                        child: Text('설정된 섹션이 없습니다. 관리자 모드에서 추가해주세요.'),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : TabBarView(
-                children: sections.map((section) {
+        body: TabBarView(
+          children: [
+            CompanyFloorImage(
+              company: company,
+              canAdd: canManageFloorImage,
+              canReplace: false,
+              onCompanyUpdated: (updatedCompany) {
+                setState(() {
+                  _company = updatedCompany;
+                });
+              },
+            ),
+            ...sections.map((section) {
                   return RefreshIndicator(
                     onRefresh: _refreshHomeData,
                     child: TableGridView(
@@ -532,8 +532,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       physics: const AlwaysScrollableScrollPhysics(),
                     ),
                   );
-                }).toList(),
-              ),
+                }),
+          ],
+        ),
       ),
     );
   }
