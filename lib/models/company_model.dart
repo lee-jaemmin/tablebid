@@ -7,7 +7,7 @@ class CompanyModel {
   final List<String> sections;
   final DateTime createdAt;
   final DateTime updatedAt;
-  String? floorImageUrl;
+  final String? floorImagePath;
 
   CompanyModel({
     required this.id,
@@ -18,7 +18,7 @@ class CompanyModel {
     required this.sections,
     required this.createdAt,
     required this.updatedAt,
-    this.floorImageUrl,
+    this.floorImagePath,
   });
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
@@ -33,7 +33,7 @@ class CompanyModel {
       ), // FastApi에서 Dart로 처음 넘어오면 List<dynamic>으로 넘어옴.
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      floorImageUrl: json['floor_image_url'] ?? "",
+      floorImagePath: json['floor_image_path'],
     );
   }
 }
