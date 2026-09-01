@@ -43,7 +43,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
     _phoneController = TextEditingController();
     _priceController = TextEditingController();
     _timeController = TextEditingController();
-    _priceController.text = widget.table.leastBidPrice.toString();
+    _priceController.text = widget.table.leastBidPrice == null ? "" : formatPrice(widget.table.leastBidPrice!);
 
     // 시간 초기화 로직
 

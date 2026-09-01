@@ -20,18 +20,22 @@ class BidPriceAlert extends StatefulWidget {
 
 class _BidPriceAlertState extends State<BidPriceAlert> {
   late TextEditingController _priceController;
+  late TextEditingController _offerProductsController;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _priceController = TextEditingController();
-    _priceController.text = widget.table.leastBidPrice.toString();
+    _priceController.text = widget.table.leastBidPrice == null ? "" : formatPrice(widget.table.leastBidPrice!);
+    _offerProductsController = TextEditingController();
+    _offerProductsController.text = widget.table.offerProducts ?? "";
   }
 
   @override
   void dispose() {
-    _priceController.dispose();  
+    _priceController.dispose();
+    _offerProductsController.dispose();
     super.dispose();
   }
 
@@ -57,6 +61,13 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(labelText: '비딩 최소가 (단위: 원)'),
                   inputFormatters: [PriceFormatters()],
+                ),
+                SizedBox(height: 12),
+                TextField(
+                  controller: _offerProductsController,
+                  decoration: InputDecoration(labelText: '제공 품목'),
+                  minLines: null,
+                  maxLines: null,
                 ),
                 SizedBox(height: 12),
               ],
@@ -90,8 +101,14 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                       _isSubmitting = true;
                     });
                     try {
-                      final leastBidPrice = int.parse(_priceController.text.replaceAll(',',''));
-                      await TableApi().updateTable(tableId: widget.table.id, leastBidPrice: leastBidPrice);
+                      final leastBidPrice = int.parse(
+                        _priceController.text.replaceAll(',', ''),
+                      );
+                      await TableApi().updateTable(
+                        tableId: widget.table.id,
+                        leastBidPrice: leastBidPrice,
+                        offerProducts: _offerProductsController.text,
+                      );
                       Navigator.pop(context);
                     } catch (e) {
                       print('❌ 최소가 변경 중 에러 발생: $e');

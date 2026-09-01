@@ -153,7 +153,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       length: sections.length,
       child: Scaffold(
         appBar: AppBar(
-          title: !_isEditingMode ? const Text('예약 관리') : const Text('경매 시작가 변경'),
+          title: !_isEditingMode ? const Text('예약 관리') : const Text('경매 설정 변경'),
            actions: [
             Padding(
               padding: EdgeInsets.all(8),
