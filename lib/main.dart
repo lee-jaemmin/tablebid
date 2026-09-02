@@ -8,7 +8,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tablebid/firebase_options.dart';
-import 'dart:io';
 import 'package:tablebid/screens/splash_screen.dart';
 
 @pragma('vm:entry-point')
@@ -30,14 +29,17 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FlutterAppBadger.removeBadge();
+  if (!kIsWeb) FlutterAppBadger.removeBadge();
 
-  kakao.KakaoSdk.init(nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe');
+  if (!kIsWeb) {
+    kakao.KakaoSdk.init(nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe');
+  }
   await _initAsyncTasks();
   runApp(const tablebid());
 }
 
 Future<void> _initAsyncTasks() async {
+  if (kIsWeb) return;
   await FirebaseAppCheck.instance.activate(
     // 웹 환경이 아니라면 androidProvider에 Play Integrity를 설정합니다.
     androidProvider: AndroidProvider.playIntegrity,
@@ -79,7 +81,7 @@ Future<void> _initAsyncTasks() async {
     AndroidNotification? android = message.notification?.android;
 
     if (notification != null) {
-      if (Platform.isAndroid && android != null) {
+      if (defaultTargetPlatform == TargetPlatform.android && android != null) {
         // 안드로이드 수동 알림
         flutterLocalNotificationsPlugin.show(
           id: notification.hashCode,
@@ -113,7 +115,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this); // 감지기 부착
-    FlutterAppBadger.removeBadge(); // 앱 껐다 켜질 때 배지 지우기
+    if (!kIsWeb) FlutterAppBadger.removeBadge(); // 앱 껐다 켜질 때 배지 지우기
   }
 
   @override
@@ -124,7 +126,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
+    if (!kIsWeb && state == AppLifecycleState.resumed) {
       FlutterAppBadger.removeBadge();
     }
   }
