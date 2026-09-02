@@ -67,7 +67,7 @@ class UserModel {
       companyId: json['company_id'],
       isPushOn: json['is_push_on'],
       phonenumber: json['phonenumber'],
-      phoneVerified: json['phoneVerified']
+      phoneVerified: json['phoneVerified'] ?? false
     );
   }
 }
