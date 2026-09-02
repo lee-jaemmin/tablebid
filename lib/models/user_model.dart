@@ -8,6 +8,8 @@ class UserModel {
   final DateTime createdAt;
   final String? companyId;
   bool isPushOn = true;
+  final String? phonenumber;
+  final bool phoneVerified;
 
   UserModel({
     required this.id,
@@ -19,6 +21,8 @@ class UserModel {
     required this.createdAt,
     this.companyId,
     required this.isPushOn,
+    this.phonenumber,
+    required this.phoneVerified,
   });
 
   UserModel copyWith({
@@ -31,6 +35,8 @@ class UserModel {
     DateTime? createdAt,
     String? companyId,
     bool? isPushOn,
+    String? phonenumber,
+    bool? phoneVerified,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -42,6 +48,8 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       companyId: companyId ?? this.companyId,
       isPushOn: isPushOn ?? this.isPushOn,
+      phonenumber: phonenumber ?? this.phonenumber,
+      phoneVerified: phoneVerified ?? this.phoneVerified
     );
   }
 
@@ -58,6 +66,8 @@ class UserModel {
       createdAt: DateTime.parse(json['created_at']),
       companyId: json['company_id'],
       isPushOn: json['is_push_on'],
+      phonenumber: json['phonenumber'],
+      phoneVerified: json['phoneVerified']
     );
   }
 }

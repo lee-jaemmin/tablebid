@@ -41,6 +41,7 @@ class UserApi {
     List<String>? cardfields,
     String? companyId,
     bool? isPushOn,
+    String? phonenumber,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/users/$userId');
 
@@ -52,6 +53,7 @@ class UserApi {
       if (cardfields != null) 'tablecardfields': cardfields,
       if (companyId != null) 'company_id': companyId,
       if (isPushOn != null) 'is_push_on': isPushOn,
+      if (phonenumber != null) 'phonenumber': phonenumber,
     };
 
     final response = await http.patch(
