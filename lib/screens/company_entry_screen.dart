@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/screens/address_screen.dart';
 import 'package:tablebid/screens/home_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
@@ -141,7 +142,6 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
 
   /// [Func] 매장 생성 및 DB 등록 함수
   Future<void> _createCompany() async {
-
     final companyName = _companyNameController.text.trim();
     final address = _addressController.text.trim();
     if (companyName.isEmpty) return;
@@ -299,7 +299,11 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                     foregroundColor: Colors.black,
                   ),
                   child: _isLoading
-                      ? Center(child: CupertinoActivityIndicator(color: Colors.black26))
+                      ? Center(
+                          child: CupertinoActivityIndicator(
+                            color: Colors.black26,
+                          ),
+                        )
                       : Text('생성하기'),
                 ),
               ),
@@ -501,7 +505,36 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        showDialog(
+                          context: context,
+                          builder: (context) => CupertinoActivityIndicator(),
+                          barrierDismissible: false,
+                        );
+                        try {
+                          await UserApi().updateUser(
+                            userId: widget.userId,
+                            role: "customer",
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          Navigator.pop(context);
+                          print('손님입니다 중 오류: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('입장 처리 중 오류가 발생했습니다. 다시 시도해주세요.'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CustomerHomeScreen(),
+                          ),
+                          (route) => false,
+                        );
+                      },
                       child: Text('손님입니다', style: TextStyle(fontSize: 20)),
                       style: FilledButton.styleFrom(
                         shape: RoundedRectangleBorder(
