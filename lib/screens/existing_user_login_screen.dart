@@ -66,7 +66,13 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
   Future<void> _routeUserByCompanyStatus(User user) async {
     try {
       final apiUser = await UserApi().getUser(user.uid);
-      final fcmtoken = await FirebaseMessaging.instance.getToken();
+      String? fcmtoken;
+      try {
+        await FirebaseMessaging.instance.requestPermission();
+        fcmtoken = await FirebaseMessaging.instance.getToken();
+      } catch (e) {
+        print("FCM 토큰 발급 실패: $e");
+      }
 
       if (fcmtoken != null) {
         try {
