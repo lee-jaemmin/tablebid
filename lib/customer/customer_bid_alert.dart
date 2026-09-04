@@ -134,13 +134,10 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
     } catch (e) {
       if (e.toString().contains("Too many reservations")) {
         if (!mounted) return;
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('최대 예약 개수는 3개입니다. 나머지 예약을 삭제하고 다시 시도해주세요.'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        setState(() {
+          _errorText = "최대 예약 개수는 3개입니다.\n다른 예약을 삭제하고 다시 시도해주세요";
+        });
+        return;
       }
       if (!mounted) return;
       setState(() {
