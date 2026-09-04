@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -35,13 +34,17 @@ class CustomerTableGrid extends StatelessWidget {
             ? '경매 불가'
             : isInUse
             ? '사용 중\n${table.registeredAt == null ? '--:--' : DateFormat('HH:mm').format(table.registeredAt!.toLocal())} 입장'
+            : table.isReserved! 
+            ? '예약 확정' 
             : table.hasReservations
             ? '비딩 중'
             : '비딩 참여 가능';
         final color = !table.bidAvailable
             ? Colors.grey[500]
             : isInUse
-            ? Colors.green.shade200
+            ? Colors.grey[500]
+            : table.isReserved!
+            ? Colors.grey[500]
             : table.hasReservations
             ? const Color.fromARGB(229, 255, 153, 0)
             : Colors.grey[100];

@@ -149,13 +149,13 @@ class TableCard extends StatelessWidget {
                   ),
                   child: Text(
                     reservedAt != null
-                        ? DateFormat(
+                        ?'예약 확정 ${DateFormat(
                             'HH:mm',
-                          ).format(reservedAt!.toLocal())
+                          ).format(reservedAt!.toLocal())}'
                         : '예약 시간 없음.',
                     style: const TextStyle(
-                      color: Colors.indigo,
-                      fontSize: 12,
+                      color: Colors.pink,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
