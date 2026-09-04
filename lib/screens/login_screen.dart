@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/screens/existing_user_login_screen.dart';
@@ -322,6 +323,12 @@ class _LoginScreenState extends State<LoginScreen> {
         // companyid비었나 체크
         final String? companyId = user.companyId;
 
+        if (user.role == 'customer') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
+          );
+        }
         if (companyId != null && companyId != 'null' && companyId != '') {
           Navigator.pushReplacement(
             context,
