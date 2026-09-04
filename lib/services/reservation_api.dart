@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_purchase_screen.dart';
@@ -23,7 +24,7 @@ class ReservationApi {
   Future<List<ReservationModel>> getReservationsByTable(String tableId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId/reservations');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
