@@ -21,7 +21,7 @@ class TableModel {
   final String? userName;
   final String? groupId;
   final List<String>? purchaseSummary;
-  bool? isReserved;
+  bool isReserved;
   DateTime? reservedAt;
   DateTime? bidEndAt;
   bool bidAvailable;
@@ -52,7 +52,7 @@ class TableModel {
     this.userName,
     this.groupId,
     this.purchaseSummary,
-    this.isReserved,
+    required this.isReserved,
     this.reservedAt,
     this.bidEndAt,
     required this.bidAvailable,
@@ -95,7 +95,7 @@ class TableModel {
       userName: json['user_name'] ?? '',
       groupId: json['group_id'],
       purchaseSummary: (json['purchase_summary'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      isReserved: json['is_reserved'] ?? false,
+      isReserved: json['is_reserved'],
       bidAvailable: json['bid_available'],
       bidEndAt: json['bid_end_at'] == null ? null : _parseUtcDateTime(json['bid_end_at']),
       leastBidPrice: json['least_bid_price'],
