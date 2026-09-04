@@ -209,7 +209,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       barrierDismissible: false,
     );
     try {
-      print("ReservationId: ${reservation.id}");
       await ReservationApi().updateReservation(
         reservationId: reservation.id,
         isFixed: true,
