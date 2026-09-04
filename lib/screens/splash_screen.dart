@@ -5,6 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tablebid/screens/home_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
+import 'package:tablebid/screens/company_entry_screen.dart';
+import 'package:tablebid/customer/customer_home_screen.dart';
+import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -17,6 +20,7 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
   bool _isLoading = true;
   bool _isInFirebase = false;
   bool _isInDB = false;
+  UserModel? _user;
 
   @override
   void initState() {
@@ -44,12 +48,13 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
     }
 
     try {
-      await UserApi().getUser(firebaseUser.uid);
+      final user = await UserApi().getUser(firebaseUser.uid);
 
       if (!mounted) return;
       setState(() {
         _isInDB = true;
         _isInFirebase = true;
+        _user = user;
         _isLoading = false;
       });
     } catch (e) {
@@ -159,7 +164,9 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
     }
 
     if (_isInDB && _isInFirebase) {
-      return HomeScreen();
+      if (_user!.role == 'customer') return const CustomerHomeScreen();
+      if ((_user!.companyId ?? '').trim().isNotEmpty) return HomeScreen();
+      return CompanyEntryScreen(userId: _user!.id);
     } else {
       return LoginScreen();
     }

@@ -9,6 +9,7 @@ import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/screens/existing_user_login_screen.dart';
 import 'package:tablebid/screens/signup_screen.dart';
+import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tablebid/screens/home_screen.dart';
@@ -209,7 +210,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
       setState(() => _isLoginLoading = false);
 
-      if (user.companyId != null && user.companyId != 'null') {
+      if (isNewUser || !isInDb) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UserTypeSelectionScreen(userId: user.id),
+          ),
+        );
+      } else if (user.role == 'customer') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
+        );
+      } else if (user.companyId != null && user.companyId != 'null') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -323,13 +336,19 @@ class _LoginScreenState extends State<LoginScreen> {
         // companyid비었나 체크
         final String? companyId = user.companyId;
 
-        if (user.role == 'customer') {
+        if (!isInDb) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
+            MaterialPageRoute(
+              builder: (context) => UserTypeSelectionScreen(userId: user.id),
+            ),
           );
-        }
-        if (companyId != null && companyId != 'null' && companyId != '') {
+        } else if (user.role == 'customer') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
+          );
+        } else if (companyId != null && companyId != 'null' && companyId != '') {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),

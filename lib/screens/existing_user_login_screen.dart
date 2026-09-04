@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tablebid/constants/gaps.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
+import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/screens/password_reset_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
@@ -102,7 +103,9 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => hasCompany
+          builder: (context) => apiUser.role == 'customer'
+              ? const CustomerHomeScreen()
+              : hasCompany
               ? HomeScreen()
               : CompanyEntryScreen(
                   userId: user.uid,

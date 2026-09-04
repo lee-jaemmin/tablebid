@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:tablebid/screens/company_entry_screen.dart';
+import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/agree_checkbox.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
@@ -127,7 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
         context,
         MaterialPageRoute(
           builder: (context) =>
-              CompanyEntryScreen(userId: userCredential.user!.uid),
+              UserTypeSelectionScreen(userId: userCredential.user!.uid),
         ),
         (route) => false,
       );
