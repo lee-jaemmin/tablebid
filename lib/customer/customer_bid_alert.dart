@@ -132,6 +132,16 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
         SnackBar(content: Text('비딩 등록 성공: ${widget.table.tablename}')),
       );
     } catch (e) {
+      if (e.toString().contains("Too many reservations")) {
+        if (!mounted) return;
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('최대 예약 개수는 3개입니다. 나머지 예약을 삭제하고 다시 시도해주세요.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
       if (!mounted) return;
       setState(() {
         _errorText = '비딩 등록 중 오류가 발생했습니다.';

@@ -34,7 +34,7 @@ class CustomerTableGrid extends StatelessWidget {
             ? '경매 불가'
             : isInUse
             ? '사용 중\n${table.registeredAt == null ? '--:--' : DateFormat('HH:mm').format(table.registeredAt!.toLocal())} 입장'
-            : table.isReserved! 
+            : table.isReserved
             ? '예약 확정' 
             : table.hasReservations
             ? '비딩 중'
@@ -43,7 +43,7 @@ class CustomerTableGrid extends StatelessWidget {
             ? Colors.grey[500]
             : isInUse
             ? Colors.grey[500]
-            : table.isReserved!
+            : table.isReserved
             ? Colors.grey[500]
             : table.hasReservations
             ? const Color.fromARGB(229, 255, 153, 0)
