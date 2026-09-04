@@ -183,7 +183,6 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                   children: [
                     if (fixedReservation != null)
                       Container(
-                        color: Colors.blue.withValues(alpha: 0.16),
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +271,7 @@ class _CustomerBidTile extends StatelessWidget {
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
     return ListTile(
-      tileColor: isMine ? Colors.green.shade500 : null,
+      tileColor: isMine ?  Colors.blue.withValues(alpha: 0.16) : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       title: Text(
         '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
