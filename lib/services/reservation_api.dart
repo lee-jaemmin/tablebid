@@ -55,7 +55,7 @@ class ReservationApi {
 
     final response = await http.patch(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
@@ -75,7 +75,7 @@ class ReservationApi {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
     final response = await http.delete(
       url,
-      headers: {if (idToken != null) 'Authorization': 'Bearer $idToken'},
+      headers: await firebaseAuthHeaders(),
     );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
