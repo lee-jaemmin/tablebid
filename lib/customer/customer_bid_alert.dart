@@ -136,6 +136,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
         if (!mounted) return;
         setState(() {
           _errorText = "최대 예약 개수는 3개입니다.\n다른 예약을 삭제하고 다시 시도해주세요";
+          _isSubmitting = false;
         });
         return;
       }
