@@ -132,6 +132,15 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fixedReservationIndex = _reservations.indexWhere(
+      (reservation) => reservation.isFixed == true,
+    );
+    final fixedReservation = fixedReservationIndex == -1
+        ? null
+        : _reservations[fixedReservationIndex];
+    final List<ReservationModel> leftBidList = fixedReservationIndex == -1
+        ? _reservations
+        : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.table.tablename} 비딩'),
@@ -167,44 +176,118 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
           ? const Center(child: Text('비딩 내역이 없습니다.'))
           : RefreshIndicator(
               onRefresh: _loadReservations,
-              child: ListView.separated(
+              child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(12),
-                itemCount: _reservations.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final reservation = _reservations[index];
-                  final isMine = reservation.createdById == widget.userId;
-                  final reservationTime = reservation.reservationTime == null
-                      ? ''
-                      : DateFormat('HH:mm').format(reservation.reservationTime!);
-                  return ListTile(
-                    tileColor: isMine ? Colors.green.shade800 : null,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 8,
-                    ),
-                    title: Text(
-                      '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(
-                      '${isMine ? '${reservation.customerPhone}\n' : ''}${formatPrice(reservation.bidPrice ?? 0)}',
-                    ),
-                    isThreeLine: true,
-                    trailing: isMine
-                        ? IconButton(
-                            tooltip: '내 비딩 삭제',
-                            onPressed: () => _deleteBid(reservation),
-                            icon: const Icon(
-                              Icons.remove_circle,
-                              color: Colors.red,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (fixedReservation != null)
+                      Container(
+                        color: Colors.blue.withValues(alpha: 0.16),
+                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                minimumSize: const Size(60, 32),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadiusGeometry.circular(8),
+                                ),
+                              ),
+                              child: const Text('확정된 예약', style: TextStyle(fontSize: 12)),
                             ),
-                          )
-                        : null,
-                  );
-                },
+                            _CustomerBidTile(
+                              reservation: fixedReservation,
+                              userId: widget.userId,
+                            ),
+                          ],
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: fixedReservation == null
+                              ? const Color.fromARGB(229, 255, 153, 0)
+                              : Colors.grey,
+                          minimumSize: const Size(60, 32),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          fixedReservation == null ? '비딩 중' : '비딩 마감',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(12),
+                      itemCount: leftBidList.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final reservation = leftBidList[index];
+                        return _CustomerBidTile(
+                          reservation: reservation,
+                          userId: widget.userId,
+                          onDelete: reservation.createdById == widget.userId
+                              ? () => _deleteBid(reservation)
+                              : null,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
+            ),
+    );
+  }
+}
+
+class _CustomerBidTile extends StatelessWidget {
+  final ReservationModel reservation;
+  final String userId;
+  final VoidCallback? onDelete;
+
+  const _CustomerBidTile({
+    required this.reservation,
+    required this.userId,
+    this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isMine = reservation.createdById == userId;
+    final reservationTime = reservation.reservationTime == null
+        ? ''
+        : DateFormat('HH:mm').format(reservation.reservationTime!);
+    return ListTile(
+      tileColor: isMine ? Colors.green.shade500 : null,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      title: Text(
+        '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        '${isMine ? '${reservation.customerPhone}\n' : ''}${formatPrice(reservation.bidPrice ?? 0)}',
+      ),
+      isThreeLine: true,
+      trailing: onDelete == null
+          ? null
+          : IconButton(
+              tooltip: '내 비딩 삭제',
+              onPressed: onDelete,
+              icon: const Icon(Icons.remove_circle, color: Colors.red),
             ),
     );
   }
