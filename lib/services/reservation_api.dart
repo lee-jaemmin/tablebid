@@ -10,7 +10,7 @@ class ReservationApi {
   Future<ReservationModel> getReservation(String reservationId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
