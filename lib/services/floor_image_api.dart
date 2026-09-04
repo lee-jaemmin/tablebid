@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/api_client.dart';
 
@@ -17,15 +17,6 @@ class FloorImageApiException implements Exception {
 }
 
 class FloorImageApi {
-  Future<String> _getToken({bool forceRefresh = false}) async {
-    final user = FirebaseAuth.instance.currentUser;
-    final token = await user?.getIdToken(forceRefresh);
-    if (token == null || token.isEmpty) {
-      throw const FloorImageApiException(401, '로그인이 필요합니다.');
-    }
-    return token;
-  }
-
   String _errorMessage(http.Response response) {
     try {
       final data = jsonDecode(response.body);
@@ -36,29 +27,34 @@ class FloorImageApi {
     return '요청 처리 중 오류가 발생했습니다.';
   }
 
+  // http 형식 반환하는 함수
   Future<http.Response> _getFloorImageUrl(
     String companyId, {
     bool forceRefresh = false,
   }) async {
-    final token = await _getToken(forceRefresh: forceRefresh);
     final url = Uri.parse(
       '${ApiClient.baseUrl}/companies/$companyId/floor-image-url',
     );
-    return http.get(url, headers: {'Authorization': 'Bearer $token'});
+    return http.get(
+      url,
+      headers: await firebaseAuthHeaders(forceRefresh: forceRefresh),
+    );
   }
 
   Future<String> getFloorImageUrl(String companyId) async {
     var response = await _getFloorImageUrl(companyId);
     if (response.statusCode == 401) {
+      // 권한 없으면 다시 시도 -> 안되면 에러
       response = await _getFloorImageUrl(companyId, forceRefresh: true);
     }
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
-      return data['url'] as String;
+      return data['url'] as String; // 최종 url 추출
     }
     throw FloorImageApiException(response.statusCode, _errorMessage(response));
   }
 
+  // http 형식 반환 함수
   Future<http.Response> _uploadFloorImage({
     required String companyId,
     required List<int> bytes,
@@ -66,12 +62,14 @@ class FloorImageApi {
     required String contentType,
     bool forceRefresh = false,
   }) async {
-    final token = await _getToken(forceRefresh: forceRefresh);
     final request = http.MultipartRequest(
       'POST',
       Uri.parse('${ApiClient.baseUrl}/companies/$companyId/floor-image'),
     );
-    request.headers['Authorization'] = 'Bearer $token';
+    request.headers.addAll(await firebaseAuthHeaders(
+      forceRefresh: forceRefresh,
+      includeContentType: false,
+    )); // 보안 인증 헤더 추가
     request.files.add(
       http.MultipartFile.fromBytes(
         'file',
@@ -79,9 +77,10 @@ class FloorImageApi {
         filename: filename,
         contentType: MediaType.parse(contentType),
       ),
-    );
+    ); // 이미지 바이트를 요청에 추가
     return http.Response.fromStream(await request.send());
   }
+
 
   Future<CompanyModel> uploadFloorImage({
     required String companyId,
