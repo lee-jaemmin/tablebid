@@ -117,10 +117,7 @@ class ReservationApi {
 
     final response = await http.post(
       url,
-      headers: {
-        'Content-Type': 'application/json',
-        if (idToken != null) 'Authorization': 'Bearer $idToken',
-      },
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
