@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_list_screen.dart';
+import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
@@ -150,6 +151,18 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.company.name),
+          actions: [
+            IconButton(
+              tooltip: '설정',
+              icon: const Icon(Icons.settings),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CustomerSettingScreen(),
+                ),
+              ),
+            ),
+          ],
           bottom: TabBar(
             indicatorSize: TabBarIndicatorSize.tab,
             indicatorWeight: 4,
