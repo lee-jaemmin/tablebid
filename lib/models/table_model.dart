@@ -99,7 +99,7 @@ class TableModel {
       bidAvailable: json['bid_available'],
       bidEndAt: json['bid_end_at'] == null ? null : _parseUtcDateTime(json['bid_end_at']),
       leastBidPrice: json['least_bid_price'],
-      hasReservations: json['has_reservations'] ?? false,
+      hasReservations: json['has_reservations'],
       offerProducts: json['offer_products'] ?? ""
     );
   }
