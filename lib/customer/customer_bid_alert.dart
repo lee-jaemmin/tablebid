@@ -139,6 +139,11 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
           _isSubmitting = false;
         });
         return;
+      } else if (e.toString().contains("Phone verification needed")) {
+        setState(() {
+          _errorText = "아직 번호 인증을 하지 않았습니다.\n설정 > 번호 인증을 완료해주세요.";
+          _isSubmitting = false;
+        });
       }
       if (!mounted) return;
       setState(() {
