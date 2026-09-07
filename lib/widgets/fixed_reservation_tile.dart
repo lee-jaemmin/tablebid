@@ -7,12 +7,14 @@ class FixedReservationTile extends StatelessWidget {
   final ReservationModel reservation;
   final VoidCallback onCheckIn;
   final VoidCallback onCancel;
+  final VoidCallback onNoshow;
 
   const FixedReservationTile({
     super.key,
     required this.reservation,
     required this.onCheckIn,
     required this.onCancel,
+    required this.onNoshow,
   });
 
   @override
@@ -25,15 +27,15 @@ class FixedReservationTile extends StatelessWidget {
         children: [
           ElevatedButton(
             onPressed: () {},
-            child: Text('확정된 예약', style: TextStyle(fontSize: 12),),
+            child: Text('확정된 예약', style: TextStyle(fontSize: 12)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               minimumSize: const Size(60, 32),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(8)
-              )
+                borderRadius: BorderRadiusGeometry.circular(8),
+              ),
             ),
           ),
           ListTile(
@@ -61,6 +63,11 @@ class FixedReservationTile extends StatelessWidget {
                   tooltip: '취소',
                   onPressed: onCancel,
                   icon: const Icon(Icons.remove_circle, color: Colors.red),
+                ),
+
+                TextButton(
+                  onPressed: onNoshow,
+                  child: Text('노쇼'),
                 ),
               ],
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/services/no_show_api.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/fixed_reservation_tile.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -72,10 +73,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     BuildContext context,
     TableModel table,
   ) async {
-    if(_tableReserved == true) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.'), behavior: SnackBarBehavior.floating,));
+    if (_tableReserved == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
       return;
     }
     bool? confirm = await showDialog<bool>(
@@ -476,6 +480,103 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     await loadData();
   }
 
+  Future<void> _noShow(
+    BuildContext context,
+    TableModel table,
+    ReservationModel reservation,
+  ) async {
+    if (reservation.isFixed == false) {
+      await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('노쇼 처리 불가'),
+          content: Text('확정되지 않은 예약에 노쇼 처리를 할 수 없습니다.\n먼저 예약을 확정해주세요.'),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(color: Colors.white),
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      '확인',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('노쇼'),
+            content: Text(
+              '${table.tablename}번 테이블에 확정된 이 예약을 노쇼 처리 하시겠습니까?\n노쇼 처리 당한 이용자는 서비스 이용에 제약이 있을 수 있습니다.',
+            ),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        side: BorderSide(color: Colors.white),
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        '아니오',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        '예',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirm) return;
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
+    try {
+      print("ReservationId: ${reservation.id}");
+      await NoShowApi().noShow(reservationId: reservation.id);
+    } catch (e) {
+      print('❌ 노쇼 처리 실패: $e');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('노쇼 처리 중 오류 발생')));
+    }
+    Navigator.pop(context);
+    await loadData();
+  }
+
   @override
   Widget build(BuildContext context) {
     final fixedReservationIndex = _reservations.indexWhere(
@@ -492,24 +593,24 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         title: Text('${widget.table.tablename} 예약'),
         actions: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(12,12,4,12),
+            padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
             child: Tooltip(
               message: "예약 추가",
               child: IconButton(
                 onPressed: () {
                   _showReservationAlert(context, widget.table);
-                  },
+                },
                 icon: Icon(Icons.add),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(4,12,12,12),
+            padding: const EdgeInsets.fromLTRB(4, 12, 12, 12),
             child: Tooltip(
               message: "새로 고침",
               child: IconButton(
                 onPressed: () {
-                  loadData();  
+                  loadData();
                 },
                 icon: Icon(Icons.refresh),
               ),
@@ -539,42 +640,52 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                             widget.table,
                             fixedReservation,
                           ),
+                          onNoshow: () =>
+                              _noShow(context, widget.table, fixedReservation),
                         ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(12,12,12,0),
-                    child: _tableReserved ? 
-                      ElevatedButton(
-                      onPressed: () {},
-                      child: Text('비딩 마감', style: TextStyle(fontSize: 12,)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                        minimumSize: const Size(60, 32),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(8),
-                        ),
-                      ),
-                    )
-                    : ElevatedButton(
-                      onPressed: () {},
-                      child: Text('비딩 중', style: TextStyle(fontSize: 12,)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(229, 255, 153, 0),
-                        minimumSize: const Size(60, 32),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadiusGeometry.circular(8),
-                        ),
-                      ),
-                    ),
+                    padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                    child: _tableReserved
+                        ? ElevatedButton(
+                            onPressed: () {},
+                            child: Text(
+                              '비딩 마감',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey,
+                              minimumSize: const Size(60, 32),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(8),
+                              ),
+                            ),
+                          )
+                        : ElevatedButton(
+                            onPressed: () {},
+                            child: Text('비딩 중', style: TextStyle(fontSize: 12)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                229,
+                                255,
+                                153,
+                                0,
+                              ),
+                              minimumSize: const Size(60, 32),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(8),
+                              ),
+                            ),
+                          ),
                   ),
                   ListView.separated(
                     shrinkWrap:
