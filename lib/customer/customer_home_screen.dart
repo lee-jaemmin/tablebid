@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
+import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/region_chip.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/company_api.dart';
@@ -55,7 +56,21 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         .where((company) => company.region == _selectedRegion)
         .toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('매장 선택')),
+      appBar: AppBar(
+        title: const Text('매장 선택'),
+        actions: [
+          IconButton(
+            tooltip: '설정',
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const CustomerSettingScreen(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           SingleChildScrollView(
@@ -132,6 +147,5 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
   }
 }
-
 
 
