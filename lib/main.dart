@@ -136,7 +136,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
     return MaterialApp(
       title: 'tablebid',
       theme: ThemeData(
-        fontFamily: 'NatoSansKR',
+        fontFamily: 'NotoSansKR',
         brightness: Brightness.dark,
         scaffoldBackgroundColor: Colors.black,
         colorScheme: const ColorScheme.dark(
