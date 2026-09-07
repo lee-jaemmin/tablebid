@@ -10,6 +10,7 @@ class UserModel {
   bool isPushOn = true;
   final String? phonenumber;
   final bool phoneVerified;
+  final int noShowCount;
 
   UserModel({
     required this.id,
@@ -23,6 +24,7 @@ class UserModel {
     required this.isPushOn,
     this.phonenumber,
     required this.phoneVerified,
+    this.noShowCount = 0,
   });
 
   UserModel copyWith({
@@ -37,6 +39,7 @@ class UserModel {
     bool? isPushOn,
     String? phonenumber,
     bool? phoneVerified,
+    int? noShowCount,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -49,7 +52,8 @@ class UserModel {
       companyId: companyId ?? this.companyId,
       isPushOn: isPushOn ?? this.isPushOn,
       phonenumber: phonenumber ?? this.phonenumber,
-      phoneVerified: phoneVerified ?? this.phoneVerified
+      phoneVerified: phoneVerified ?? this.phoneVerified,
+      noShowCount: noShowCount ?? this.noShowCount
     );
   }
 
@@ -67,7 +71,8 @@ class UserModel {
       companyId: json['company_id'],
       isPushOn: json['is_push_on'],
       phonenumber: json['phonenumber'],
-      phoneVerified: json['phoneVerified'] ?? false
+      phoneVerified: json['phone_verified'] ?? json['phoneVerified'] ?? false,
+      noShowCount: json['no_show_count'] ?? json['noShowCount'] ?? 0
     );
   }
 }
