@@ -49,38 +49,102 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('사용자 유형 선택')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: _isLoading
-              ? const CupertinoActivityIndicator()
-              : Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+      body: _isLoading
+          ? const Center(child: CupertinoActivityIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 20),
                     const Text(
-                      '어떤 목적으로 이용하시나요?',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 40),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _selectCustomer,
-                        child: const Text('손님으로 이용하기'),
+                      '어떤 목적으로\n이용하시나요?',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: _selectStaff,
-                        child: const Text('직원 또는 사장으로 이용하기'),
+                    const SizedBox(height: 12),
+                    Text(
+                      '사용자 유형에 맞는 항목을 선택해주세요.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
+                    ),
+                    const SizedBox(height: 30),
+                    _buildTypeCard(
+                      title: '손님으로 이용하기',
+                      subtitle: '매장을 검색하고 예약할 수 있습니다.',
+                      icon: Icons.person_outline,
+                      onTap: _selectCustomer,
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTypeCard(
+                      title: '직원 또는 사장으로 이용하기',
+                      subtitle: '매장을 등록하거나 초대 코드로 입장합니다.',
+                      icon: Icons.storefront_outlined,
+                      onTap: _selectStaff,
                     ),
                   ],
                 ),
+              ),
+            ),
+    );
+  }
+
+  Widget _buildTypeCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 40,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
         ),
       ),
     );

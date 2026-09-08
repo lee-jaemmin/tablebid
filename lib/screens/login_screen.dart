@@ -182,7 +182,6 @@ class _LoginScreenState extends State<LoginScreen> {
           userId: firebaseUser.uid,
           userName: nickname,
           email: realEmail!,
-          role: 'user',
           fcmtoken: fcmtoken,
           cardFields: ['purchases', 'persons'],
         );
@@ -201,7 +200,6 @@ class _LoginScreenState extends State<LoginScreen> {
             userId: firebaseUser.uid,
             userName: nickname,
             email: email,
-            role: 'user',
             fcmtoken: fcmtoken,
             cardFields: ['purchases', 'persons'],
           );
@@ -320,7 +318,6 @@ class _LoginScreenState extends State<LoginScreen> {
             userId: firebaseUser.uid,
             userName: nickname,
             email: email ?? '',
-            role: 'user',
             fcmtoken: fcmtoken,
             cardFields: ['purchases', 'persons'],
           );

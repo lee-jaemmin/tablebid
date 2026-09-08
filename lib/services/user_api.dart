@@ -75,7 +75,6 @@ class UserApi {
     required String userId,
     required String userName,
     required String email,
-    required String role,
     required String? fcmtoken,
     required List<String> cardFields,
   }) async {
@@ -84,7 +83,6 @@ class UserApi {
       'id': userId,
       'username': userName,
       'email': email,
-      'role': role,
       'fcmtoken': fcmtoken,
       'tablecardfields': cardFields,
     };
@@ -113,7 +111,7 @@ class UserApi {
       },
       body: jsonEncode({
         'company_id': null,
-        'role': 'user',
+        'role': null,
       }),
     );
 
