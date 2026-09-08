@@ -118,7 +118,6 @@ class _SignupScreenState extends State<SignupScreen> {
         email: inputEmail,
         fcmtoken: fcmtoken,
         userName: userName,
-        role: 'user',
         cardFields: ['purchases', 'persons'],
       );
 
