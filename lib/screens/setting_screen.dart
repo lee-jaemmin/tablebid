@@ -363,13 +363,13 @@ class _SettingScreenState extends State<SettingScreen> {
     }
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('회원 탈퇴'),
         content: const Text(
           '애플 앱스토어 규정 및 2026 보안 가이드라인에 따라, 탈퇴 즉시 귀하의 모든 개인정보와 식별 데이터는 서버에서 영구 삭제(익명화)됩니다. '
           '탈퇴 보류 기간이 없으므로 삭제된 데이터는 복구할 수 없습니다. 정말 탈퇴하시겠습니까?',
           style: TextStyle(fontSize: 14),
-        ),
+        ),  
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -377,7 +377,7 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               _withdrawMembership(context);
             },
             child: const Text('탈퇴하기', style: TextStyle(color: Colors.red)),
@@ -470,7 +470,7 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             title: const Text('회원 탈퇴', style: TextStyle(color: Colors.red)),
             onTap: () =>
-                _showWithdrawDialog(context, _currentUser, _currentUser.role),
+                _showWithdrawDialog(context, _currentUser, _currentUser.role!),
           ),
         ],
       ),
