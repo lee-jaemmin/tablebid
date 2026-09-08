@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/api_client.dart';
 import 'package:http/http.dart' as http;
@@ -58,7 +59,7 @@ class UserApi {
 
     final response = await http.patch(
       url,
-      headers: {'Content-type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
