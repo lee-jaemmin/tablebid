@@ -10,7 +10,8 @@ import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 
 class CustomerSettingScreen extends StatefulWidget {
-  const CustomerSettingScreen({super.key});
+  final ValueChanged<UserModel>? onUserChanged;
+  const CustomerSettingScreen({super.key, required this.onUserChanged});
 
   @override
   State<CustomerSettingScreen> createState() => _CustomerSettingScreenState();
@@ -175,6 +176,9 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      if(widget.onUserChanged != null) {
+        widget.onUserChanged!(user); 
+      }
     } catch (e) {
       print('########### 번호 인증 중 오류 발생: $e');
       if(!mounted) return;

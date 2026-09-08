@@ -65,7 +65,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const CustomerSettingScreen(),
+                builder: (context) => CustomerSettingScreen(
+                  onUserChanged: null,
+                ),
               ),
             ),
           ),
