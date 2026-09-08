@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
@@ -9,8 +8,10 @@ import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/table_api.dart';
+import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/company_floor_image.dart';
 
@@ -27,13 +28,16 @@ class CustomerCompanyScreen extends StatefulWidget {
 class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
   List<TableModel> _tables = [];
   StreamSubscription<WebSocketEvent>? _webSocketSubscription;
-  bool _isLoading = true;
+  UserModel? _user;
+  bool _isTableLoading = true;
+  bool _isUserLoading = true;
   bool _hasError = false;
 
   @override
   void initState() {
     super.initState();
     _loadTables();
+    _loadUser();
     _subscribeToWebSocket();
   }
 
@@ -43,13 +47,31 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       if (!mounted) return;
       setState(() {
         _tables = tables;
-        _isLoading = false;
+        _isTableLoading = false;
         _hasError = false;
       });
     } catch (e) {
       if (!mounted || !showError) return;
       setState(() {
-        _isLoading = false;
+        _isTableLoading = false;
+        _hasError = true;
+      });
+    }
+  }
+
+  Future<void> _loadUser() async {
+    try {
+      final user = await UserApi().getUser(widget.userId);
+      if (!mounted) return;
+      setState(() {
+        _user = user;
+        _isUserLoading = false;
+        _hasError = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isUserLoading = false;
         _hasError = true;
       });
     }
@@ -88,6 +110,35 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
   }
 
   Future<void> _openTable(TableModel table) async {
+    final user = _user;
+    if (user == null) {
+      return;
+    }
+    if (!user.phoneVerified) {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text('전화 번호 인증 필요'),
+          content: Text('설정 > 번호 인증을 탭하여 전화 번호 인증을 진행해주세요.'),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                    ),
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    child: Text('확인', style: TextStyle(color: Colors.black)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     if (!table.bidAvailable) return;
     if (table.hasReservations) {
       await Navigator.push(
@@ -115,7 +166,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    if (_isUserLoading || _isTableLoading) {
       return Scaffold(
         appBar: AppBar(title: Text(widget.company.name)),
         body: const Center(child: CupertinoActivityIndicator()),
@@ -128,7 +179,8 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
           child: ElevatedButton(
             onPressed: () {
               setState(() {
-                _isLoading = true;
+                _isTableLoading = true;
+                _isUserLoading = true;
                 _hasError = false;
               });
               _loadTables();
@@ -158,7 +210,13 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const CustomerSettingScreen(),
+                  builder: (context) => CustomerSettingScreen(
+                    onUserChanged: (updatedUser) {
+                      setState(() {
+                        _user = updatedUser;
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
