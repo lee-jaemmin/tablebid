@@ -151,4 +151,17 @@ class UserApi {
     );
   }
 
+  Future<UserModel> verifyPhoneNumber() async {
+    final url = Uri.parse('${ApiClient.baseUrl}/verify-phonenumber');
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return UserModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to verify phonenumber: ${response.statusCode} ${response.body}',
+    );
+  }
+
 }

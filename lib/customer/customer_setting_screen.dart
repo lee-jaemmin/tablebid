@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:tablebid/customer/phone_verification_dialog.dart';
@@ -38,9 +39,9 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('사용자 정보를 불러오지 못했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('사용자 정보를 불러오지 못했습니다.')));
     }
   }
 
@@ -55,18 +56,18 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')));
     }
   }
 
   Future<void> _withdrawMembership(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('user가 존재하지 않습니다')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('user가 존재하지 않습니다')));
       return;
     }
     showDialog(
@@ -84,9 +85,9 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       await UserApi().deleteUser(userId: uid);
       if (!context.mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')));
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -97,7 +98,9 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       Navigator.pop(context);
       if (e.code == 'requires-recent-login') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('보안 정책에 의해 재로그인이 필요합니다. 다시 로그인 후 탈퇴해주세요.')),
+          const SnackBar(
+            content: Text('보안 정책에 의해 재로그인이 필요합니다. 다시 로그인 후 탈퇴해주세요.'),
+          ),
         );
         await FirebaseAuth.instance.signOut();
         if (!context.mounted) return;
@@ -107,16 +110,16 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           (route) => false,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Firebase 계정 삭제 실패: ${e.code}')));
       }
     } catch (e) {
       if (!context.mounted) return;
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('탈퇴 처리 중 오류가 발생했습니다: $e')));
     }
   }
 
@@ -154,9 +157,35 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       builder: (context) => const PhoneVerificationDialog(),
     );
     if (!mounted || verifiedPhoneNumber == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$verifiedPhoneNumber 번호 인증이 완료되었습니다.'), behavior: SnackBarBehavior.floating,),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const CupertinoActivityIndicator(),
     );
+    try {
+      final user = await UserApi().verifyPhoneNumber();
+      if(!mounted) return;
+      setState(() {
+        _user = user;
+      });
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('$verifiedPhoneNumber 번호 인증이 완료되었습니다.'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      print('########### 번호 인증 중 오류 발생: $e');
+      if(!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('번호 인증 중 오류 발생'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
   }
 
   Widget _statusBadge(String text, Color color) {
@@ -166,7 +195,10 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
         color: color,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 12, color: Colors.white)),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 12, color: Colors.white),
+      ),
     );
   }
 
@@ -177,38 +209,47 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.warning_amber, size: 18),
-            title: const Text('노쇼'),
-            trailing: _statusBadge('${_user?.noShowCount ?? 0}회', Colors.orange),
-          ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.phone_android, size: 18),
-            title: const Text('번호 인증'),
-            onTap: _showPhoneVerificationDialog,
-            trailing: _statusBadge(
-              _user?.phoneVerified == true ? '인증 완료' : '인증 안 됨',
-              _user?.phoneVerified == true ? Colors.green : Colors.red,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.warning_amber, size: 18),
+                  title: const Text('노쇼'),
+                  trailing: _statusBadge(
+                    '${_user?.noShowCount ?? 0}회',
+                    Colors.orange,
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.phone_android, size: 18),
+                  title: const Text('번호 인증'),
+                  onTap: _showPhoneVerificationDialog,
+                  trailing: _statusBadge(
+                    _user?.phoneVerified == true ? '인증 완료' : '인증 안 됨',
+                    _user?.phoneVerified == true ? Colors.green : Colors.red,
+                  ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.logout, size: 18),
+                  title: const Text('로그아웃'),
+                  onTap: () => _signOutAndNavigate(context),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(
+                    Icons.person_remove,
+                    size: 18,
+                    color: Colors.red,
+                  ),
+                  title: const Text(
+                    '회원 탈퇴',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: () => _showWithdrawDialog(context),
+                ),
+                const Divider(height: 1),
+              ],
             ),
-          ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.logout, size: 18),
-            title: const Text('로그아웃'),
-            onTap: () => _signOutAndNavigate(context),
-          ),
-          const Divider(height: 1),
-          ListTile(
-            leading: const Icon(Icons.person_remove, size: 18, color: Colors.red),
-            title: const Text('회원 탈퇴', style: TextStyle(color: Colors.red)),
-            onTap: () => _showWithdrawDialog(context),
-          ),
-          const Divider(height: 1),
-        ],
-      ),
     );
   }
 }
-

@@ -47,6 +47,13 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) throw FirebaseAuthException(code: 'user-not-found');
       await user.updatePhoneNumber(credential);
+      await user.reload();
+      final verifiedUser = FirebaseAuth.instance.currentUser;
+      final verifiedPhoneNumber = verifiedUser?.phoneNumber;
+      if (verifiedPhoneNumber == null) {
+        throw Exception('인증된 전화번호를 가져올 수 없습니다.');
+      }
+      print(verifiedPhoneNumber);
       _isCompleted = true;
       if (!mounted) return;
       Navigator.pop(context, phoneNumber);
