@@ -57,9 +57,9 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
         (route) => false,
       );
     } catch (e) {
+      print('>>>>매장 입장 중 오류 발생: $e');
       navigator.pop();
       messenger.showSnackBar(SnackBar(content: Text('매장 입장 중 오류 발생.')));
-      print('❌ 코드로 회사 가져오는 중 오류 발생: $e');
     }
   }
 
