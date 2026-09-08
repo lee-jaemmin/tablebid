@@ -140,7 +140,7 @@ class UserApi {
 
   Future<UserModel> setUserAsCustomer() async {
     final url = Uri.parse('${ApiClient.baseUrl}/users/set-customer');
-    final response = await http.post(url);
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final Map<String, dynamic> data = jsonDecode(response.body);
