@@ -2,7 +2,7 @@ class UserModel {
   final String id;
   final String userName;
   final String email;
-  String role;
+  String? role;
   final String? fcmToken;
   final List<String> cardfields;
   final DateTime createdAt;
@@ -16,7 +16,7 @@ class UserModel {
     required this.id,
     required this.userName,
     required this.email,
-    required this.role,
+    this.role,
     this.fcmToken,
     required this.cardfields,
     required this.createdAt,
@@ -62,7 +62,7 @@ class UserModel {
       id: json['id'],
       userName: json['username'] ?? "이름 미지정",
       email: json['email'],
-      role: json['role'],
+      role: json['role'] == null ? null : json['role'],
       fcmToken: json['fcmtoken'],
       cardfields: List<String>.from(
         json['tablecardfields'] ?? ['purchases', 'persons'],
