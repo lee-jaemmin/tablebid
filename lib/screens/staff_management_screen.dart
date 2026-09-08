@@ -174,7 +174,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
               itemBuilder: (context, index) {
                 final user = users[index];
                 final String uid = user.id;
-                final String role = user.role;
+                final String role = user.role!;
                 final bool isMe = role == 'owner'; // 나(사장님)는 관리 대상에서 제외
 
                 return ListTile(
