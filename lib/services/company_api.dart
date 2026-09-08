@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/api_client.dart';
@@ -41,7 +42,7 @@ class CompanyApi {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
@@ -115,10 +116,15 @@ class CompanyApi {
   }
 
   Future<UserModel> joinCompanyWithCode(String code) async {
-        final url = Uri.parse(
-      '${ApiClient.baseUrl}/join-with-code',
+    final url = Uri.parse('${ApiClient.baseUrl}/join-with-code');
+    final body =  {
+      'code': code
+    };
+    final response = await http.post(
+      url,
+      headers: await firebaseAuthHeaders(),
+      body: jsonEncode(body)
     );
-    final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       return UserModel.fromJson(data);

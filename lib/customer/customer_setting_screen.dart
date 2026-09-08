@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:tablebid/customer/phone_verification_dialog.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/login_screen.dart';
 import 'package:tablebid/services/user_api.dart';
@@ -146,6 +147,18 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
     );
   }
 
+  Future<void> _showPhoneVerificationDialog() async {
+    final verifiedPhoneNumber = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const PhoneVerificationDialog(),
+    );
+    if (!mounted || verifiedPhoneNumber == null) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('$verifiedPhoneNumber 번호 인증이 완료되었습니다.'), behavior: SnackBarBehavior.floating,),
+    );
+  }
+
   Widget _statusBadge(String text, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -174,6 +187,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           ListTile(
             leading: const Icon(Icons.phone_android, size: 18),
             title: const Text('번호 인증'),
+            onTap: _showPhoneVerificationDialog,
             trailing: _statusBadge(
               _user?.phoneVerified == true ? '인증 완료' : '인증 안 됨',
               _user?.phoneVerified == true ? Colors.green : Colors.red,
@@ -197,3 +211,4 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
     );
   }
 }
+
