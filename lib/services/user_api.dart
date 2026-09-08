@@ -137,4 +137,18 @@ class UserApi {
       'Failed to delete User: ${response.statusCode} ${response.body}',
     );
   }
+
+  Future<UserModel> setUserAsCustomer() async {
+    final url = Uri.parse('${ApiClient.baseUrl}/users/set-customer');
+    final response = await http.post(url);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return UserModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to set user as customer: ${response.statusCode} ${response.body}',
+    );
+  }
+
 }

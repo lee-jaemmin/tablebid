@@ -19,7 +19,7 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
   Future<void> _selectCustomer() async {
     setState(() => _isLoading = true);
     try {
-      await UserApi().updateUser(userId: widget.userId, role: 'customer');
+      await UserApi().setUserAsCustomer();
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
         context,
@@ -27,6 +27,7 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
         (route) => false,
       );
     } catch (e) {
+      print('>>>>>>>>>>>>>>>>.사용자 유형 저장 오류: $e');
       if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
