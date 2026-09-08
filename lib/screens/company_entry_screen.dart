@@ -48,8 +48,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
     );
 
     try {
-      final company = await CompanyApi().getCompanyByCode(upperCode);
-      await UserApi().updateUser(userId: widget.userId, companyId: company.id);
+      await CompanyApi().joinCompanyWithCode(upperCode);
 
       if (!mounted) return;
       navigator.pop();

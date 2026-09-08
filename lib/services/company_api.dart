@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:tablebid/models/company_model.dart';
+import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/api_client.dart';
 import 'package:http/http.dart' as http;
 
@@ -110,6 +111,20 @@ class CompanyApi {
     }
     throw Exception(
       'Failed to get Company by Code: ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<UserModel> joinCompanyWithCode(String code) async {
+        final url = Uri.parse(
+      '${ApiClient.baseUrl}/join-with-code',
+    );
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return UserModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to join Company by Code: ${response.statusCode} ${response.body}',
     );
   }
 }
