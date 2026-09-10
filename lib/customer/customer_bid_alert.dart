@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
@@ -31,6 +32,24 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
   late DateTime _selectedDateTime;
   String? _errorText;
   bool _isSubmitting = false;
+  bool _isLoading = true;
+
+  Future<void> _loadUser() async {
+    try {
+      final user = await UserApi().getUser(widget.userId);
+      setState(() {
+        _phoneController.text = formatKoreanPhoneNumber(user.phonenumber);
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('유저 로딩 중 오류 발생: $e');
+      if (!mounted) return;
+      setState(() {
+        _errorText = '유저 로딩 중 오류 발생';
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -51,6 +70,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       now.hour,
       (now.minute / 5).round() * 5,
     );
+    _loadUser();
   }
 
   @override
@@ -60,6 +80,24 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
     _priceController.dispose();
     _timeController.dispose();
     super.dispose();
+  }
+
+    String formatKoreanPhoneNumber(String? value) {
+    if (value == null || value.trim().isEmpty) return '';
+
+    var digits = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (digits.startsWith('82')) {
+      digits = '0${digits.substring(2)}';
+    }
+
+    if (digits.length == 11) {
+      return '${digits.substring(0, 3)}-'
+          '${digits.substring(3, 7)}-'
+          '${digits.substring(7)}';
+    }
+
+    return value;
   }
 
   Future<void> _selectReservationTime() async {
@@ -115,8 +153,9 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
     });
     try {
       final token = await user.getIdToken();
-      if (token == null || token.isEmpty)
+      if (token == null || token.isEmpty) {
         throw Exception('Firebase ID Token 없음');
+      }
       await ReservationApi().registerReservation(
         reservationTime: _selectedDateTime,
         tableId: widget.table.id,
@@ -156,115 +195,125 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
   @override
   Widget build(BuildContext context) {
     final offerProducts = widget.table.offerProducts?.trim() ?? '';
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: AlertDialog(
-        title: Text('${widget.table.tablename} 비딩 참여'),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.9,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (offerProducts.isNotEmpty) ...[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('제공 품목: $offerProducts'),
+    return _isLoading
+        ? const CupertinoActivityIndicator()
+        : GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: AlertDialog(
+              title: Text('${widget.table.tablename} 비딩 참여'),
+              content: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (offerProducts.isNotEmpty) ...[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('제공 품목: $offerProducts'),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      TextField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: '(필수) 손님 이름',
+                        ),
+                      ),
+                      TextField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [PhoneNumberFormatter()],
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: '(필수) 손님 번호',
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.copy, size: 20),
+                            onPressed: () {
+                              final phoneNumber = _phoneController.text;
+                              if (phoneNumber.isEmpty) return;
+                              Clipboard.setData(
+                                ClipboardData(text: phoneNumber),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('번호 복사 완료')),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                      TextField(
+                        controller: _timeController,
+                        readOnly: true,
+                        onTap: _selectReservationTime,
+                        decoration: const InputDecoration(
+                          labelText: '(필수) 예약 시간',
+                          suffixIcon: Icon(Icons.access_time),
+                        ),
+                      ),
+                      TextField(
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: '비딩 제안가 (단위: 원)',
+                        ),
+                        inputFormatters: [PriceFormatters()],
+                      ),
+                      if (_errorText != null) ...[
+                        const SizedBox(height: 12),
+                        Text(
+                          _errorText!,
+                          style: const TextStyle(color: Colors.redAccent),
+                        ),
+                      ],
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                ],
-                TextField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(labelText: '(필수) 손님 이름'),
                 ),
-                TextField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [PhoneNumberFormatter()],
-                  decoration: InputDecoration(
-                    labelText: '(필수) 손님 번호',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.copy, size: 20),
-                      onPressed: () {
-                        final phoneNumber = _phoneController.text;
-                        if (phoneNumber.isEmpty) return;
-                        Clipboard.setData(ClipboardData(text: phoneNumber));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('번호 복사 완료')),
-                        );
-                      },
+              ),
+              actions: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          side: const BorderSide(color: Colors.white),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: _isSubmitting
+                            ? null
+                            : () => Navigator.pop(context, false),
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: _isSubmitting ? null : _submit,
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CupertinoActivityIndicator(
+                                  color: Colors.black,
+                                ),
+                              )
+                            : const Text(
+                                '등록',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: _timeController,
-                  readOnly: true,
-                  onTap: _selectReservationTime,
-                  decoration: const InputDecoration(
-                    labelText: '(필수) 예약 시간',
-                    suffixIcon: Icon(Icons.access_time),
-                  ),
-                ),
-                TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: '비딩 제안가 (단위: 원)',
-                  ),
-                  inputFormatters: [PriceFormatters()],
-                ),
-                if (_errorText != null) ...[
-                  const SizedBox(height: 12),
-                  Text(
-                    _errorText!,
-                    style: const TextStyle(color: Colors.redAccent),
-                  ),
-                ],
               ],
             ),
-          ),
-        ),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
-                  onPressed: _isSubmitting
-                      ? null
-                      : () => Navigator.pop(context, false),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-                  onPressed: _isSubmitting ? null : _submit,
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CupertinoActivityIndicator(
-                            color: Colors.black,
-                          ),
-                        )
-                      : const Text('등록', style: TextStyle(color: Colors.black)),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+          );
   }
 }
