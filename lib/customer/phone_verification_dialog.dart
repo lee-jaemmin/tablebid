@@ -42,7 +42,7 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
     PhoneAuthCredential credential,
     String phoneNumber,
   ) async {
-    if (_isCompleted) return;
+    if (_isCompleted || !mounted) return;
     setState(() {
       _isProcessing = true;
       _errorText = null;
@@ -224,9 +224,9 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               labelText: '인증번호',
-              helperText: _verificationId == null
-                  ? '전화 번호 입력 후 인증하기를 눌러주세요.'
-                  : '6자리 인증번호 입력',
+              helperText: _codeSent
+                  ? '6자리 인증번호 입력'
+                  : '전화 번호 입력 후 인증하기를 눌러주세요.',
               errorText: _errorText,
             ),
           ),
