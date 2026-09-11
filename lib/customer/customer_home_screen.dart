@@ -17,7 +17,7 @@ class CustomerHomeScreen extends StatefulWidget {
 }
 
 class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
-  static const _regions = ['강남', '이태원', '홍대', '신사/압구정'];
+  static const _regions = ['강남', '이태원', '홍대', '신사/압구정', '기타'];
   List<CompanyModel> _companies = [];
   String _selectedRegion = _regions.first;
   bool _isLoading = true;
