@@ -490,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                    ),
                     SizedBox(height: 12),
-                    Text('그리드(TABLEBID)는 그리드(GRID)에서 운영하는 서비스입니다.')
+                    Text('테이블비드(TABLEBID)는 그리드(GRID)에서 운영하는 서비스입니다.')
               ],
             ],
           ),
