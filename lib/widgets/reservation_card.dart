@@ -11,6 +11,7 @@ class ReservationCard extends StatelessWidget {
   final TableModel table;
   final String userId;
   final bool isEditingMode;
+  final ValueChanged<TableModel> onTableChanged;
 
   ReservationCard({
     super.key,
@@ -18,6 +19,7 @@ class ReservationCard extends StatelessWidget {
     required this.table,
     required this.userId,
     required this.isEditingMode,
+    required this.onTableChanged,
   });
 
   @override
@@ -42,7 +44,7 @@ class ReservationCard extends StatelessWidget {
             showDialog(
               context: context,
               builder: (context) =>
-                  BidPriceAlert(companyId: companyId, table: table),
+                  BidPriceAlert(companyId: companyId, table: table, userId: userId, onTableChanged: onTableChanged),
             );
             return;
           }

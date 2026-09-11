@@ -122,9 +122,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
     }
     if (_hasLoadError) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('예약 관리'),
-        ),
+        appBar: AppBar(title: const Text('예약 관리')),
         body: Center(
           child: ElevatedButton(
             onPressed: () {
@@ -154,22 +152,25 @@ class _ReservationScreenState extends State<ReservationScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: !_isEditingMode ? const Text('예약 관리') : const Text('경매 설정 변경'),
-           actions: [
+          actions: [
             Padding(
               padding: EdgeInsets.all(8),
-              child: !_isEditingMode ? 
-              IconButton(onPressed: () => setState(() {
-                _isEditingMode = !_isEditingMode;
-              }),
-              icon: Icon(Icons.settings, color: Colors.white,))
-              : GestureDetector(
-                onTap: () => setState(() {
-                _isEditingMode = !_isEditingMode;
-              }),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('완료', style: TextStyle(fontSize: 16,),),
-                ))
+              child: !_isEditingMode
+                  ? IconButton(
+                      onPressed: () => setState(() {
+                        _isEditingMode = !_isEditingMode;
+                      }),
+                      icon: Icon(Icons.settings, color: Colors.white),
+                    )
+                  : GestureDetector(
+                      onTap: () => setState(() {
+                        _isEditingMode = !_isEditingMode;
+                      }),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('완료', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
             ),
           ],
           bottom: sections.isEmpty
@@ -196,6 +197,16 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     tables: sectionTables,
                     userId: widget.userId,
                     isEditingMode: _isEditingMode,
+                    onTableChanged: (updatedTable) {
+                      final index = _tables.indexWhere(
+                        (table) => table.id == updatedTable.id,
+                      );
+                      if (index != -1) {
+                        setState(() {
+                          _tables[index] = updatedTable;
+                        });
+                      }
+                    },
                   );
                 }).toList(),
               ),

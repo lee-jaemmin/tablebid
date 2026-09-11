@@ -43,7 +43,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
     _phoneController = TextEditingController();
     _priceController = TextEditingController();
     _timeController = TextEditingController();
-    _priceController.text = widget.table.leastBidPrice == null ? "" : formatPrice(widget.table.leastBidPrice!);
+    _priceController.text = widget.table.leastBidPrice == null
+        ? ""
+        : formatPrice(widget.table.leastBidPrice!);
 
     // 시간 초기화 로직
 
@@ -111,7 +113,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
         customerName: _nameController.text,
         customerPhone: _phoneController.text,
         items: _selectedItems,
-        bidPrice: int.tryParse(_priceController.text.replaceAll(',', '')),
+        bidPrice: int.tryParse(
+          _priceController.text.replaceAll(',', '').replaceAll('원', ''),
+        ),
       );
       if (!mounted) return;
       navigator.pop();
@@ -173,7 +177,8 @@ class _ReservationAlertState extends State<ReservationAlert> {
                                     SizedBox(width: 12),
                                     Expanded(
                                       child: ElevatedButton(
-                                        onPressed: () => Navigator.pop(context, true),
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
                                         child: const Text(
                                           '예',
                                           style: TextStyle(color: Colors.black),
@@ -224,7 +229,6 @@ class _ReservationAlertState extends State<ReservationAlert> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadiusGeometry.circular(12),
                         ),
-    
                       ),
                       onPressed: () async {
                         final confirm = await showDialog<bool>(
@@ -253,7 +257,6 @@ class _ReservationAlertState extends State<ReservationAlert> {
                                     ),
                                     SizedBox(width: 12),
                                     Expanded(
-
                                       child: ElevatedButton(
                                         onPressed: () =>
                                             Navigator.pop(context, true),
