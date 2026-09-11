@@ -481,12 +481,16 @@ class _LoginScreenState extends State<LoginScreen> {
                    Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('운영사: 그리드(GRID)', style: TextStyle(color: Colors.white),),
-                      Text('사업자 등록번호: 262-10-02959',  style: TextStyle(color: Colors.white),),
-                      Text('대표자: 이재민', style: TextStyle(color: Colors.white),)
+                      Text('운영사: 그리드(GRID)', style: TextStyle(color: Colors.white)),
+                      SizedBox(width: 4),
+                      Text('사업자 등록번호: 262-10-02959',  style: TextStyle(color: Colors.white)),
+                      SizedBox(width: 4),
+                      Text('대표자: 이재민', style: TextStyle(color: Colors.white)),
+                      SizedBox(width: 4),
                     ],
-                   )
-                  
+                   ),
+                    SizedBox(height: 12),
+                    Text('그리드(TABLEBID)는 그리드(GRID)에서 운영하는 서비스입니다.')
               ],
             ],
           ),
