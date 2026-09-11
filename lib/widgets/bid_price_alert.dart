@@ -72,13 +72,12 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          height: 300, // 상단바가 빠졌으니 높이를 살짝 줄임
+          height: 500, // 상단바가 빠졌으니 높이를 살짝 줄임
           color: CupertinoColors.systemBackground.resolveFrom(context),
           child: SafeArea(
             top: false,
             child: CupertinoDatePicker(
               mode: CupertinoDatePickerMode.time, // mm:ss
-
               initialDateTime: DateTime.now(),
               onDateTimeChanged: (DateTime newDateTime) {
                 selectedDateTime = newDateTime;
@@ -101,19 +100,23 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
         barrierDismissible: false,
         builder: (context) => const Center(child: CupertinoActivityIndicator()),
       );
+      try {
+        final table = await TableApi().updateTable(
+          tableId: widget.table.id,
+          userId: widget.userId,
+          bidEndAt: selectedDateTime,
+        );
+        widget.onTableChanged(table);
+      } catch (e) {
+        print(e);
+      }
       // 타이머 db로 보내기
-      final table = await TableApi().updateTable(
-        tableId: widget.table.id,
-        userId: widget.userId,
-        bidEndAt: selectedDateTime,
-      );
-      widget.onTableChanged(table);
 
       navigator.pop(); // 로딩창 끄기
       navigator.pop(); // info 내리기
       messenger.showSnackBar(
         SnackBar(
-          content: Text("타이머 설정이 완료되었습니다."),
+          content: Text("비딩 마감 시간이 변경되었습니다."),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -154,7 +157,10 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                 GestureDetector(
                   onTap: () => _showCupertinoTimerPicker(context),
                   child: InputDecorator(
-                    child: Text(_bidEndAtController.text, style: TextStyle(fontSize: 16),),
+                    child: Text(
+                      _bidEndAtController.text,
+                      style: TextStyle(fontSize: 16),
+                    ),
                     decoration: InputDecoration(labelText: '비딩 마감 시간'),
                   ),
                 ),
@@ -191,7 +197,9 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                     });
                     try {
                       final leastBidPrice = int.parse(
-                        _priceController.text.replaceAll(',', '').replaceAll('원', ''),
+                        _priceController.text
+                            .replaceAll(',', '')
+                            .replaceAll('원', ''),
                       );
                       await TableApi().updateTable(
                         tableId: widget.table.id,
