@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import '../models/table_model.dart';
 import 'api_client.dart';
 
@@ -109,7 +110,7 @@ class TableApi {
     }; 
     final response = await http.patch(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
     if (response.statusCode == 200) {
