@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -7,11 +8,15 @@ import 'package:tablebid/widgets/price_formatter.dart';
 class BidPriceAlert extends StatefulWidget {
   final String companyId;
   final TableModel table;
+  final String userId;
+  final ValueChanged<TableModel> onTableChanged;
 
   const BidPriceAlert({
     super.key,
     required this.companyId,
     required this.table,
+    required this.userId,
+    required this.onTableChanged,
   });
 
   @override
@@ -21,22 +26,99 @@ class BidPriceAlert extends StatefulWidget {
 class _BidPriceAlertState extends State<BidPriceAlert> {
   late TextEditingController _priceController;
   late TextEditingController _offerProductsController;
+  late TextEditingController _bidEndAtController;
   bool _isSubmitting = false;
 
   @override
   void initState() {
     super.initState();
     _priceController = TextEditingController();
-    _priceController.text = widget.table.leastBidPrice == null ? "" : formatPrice(widget.table.leastBidPrice!);
+    _priceController.text = widget.table.leastBidPrice == null
+        ? ""
+        : formatPrice(widget.table.leastBidPrice!);
     _offerProductsController = TextEditingController();
     _offerProductsController.text = widget.table.offerProducts ?? "";
+    _bidEndAtController = TextEditingController();
+    _bidEndAtController.text = widget.table.bidEndAt == null
+        ? ""
+        : DateFormat("MM-dd HH:mm").format(widget.table.bidEndAt!);
   }
 
   @override
   void dispose() {
     _priceController.dispose();
     _offerProductsController.dispose();
+    _bidEndAtController.dispose();
     super.dispose();
+  }
+
+  Future<void> _showCupertinoTimerPicker(BuildContext context) async {
+    if (widget.table.bidAvailable == false) {
+      if (mounted) Navigator.pop(context); // info_alert 내리기
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('해당 테이블은 경매가 비활성화 되어있습니다. 경매 기능을 먼저 켜주세요'),
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    DateTime? selectedDateTime = null;
+
+    // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 300, // 상단바가 빠졌으니 높이를 살짝 줄임
+          color: CupertinoColors.systemBackground.resolveFrom(context),
+          child: SafeArea(
+            top: false,
+            child: CupertinoDatePicker(
+              mode: CupertinoDatePickerMode.time, // mm:ss
+
+              initialDateTime: DateTime.now(),
+              onDateTimeChanged: (DateTime newDateTime) {
+                selectedDateTime = newDateTime;
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+    // 팝업이 닫히면 서버로 전송
+    if (selectedDateTime != null) {
+      if (selectedDateTime!.isBefore(DateTime.now())) {
+        selectedDateTime = selectedDateTime!.add(Duration(days: 1));
+      } // 지금보다 늦은 오전 선택 시
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CupertinoActivityIndicator()),
+      );
+      // 타이머 db로 보내기
+      final table = await TableApi().updateTable(
+        tableId: widget.table.id,
+        userId: widget.userId,
+        bidEndAt: selectedDateTime,
+      );
+      widget.onTableChanged(table);
+
+      navigator.pop(); // 로딩창 끄기
+      navigator.pop(); // info 내리기
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("타이머 설정이 완료되었습니다."),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -46,9 +128,8 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: AlertDialog(
         title: Row(
-          children: [
-            Expanded(child: Text('${widget.table.tablename} 경매 최소가 변경')),
-          ],
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [Text('${widget.table.tablename} 경매 설정 변경')],
         ),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
@@ -68,6 +149,14 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                   decoration: InputDecoration(labelText: '제공 품목'),
                   minLines: null,
                   maxLines: null,
+                ),
+                SizedBox(height: 12),
+                GestureDetector(
+                  onTap: () => _showCupertinoTimerPicker(context),
+                  child: InputDecorator(
+                    child: Text(_bidEndAtController.text, style: TextStyle(fontSize: 16),),
+                    decoration: InputDecoration(labelText: '비딩 마감 시간'),
+                  ),
                 ),
                 SizedBox(height: 12),
               ],
@@ -102,7 +191,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                     });
                     try {
                       final leastBidPrice = int.parse(
-                        _priceController.text.replaceAll(',', ''),
+                        _priceController.text.replaceAll(',', '').replaceAll('원', ''),
                       );
                       await TableApi().updateTable(
                         tableId: widget.table.id,
