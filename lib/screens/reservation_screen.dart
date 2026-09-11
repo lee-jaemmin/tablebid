@@ -5,6 +5,7 @@ import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
+import 'package:tablebid/services/company_api.dart';
 import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/reservation_gridview.dart';
@@ -109,6 +110,77 @@ class _ReservationScreenState extends State<ReservationScreen> {
     service.connect(widget.companyId);
   }
 
+  Future<void> _showCupertinoTimerPicker(BuildContext context) async {
+    DateTime? selectedDateTime = null;
+    // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 400,
+          child: Material(
+            color: CupertinoColors.systemBackground.resolveFrom(context),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      '테이블 마감 시간 일괄 설정',
+                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  Expanded(
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.time, // mm:ss
+                      initialDateTime: DateTime.now(),
+                      onDateTimeChanged: (DateTime newDateTime) {
+                        selectedDateTime = newDateTime;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    // 팝업이 닫히면 서버로 전송
+    if (selectedDateTime != null) {
+      if (selectedDateTime!.isBefore(DateTime.now())) {
+        selectedDateTime = selectedDateTime!.add(Duration(days: 1));
+      } // 지금보다 늦은 오전 선택 시
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(child: CupertinoActivityIndicator()),
+      );
+      // 타이머 db로 보내기
+      try {
+        await CompanyApi().setTablesBidEndAt(
+          widget.companyId,
+          selectedDateTime!,
+        );
+      } catch (e) {
+        print(e);
+      }
+      navigator.pop(); // 로딩창 끄기
+      navigator.pop(); // info 내리기
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("타이머 설정이 완료되었습니다."),
+          duration: Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _webSocketEventSubscription?.cancel();
@@ -151,8 +223,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
       length: sections.length,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: !_isEditingMode,
           title: !_isEditingMode ? const Text('예약 관리') : const Text('경매 설정 변경'),
           actions: [
+            _isEditingMode
+                ? Padding(
+                    padding: EdgeInsets.all(8),
+                    child: IconButton(
+                      onPressed: () => _showCupertinoTimerPicker(context),
+                      icon: Icon(Icons.timer),
+                    ),
+                  )
+                : SizedBox.shrink(),
             Padding(
               padding: EdgeInsets.all(8),
               child: !_isEditingMode

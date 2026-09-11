@@ -133,4 +133,42 @@ class CompanyApi {
       'Failed to join Company by Code: ${response.statusCode} ${response.body}',
     );
   }
+
+  Future<void> toggleTablesBid(String companyId, bool bidAvailable) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/toggle-tables-bid');
+    final body = {
+      'company_id': companyId,
+      'bid_available': bidAvailable
+    };
+    final response = await http.patch(
+      url,
+      headers: await firebaseAuthHeaders(),
+      body: jsonEncode(body)
+    );
+    if (response.statusCode == 200) {
+      return;
+    }
+    throw Exception(
+      'Failed to toggle tables bid: ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<void> setTablesBidEndAt(String companyId, DateTime bidEndAt) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/set-tables-bid-end-at');
+    final body = {
+      'company_id': companyId,
+      'bid_end_at': bidEndAt.toUtc().toIso8601String()
+    };
+    final response = await http.patch(
+      url,
+      headers: await firebaseAuthHeaders(),
+      body: jsonEncode(body)
+    );
+    if (response.statusCode == 200) {
+      return;
+    }
+    throw Exception(
+      'Failed to set Bid End At: ${response.statusCode} ${response.body}',
+    );
+  }
 }
