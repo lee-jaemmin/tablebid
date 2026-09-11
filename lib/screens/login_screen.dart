@@ -477,6 +477,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
+                   const SizedBox(height: 32),
+                   Row(
+                    children: [
+                      Text('운영사: 그리드(GRID)'),
+                      Text('사업자 등록번호: 262-10-02959'),
+                      Text('대표자: 이재민')
+                    ],
+                   )
+                  
               ],
             ],
           ),
