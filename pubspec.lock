@@ -445,6 +445,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.7"
+  flutter_naver_map_web:
+    dependency: "direct main"
+    description:
+      name: flutter_naver_map_web
+      sha256: f233913b33bfb0d7e61a42d18917596315b9ae6a250e5f062d098f4097a8e802
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
