@@ -477,16 +477,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Text(
-                  'TABLEBID는 그리드(GRID)가 개발·운영하는 테이블 예약 및 비딩(경매) 플랫폼입니다.\n'
-                  '운영사업자: 그리드(GRID)\n'
-                  '대표자: 이재민\n'
-                  '사업자등록번호: 262-10-02959\n'
-                  '고객문의: 010-6626-8546',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.white),
-                ),
               ],
             ],
           ),
