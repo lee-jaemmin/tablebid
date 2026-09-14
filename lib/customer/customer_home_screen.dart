@@ -7,6 +7,7 @@ import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/region_chip.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/company_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class CustomerHomeScreen extends StatefulWidget {
@@ -48,6 +49,22 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     }
     print(_companies.length);
   }
+
+
+  Future<void> _openNaverMap(String address) async {
+    final uri = Uri.https(
+      'map.naver.com',
+      '/p/search/${Uri.encodeComponent(address)}',
+    );
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('네이버 지도를 열 수 없습니다.');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,9 +143,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         final company = visibleCompanies[index];
                         return Card(
                           child: ListTile(
+                            isThreeLine: true,
                             title: Text(company.name),
                             subtitle: Text(company.address),
-                            trailing: const Icon(Icons.chevron_right),
+                            trailing: IconButton(onPressed: () {
+                                  _openNaverMap(company.address);
+                                }, icon: Icon(Icons.place)),
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
