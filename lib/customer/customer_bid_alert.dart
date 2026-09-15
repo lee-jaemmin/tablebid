@@ -186,6 +186,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       }
       if (!mounted) return;
       setState(() {
+        print("예약 등록 중 오류: $e");
         _errorText = '비딩 등록 중 오류가 발생했습니다.';
         _isSubmitting = false;
       });
