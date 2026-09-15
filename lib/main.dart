@@ -31,6 +31,9 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) FlutterAppBadger.removeBadge();
 
+  if (kIsWeb) {
+    kakao.KakaoSdk.init(javaScriptAppKey: '0221b4ec3e80fe16833271e7da979edc');
+  }
   if (!kIsWeb) {
     kakao.KakaoSdk.init(nativeAppKey: 'f13eb4135ede439e8492dca27ef1d8fe');
   }
