@@ -133,7 +133,9 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
         reservationTime: _selectedDateTime,
         customerName: _nameController.text,
         customerPhone: _phoneController.text,
-        bidPrice: int.tryParse(_priceController.text.replaceAll(',', '')),
+        bidPrice: int.tryParse(
+          _priceController.text.replaceAll(',', '').replaceAll('원', ''),
+        ),
       );
       if (!mounted) return;
       navigator.pop();
