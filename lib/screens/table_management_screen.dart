@@ -246,6 +246,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 입력창
+                      _loadData();
                     } catch (e) {
                       navigator.pop();
                       print('>>>>>>>>>>>>>>> e: $e');
@@ -272,7 +273,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('$sectionName 섹션 삭제'),
-        content: const Text('섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.'),
+        content: const Text('섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.\n해당 작업은 20초 정도 소요됩니다.'),
         actions: [
           Row(
             children: [
@@ -320,9 +321,10 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 확인창
+                      _loadData();
                     } catch (e) {
+                      print('>>>>> 섹션 삭제 실패: $e');
                       navigator.pop();
-
                       messenger.showSnackBar(
                         SnackBar(
                           content: Text('섹션 삭제 실패: $e'),
