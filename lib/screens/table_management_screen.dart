@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -105,7 +106,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
         title: const Text('섹션 추가 옵션'),
         content: const Text(
           '섹션에 해당하는 테이블도 같이 만들까요?\n이 작업에는 약 20초 정도가 소요됩니다.\n섹션만 만들 시 모든 테이블을 직접 생성하셔야합니다.',
-          style: TextStyle(fontSize: 16 ),
+          style: TextStyle(fontSize: 16),
         ),
         actions: [
           Row(
@@ -231,9 +232,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                     showDialog(
                       context: dialogContext,
+                      barrierColor: Colors.black,
                       barrierDismissible: false,
-                      builder: (context) =>
-                          const Center(child: CircularProgressIndicator()),
+                      builder: (context) => Center(
+                        child: Lottie.asset('assets/lottie/working_man.json'),
+                      ),
                     );
                     try {
                       final updatedSections = [...currentSections, newSection];
@@ -273,7 +276,9 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text('$sectionName 섹션 삭제'),
-        content: const Text('섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.\n해당 작업은 20초 정도 소요됩니다.'),
+        content: const Text(
+          '섹션을 삭제하시겠습니까?\n이 섹션에 속한 모든 테이블도 삭제됩니다.\n해당 작업은 20초 정도 소요됩니다.',
+        ),
         actions: [
           Row(
             children: [
@@ -300,9 +305,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                     showDialog(
                       context: dialogContext,
+                      barrierColor: Colors.black,
                       barrierDismissible: false,
-                      builder: (context) =>
-                          const Center(child: CircularProgressIndicator()),
+                      builder: (context) => Center(
+                        child: Lottie.asset('assets/lottie/working_man.json'),
+                      ),
                     );
 
                     try {
@@ -410,9 +417,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                     showDialog(
                       context: dialogContext,
+                      barrierColor: Colors.black,
                       barrierDismissible: false,
-                      builder: (context) =>
-                          const Center(child: CircularProgressIndicator()),
+                      builder: (context) => Center(
+                        child: Lottie.asset('assets/lottie/working_man.json'),
+                      ),
                     );
 
                     try {
