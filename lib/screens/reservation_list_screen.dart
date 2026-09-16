@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
@@ -55,7 +56,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           if (widget.table.id != event.payload["table_id"]) {
             return;
           } else {
-            loadData();
+            loadData(showLoading: false);
           }
         }
       } catch (e) {
@@ -71,11 +72,12 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     super.dispose();
   }
 
-  Future<void> loadData() async {
-    setState(() {
+  Future<void> loadData({bool showLoading = true}) async {
+    if(showLoading) {
+      setState(() {
       _isLoading = true;
     });
-
+    }
     final reservations = await ReservationApi().getReservationsByTable(
       widget.table.id,
     );
@@ -250,7 +252,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     if (!confirm) return;
     showDialog(
       context: context,
-      builder: (context) => CupertinoActivityIndicator(),
+      builder: (dialogContext) => CupertinoActivityIndicator(),
       barrierDismissible: false,
     );
     try {
@@ -258,14 +260,39 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         reservationId: reservation.id,
         isFixed: true,
       );
+      if (!mounted) return;
+      Navigator.pop(context);
     } catch (e) {
+      if(!mounted) return;
+      Navigator.pop(context);
       print('❌ 예약 확정 실패: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('예약 확정 중 오류 발생')));
     }
-    Navigator.pop(context);
-    await loadData();
+    // await showDialog<void>(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (lottieContext) {
+    //     return Center(
+    //       child: Lottie.asset(
+    //         'assets/lottie/sold.json',
+    //         repeat: false,
+    //         // lottieObject: 로티 파일즈 객체
+    //         // 이게 로딩 되면 onLoaded실행
+    //         // duration: 애니메이션 길이
+    //         // 만큼 기다렸다가 콜백 (pop) 실행
+    //         onLoaded: (lottieObject) {
+    //           Future.delayed(lottieObject.duration, () {
+    //             if (lottieContext.mounted) {
+    //               Navigator.pop(lottieContext);
+    //             }
+    //           });
+    //         },
+    //       ),
+    //     );
+    //   },
+    // );
   }
 
   Future<void> _unfixReservation(
@@ -367,7 +394,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       ).showSnackBar(SnackBar(content: Text('예약 확정 취소 중 오류 발생')));
     }
     Navigator.pop(context);
-    await loadData();
   }
 
   Future<void> _admitReservation(
@@ -518,7 +544,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       ).showSnackBar(SnackBar(content: Text('예약 삭제 중 오류 발생')));
     }
     Navigator.pop(context);
-    await loadData();
   }
 
   Future<void> _noShow(
@@ -615,7 +640,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       ).showSnackBar(SnackBar(content: Text('노쇼 처리 중 오류 발생')));
     }
     Navigator.pop(context);
-    await loadData();
   }
 
   @override
