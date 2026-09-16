@@ -21,6 +21,8 @@ class AdminTableGrid extends StatefulWidget {
   State<AdminTableGrid> createState() => _AdminTableGridState();
 }
 
+
+
 class _AdminTableGridState extends State<AdminTableGrid> {
   late Future<List<TableModel>> _tablesFuture;
 
@@ -29,6 +31,17 @@ class _AdminTableGridState extends State<AdminTableGrid> {
     super.initState();
     _loadTables();
   }
+  
+  @override
+    void didUpdateWidget(covariant AdminTableGrid oldWidget) {
+      super.didUpdateWidget(oldWidget);
+
+      if (oldWidget.section != widget.section ||
+          oldWidget.companyId != widget.companyId) {
+        _loadTables();
+      }
+    }
+
 
   void _loadTables() {
     _tablesFuture = TableApi().getTables(widget.companyId); // 나중에 명시적으로 선언할 때만 불러오기 위함.
