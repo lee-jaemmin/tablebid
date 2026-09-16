@@ -73,17 +73,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
       (event) {
         if (!mounted) return;
         try {
-          if (event.type == 'reservation_created') {
-            final reservation = ReservationModel.fromJson(event.payload);
-            setState(() {
-              final index = _tables.indexWhere(
-                (table) => table.id == reservation.tableId,
-              );
-              if (index != -1) {
-                _tables[index].isReserved = true;
-              }
-            });
-          }
           if (event.type == 'table_updated') {
             final updatedTable = TableModel.fromJson(event.payload);
             setState(() {
@@ -94,10 +83,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 _tables[index] = updatedTable;
               }
             });
-          }
-          if (event.type == 'reservation_updated' ||
-              event.type == 'reservation_deleted') {
-            _loadTables(widget.companyId, showErrorState: false);
+             _loadTables(widget.companyId, showErrorState: false);
           }
         } catch (e) {
           print('예약 실시간 업데이트 처리 실패: $e');
