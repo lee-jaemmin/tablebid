@@ -50,7 +50,7 @@ class _AdminTableGridState extends State<AdminTableGrid> {
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
-            hintText: '테이블 번호/이름 (예: A1)',
+            hintText: '섹션-번호 (예)A-1',
           ),
         ),
         actions: [

@@ -61,6 +61,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     List<TableModel>? tables,
     String? newName, {
     bool createTables = true,
+    bool renameTables = true,
   }) async {
     try {
       await CompanyApi().updateCompany(
@@ -73,7 +74,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           await TableApi().updateTable(
             tableId: table.id,
             section: newName,
-            tableName: '${newName}-$i',
+            tableName: renameTables ? '${newName}-$i' : null,
           );
           i += 1;
         }
@@ -131,6 +132,35 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                   ),
                   onPressed: () => Navigator.pop(optionDialogContext, true),
                   child: const Text('예'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool?> _showSectionRenameOptions(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (optionDialogContext) => AlertDialog(
+        title: const Text('섹션 수정 옵션'),
+        content: const Text(
+          '해당 작업은 약 20초 정도 소요됩니다.',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () => Navigator.pop(optionDialogContext, true),
+                  child: const Text('확인'),
                 ),
               ),
             ],
@@ -368,6 +398,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                       return;
                     }
 
+                    final renameTables = await _showSectionRenameOptions(
+                      dialogContext,
+                    );
+                    if (renameTables == null || !dialogContext.mounted) return;
+
                     final navigator = Navigator.of(dialogContext);
                     final messenger = ScaffoldMessenger.of(context);
 
@@ -394,6 +429,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                         updatedSections,
                         updatedTables,
                         newName,
+                        renameTables: renameTables,
                       );
 
                       navigator.pop(); // 로딩창
