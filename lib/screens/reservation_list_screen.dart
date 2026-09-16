@@ -270,29 +270,29 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('예약 확정 중 오류 발생')));
     }
-    // await showDialog<void>(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (lottieContext) {
-    //     return Center(
-    //       child: Lottie.asset(
-    //         'assets/lottie/sold.json',
-    //         repeat: false,
-    //         // lottieObject: 로티 파일즈 객체
-    //         // 이게 로딩 되면 onLoaded실행
-    //         // duration: 애니메이션 길이
-    //         // 만큼 기다렸다가 콜백 (pop) 실행
-    //         onLoaded: (lottieObject) {
-    //           Future.delayed(lottieObject.duration, () {
-    //             if (lottieContext.mounted) {
-    //               Navigator.pop(lottieContext);
-    //             }
-    //           });
-    //         },
-    //       ),
-    //     );
-    //   },
-    // );
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (lottieContext) {
+        return Center(
+          child: Lottie.asset(
+            'assets/lottie/sold.json',
+            repeat: false,
+            // lottieObject: 로티 파일즈 객체
+            // 이게 로딩 되면 onLoaded실행
+            // duration: 애니메이션 길이
+            // 만큼 기다렸다가 콜백 (pop) 실행
+            onLoaded: (lottieObject) {
+              Future.delayed(lottieObject.duration, () {
+                if (lottieContext.mounted) {
+                  Navigator.pop(lottieContext);
+                }
+              });
+            },
+          ),
+        );
+      },
+    );
   }
 
   Future<void> _unfixReservation(
