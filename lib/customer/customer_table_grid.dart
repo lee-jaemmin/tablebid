@@ -30,22 +30,28 @@ class CustomerTableGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final table = tables[index];
         final isInUse = table.status == 'inuse';
+        final isBidClosed =
+            table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
         final statusText = !table.bidAvailable
             ? '경매 불가'
             : isInUse
             ? '사용 중\n${table.registeredAt == null ? '--:--' : DateFormat('HH:mm').format(table.registeredAt!.toLocal())} 입장'
             : table.isReserved
-            ? '예약 확정' 
+            ? '예약 확정'
+            : isBidClosed
+            ? '경매 마감'
             : table.hasReservations
             ? '비딩 중'
             : '비딩 참여 가능';
         final showBidEndAt =
-            table.bidAvailable && !isInUse && !table.isReserved;
+            table.bidAvailable && !isInUse && !table.isReserved && !isBidClosed;
         final color = !table.bidAvailable
             ? Colors.grey[500]
             : isInUse
             ? Colors.grey[500]
             : table.isReserved
+            ? Colors.grey[500]
+            : isBidClosed
             ? Colors.grey[500]
             : table.hasReservations
             ? const Color.fromARGB(229, 255, 153, 0)
@@ -53,7 +59,10 @@ class CustomerTableGrid extends StatelessWidget {
         return Card(
           color: color,
           child: InkWell(
-            onTap: table.bidAvailable ? () => onTableTap(table) : null,
+            onTap: table.bidAvailable &&
+                    !(isBidClosed && !isInUse && !table.isReserved)
+                ? () => onTableTap(table)
+                : null,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Column(

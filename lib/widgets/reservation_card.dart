@@ -27,20 +27,25 @@ class ReservationCard extends StatelessWidget {
     bool hasReservation = table.hasReservations == true;
     bool bidAvailable = table.bidAvailable == true;
     bool isReserved = table.isReserved == true;
-    bool showBidEndAt = !isEditingMode && bidAvailable && !isReserved;
+    bool isBidClosed =
+        table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
+    bool showBidEndAt =
+        !isEditingMode && bidAvailable && !isReserved && !isBidClosed;
 
     return Card(
       // 예약이 있으면 노랑, 없으면 하양
       color: bidAvailable
           ? isReserved
                 ? Colors.green.shade200
+                : isBidClosed
+                ? Colors.grey[500]
                 : hasReservation
                 ? Color.fromARGB(229, 255, 153, 0)
                 : Colors.grey[100]
           : Colors.grey[500],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
-        onTap: () {
+        onTap: isBidClosed && !isReserved ? null : () {
           if (isEditingMode) {
             showDialog(
               context: context,
@@ -99,6 +104,11 @@ class ReservationCard extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
+                          )
+                        : isBidClosed
+                        ? const Text(
+                            '경매 마감',
+                            style: TextStyle(fontSize: 12, color: Colors.black),
                           )
                         : hasReservation ?
                         const Text(
