@@ -16,7 +16,46 @@ class UserTypeSelectionScreen extends StatefulWidget {
 class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
   bool _isLoading = false;
 
+  Future<bool> _confirmUserType(String userType) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('사용자 유형 확인'),
+            content: Text('정말 $userType 이용하시겠습니까?'),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: const BorderSide(color: Colors.white),
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text('취소', style: TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text('확인', style: TextStyle(color: Colors.black)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   Future<void> _selectCustomer() async {
+    final confirmed = await _confirmUserType('손님으로');
+    if (!mounted || !confirmed) return;
     setState(() => _isLoading = true);
     try {
       await UserApi().setUserAsCustomer();
@@ -36,7 +75,9 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
     }
   }
 
-  void _selectStaff() {
+  Future<void> _selectStaff() async {
+    final confirmed = await _confirmUserType('직원 또는 사장으로');
+    if (!mounted || !confirmed) return;
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
