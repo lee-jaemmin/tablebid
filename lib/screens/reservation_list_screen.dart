@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/no_show_api.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/fixed_reservation_tile.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
@@ -29,6 +33,7 @@ class ReservationListScreen extends StatefulWidget {
 }
 
 class _ReservationListScreenState extends State<ReservationListScreen> {
+  StreamSubscription<WebSocketEvent>? _webSocketSubscription;
   List<ReservationModel> _reservations = [];
   // Map<int, List<ReservationPurchaseModel>> _resPurchasesByReservation = {};
   bool _isLoading = false;
@@ -38,6 +43,32 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   void initState() {
     super.initState();
     loadData();
+    _subscribeToWebSocket();
+  }
+
+  void _subscribeToWebSocket() {
+    final service = WebsocketService.instance;
+    _webSocketSubscription = service.events.listen((event) {
+      if (!mounted) return;
+      try {
+        if (event.type == 'reservation_updated') {
+          if (widget.table.id != event.payload["table_id"]) {
+            return;
+          } else {
+            loadData();
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+    service.connect(widget.companyId);
+  }
+
+  @override
+  void dispose() {
+    _webSocketSubscription?.cancel();
+    super.dispose();
   }
 
   Future<void> loadData() async {
