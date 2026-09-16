@@ -39,6 +39,8 @@ class CustomerTableGrid extends StatelessWidget {
             : table.hasReservations
             ? '비딩 중'
             : '비딩 참여 가능';
+        final showBidEndAt =
+            table.bidAvailable && !isInUse && !table.isReserved;
         final color = !table.bidAvailable
             ? Colors.grey[500]
             : isInUse
@@ -71,6 +73,13 @@ class CustomerTableGrid extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 12, color: Colors.black),
                   ),
+                  if (showBidEndAt) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '경매 마감 ${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
+                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                    ),
+                  ],
                 ],
               ),
             ),

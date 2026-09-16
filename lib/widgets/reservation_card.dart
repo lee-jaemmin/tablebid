@@ -27,6 +27,7 @@ class ReservationCard extends StatelessWidget {
     bool hasReservation = table.hasReservations == true;
     bool bidAvailable = table.bidAvailable == true;
     bool isReserved = table.isReserved == true;
+    bool showBidEndAt = !isEditingMode && bidAvailable && !isReserved;
 
     return Card(
       // 예약이 있으면 노랑, 없으면 하양
@@ -113,6 +114,13 @@ class ReservationCard extends StatelessWidget {
                       '경매 불가',
                       style: TextStyle(color: Colors.black, fontSize: 12),
                     ),
+              if (showBidEndAt) ...[
+                const SizedBox(height: 4),
+                Text(
+                  '경매 마감 ${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
+                  style: const TextStyle(fontSize: 12, color: Colors.black),
+                ),
+              ],
             ],
           ),
         ),
