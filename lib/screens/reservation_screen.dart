@@ -174,7 +174,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       navigator.pop(); // info 내리기
       messenger.showSnackBar(
         SnackBar(
-          content: Text("타이머 설정이 완료되었습니다."),
+          content: Text("경매 마감 시간 일괄 설정 완료"),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
