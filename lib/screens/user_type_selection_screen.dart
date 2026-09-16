@@ -21,10 +21,9 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
     try {
       await UserApi().setUserAsCustomer();
       if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
-        (route) => false,
       );
     } catch (e) {
       print('>>>>>>>>>>>>>>>>.사용자 유형 저장 오류: $e');
@@ -37,12 +36,11 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
   }
 
   void _selectStaff() {
-    Navigator.pushAndRemoveUntil(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CompanyEntryScreen(userId: widget.userId),
       ),
-      (route) => false,
     );
   }
 
