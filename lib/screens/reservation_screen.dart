@@ -97,7 +97,21 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   Future<void> _showCupertinoTimerPicker(BuildContext context) async {
-    DateTime? selectedDateTime = null;
+    final threshold = DateTime.now().add(const Duration(minutes: 1));
+    final minimumDateTime = DateTime(
+      threshold.year,
+      threshold.month,
+      threshold.day,
+      threshold.hour,
+      threshold.minute,
+    ).add(
+      threshold.second > 0 ||
+              threshold.millisecond > 0 ||
+              threshold.microsecond > 0
+          ? const Duration(minutes: 1)
+          : Duration.zero,
+    );
+    DateTime? selectedDateTime = minimumDateTime;
     // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
     await showCupertinoModalPopup<void>(
       context: context,
@@ -120,7 +134,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   Expanded(
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.time, // mm:ss
-                      initialDateTime: DateTime.now(),
+                      initialDateTime: minimumDateTime,
+                      minimumDate: minimumDateTime,
                       onDateTimeChanged: (DateTime newDateTime) {
                         selectedDateTime = newDateTime;
                       },
