@@ -21,9 +21,10 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
     try {
       await UserApi().setUserAsCustomer();
       if (!mounted) return;
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
+        (route) => false,
       );
     } catch (e) {
       print('>>>>>>>>>>>>>>>>.사용자 유형 저장 오류: $e');
@@ -36,11 +37,12 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
   }
 
   void _selectStaff() {
-    Navigator.push(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
         builder: (context) => CompanyEntryScreen(userId: widget.userId),
       ),
+      (route)=>false
     );
   }
 
@@ -64,18 +66,10 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '사용자 유형에 맞는 항목을 선택해주세요.',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
                     const SizedBox(height: 30),
                     _buildTypeCard(
                       title: '손님으로 이용하기',
-                      subtitle: '매장을 검색하고 예약할 수 있습니다.',
+                      subtitle: '다양한 매장의 테이블을 예약 및 경매에 참여할 수 있습니다.',
                       icon: Icons.person_outline,
                       onTap: _selectCustomer,
                     ),
