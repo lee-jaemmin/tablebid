@@ -90,6 +90,13 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 
 
   Future<void> _addBid() async {
+    final bidEndAt = widget.table.bidEndAt;
+    if (bidEndAt != null && !bidEndAt.isAfter(DateTime.now())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('경매가 마감되어 예약할 수 없습니다.')),
+      );
+      return;
+    }
     if (_reservations.any((reservation) => reservation.isFixed == true)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.')),
