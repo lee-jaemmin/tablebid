@@ -11,6 +11,7 @@ import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
+import 'package:tablebid/widgets/reservation_modify_alert.dart';
 
 class CustomerBidListScreen extends StatefulWidget {
   final String companyId;
@@ -163,6 +164,24 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     }
   }
 
+  Future<void> _modifyBid(ReservationModel reservation) async {
+    await showDialog<bool>(
+      context: context,
+      builder: (context) => ReservationModifyAlert(
+        companyId: widget.companyId,
+        table: widget.table,
+        reservationId: reservation.id,
+        userId: widget.userId,
+        reservationTime: reservation.reservationTime,
+        customerName: reservation.customerName,
+        phonenumber: reservation.customerPhone,
+        bidPrice: reservation.bidPrice,
+      ),
+    );
+    if (!mounted) return;
+    await _loadReservations();
+  }
+
   @override
   Widget build(BuildContext context) {
     final fixedReservationIndex = _reservations.indexWhere(
@@ -236,6 +255,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                             _CustomerBidTile(
                               reservation: fixedReservation,
                               userId: widget.userId,
+                              onTap: fixedReservation.createdById == widget.userId
+                                  ? () => _modifyBid(fixedReservation)
+                                  : null,
                             ),
                           ],
                         ),
@@ -272,6 +294,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         return _CustomerBidTile(
                           reservation: reservation,
                           userId: widget.userId,
+                          onTap: reservation.createdById == widget.userId
+                              ? () => _modifyBid(reservation)
+                              : null,
                           onDelete: reservation.createdById == widget.userId
                               ? () => _deleteBid(reservation)
                               : null,
@@ -289,11 +314,13 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 class _CustomerBidTile extends StatelessWidget {
   final ReservationModel reservation;
   final String userId;
+  final VoidCallback? onTap;
   final VoidCallback? onDelete;
 
   const _CustomerBidTile({
     required this.reservation,
     required this.userId,
+    this.onTap,
     this.onDelete,
   });
 
@@ -304,6 +331,7 @@ class _CustomerBidTile extends StatelessWidget {
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
     return ListTile(
+      onTap: onTap,
       tileColor: isMine ?  Colors.blue.withValues(alpha: 0.16) : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       title: Text(
