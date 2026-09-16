@@ -91,10 +91,6 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
           setState(() {
             _tables[index] = updatedTable;
           });
-        } else if (event.type == 'reservation_created' ||
-            event.type == 'reservation_updated' ||
-            event.type == 'reservation_deleted') {
-          _loadTables(showError: false);
         }
       } catch (e) {
         _loadTables(showError: false);
