@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +7,9 @@ import 'package:intl/intl.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
 class CustomerBidListScreen extends StatefulWidget {
@@ -24,6 +28,7 @@ class CustomerBidListScreen extends StatefulWidget {
 }
 
 class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
+  StreamSubscription<WebSocketEvent>? _webSocketSubscription;
   List<ReservationModel> _reservations = [];
   bool _isLoading = true;
   bool _hasError = false;
@@ -32,6 +37,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   void initState() {
     super.initState();
     _loadReservations();
+    _subscribeToWebSocket();
   }
 
   Future<void> _loadReservations() async {
@@ -54,6 +60,33 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
       });
     }
   }
+
+
+  void _subscribeToWebSocket() {
+    final service = WebsocketService.instance;
+    _webSocketSubscription = service.events.listen((event) {
+      if (!mounted) return;
+      try {
+        if (event.type == 'reservation_updated') {
+          if (widget.table.id != event.payload["table_id"]) {
+            return;
+          } else {
+            _loadReservations();     
+          }
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+    service.connect(widget.companyId);
+  }
+
+  @override
+  void dispose() {
+    _webSocketSubscription?.cancel();
+    super.dispose();
+  }
+
 
   Future<void> _addBid() async {
     if (_reservations.any((reservation) => reservation.isFixed == true)) {
