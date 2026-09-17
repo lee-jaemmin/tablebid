@@ -156,7 +156,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                     ),
                   )
                 : visibleCompanies.isEmpty
-                ? const Center(child: Text('해당 지역에 등록된 매장이 없습니다.'))
+                ? const Center(
+                    child: Text(
+                      '해당 지역에 등록된 매장이 없습니다.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  )
                 : RefreshIndicator(
                     onRefresh: _loadInitialData,
                     child: ListView.separated(
