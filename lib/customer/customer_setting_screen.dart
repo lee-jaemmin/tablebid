@@ -222,7 +222,8 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.warning_amber, size: 18),
-                  title: const Text('노쇼'),
+                  title: const Text('No Show'),
+                  subtitle: const Text('3회부터 서비스 이용이 제한됩니다.'),
                   trailing: _statusBadge(
                     '${_user?.noShowCount ?? 0}회',
                     Colors.orange,
