@@ -215,6 +215,12 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           : ListView(
               children: [
                 ListTile(
+                  leading: const Icon(Icons.person, size: 18),
+                  title: const Text('이름'),
+                  trailing: Text(_user?.userName ?? ''),
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.warning_amber, size: 18),
                   title: const Text('노쇼'),
                   trailing: _statusBadge(
