@@ -95,6 +95,11 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         title: const Text('매장 선택'),
         actions: [
           IconButton(
+            tooltip: '새로고침',
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadInitialData,
+          ),
+          IconButton(
             tooltip: '설정',
             icon: const Icon(Icons.settings),
             onPressed: () => Navigator.push(
