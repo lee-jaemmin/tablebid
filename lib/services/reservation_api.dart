@@ -190,4 +190,16 @@ class ReservationApi {
       'Failed to check-in Reservation: ${response.statusCode} ${response.body}',
     );
   }
+
+  Future<bool> reservationUnder() async {
+    final url = Uri.parse('${ApiClient.baseUrl}/reservations-under');
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as bool;
+    }
+    throw Exception(
+      'Failed to check reservation under: ${response.statusCode} ${response.body}',
+    );
+  }
 }
