@@ -191,12 +191,16 @@ class ReservationApi {
     );
   }
 
-  Future<bool> reservationUnder() async {
+  Future<ReservationModel?> reservationUnder() async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations-under');
     final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body) as bool;
+      final data = jsonDecode(response.body) as Map<String, dynamic>?;
+      if (data == null) {
+        return null;
+      }
+      return ReservationModel.fromJson(data);
     }
     throw Exception(
       'Failed to check reservation under: ${response.statusCode} ${response.body}',
