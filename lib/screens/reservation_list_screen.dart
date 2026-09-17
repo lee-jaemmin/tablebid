@@ -609,12 +609,12 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Colors.red,
                       ),
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text(
                         '예',
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(color: Colors.black),
                       ),
                     ),
                   ),
