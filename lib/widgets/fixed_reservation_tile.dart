@@ -20,7 +20,7 @@ class FixedReservationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.blue.withValues(alpha: 0.16),
+      color: Colors.blue.withValues(alpha: 0.32),
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,6 +37,21 @@ class FixedReservationTile extends StatelessWidget {
                 borderRadius: BorderRadiusGeometry.circular(8),
               ),
             ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                '비드 수락 시간: ${reservation.fixedAt == null ? '--:--' : DateFormat('HH:mm').format(reservation.fixedAt!)}',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '상태: ${reservation.arrivalAt == null ? '응답 대기 중' : '${DateFormat('HH:mm').format(reservation.arrivalAt!)} 도착 예정'}',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
           ),
           ListTile(
             contentPadding: const EdgeInsets.symmetric(
@@ -64,11 +79,14 @@ class FixedReservationTile extends StatelessWidget {
                   onPressed: onCancel,
                   icon: const Icon(Icons.remove_circle, color: Colors.red),
                 ),
-
-                TextButton(
-                  onPressed: onNoshow,
-                  child: Text('노쇼'),
+                ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.all(1),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8)),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
                 ),
+                  onPressed: onNoshow, child: Text('노쇼')),
               ],
             ),
           ),
