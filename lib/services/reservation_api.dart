@@ -42,6 +42,8 @@ class ReservationApi {
     String? customerPhone,
     int? bidPrice,
     bool? isFixed,
+    DateTime? fixedAt,
+    DateTime? arrivalAt,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
@@ -51,6 +53,8 @@ class ReservationApi {
       if (customerPhone != null) 'customer_phone': customerPhone,
       if (bidPrice != null) 'bid_price': bidPrice,
       if (isFixed != null) 'is_fixed': isFixed,
+      if (fixedAt != null) 'fixed_at': fixedAt.toUtc().toIso8601String(),
+      if (arrivalAt != null) 'arrival_at': arrivalAt.toUtc().toIso8601String(),
     };
 
     final response = await http.patch(
