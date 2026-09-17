@@ -168,7 +168,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
           selectedDateTime!,
         );
       } catch (e) {
-        print(e);
+          navigator.pop(); // 로딩창 끄기
+        navigator.pop(); // info 내리기
+        if(e.toString().contains("Reserved table exists")) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('비딩 진행 중인 테이블이 있어 비딩 마감 일괄 설정에 실패하였습니다.'))
+          );
+        }
       }
       navigator.pop(); // 로딩창 끄기
       navigator.pop(); // info 내리기
