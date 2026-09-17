@@ -40,7 +40,10 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       if (fixedReservation != null) {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => ConfirmArrivalTime(reservationId: fixedReservation.id)),
+          MaterialPageRoute(
+            builder: (context) =>
+                ConfirmArrivalTime(reservationId: fixedReservation.id),
+          ),
           (route) => false,
         );
       }
