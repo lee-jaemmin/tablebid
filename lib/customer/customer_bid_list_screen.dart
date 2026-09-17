@@ -62,7 +62,6 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     }
   }
 
-
   void _subscribeToWebSocket() {
     final service = WebsocketService.instance;
     _webSocketSubscription = service.events.listen((event) {
@@ -72,7 +71,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
           if (widget.table.id != event.payload["table_id"]) {
             return;
           } else {
-            _loadReservations();     
+            _loadReservations();
           }
         }
       } catch (e) {
@@ -88,13 +87,12 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     super.dispose();
   }
 
-
   Future<void> _addBid() async {
     final bidEndAt = widget.table.bidEndAt;
     if (bidEndAt != null && !bidEndAt.isAfter(DateTime.now())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('경매가 마감되어 예약할 수 없습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('경매가 마감되어 예약할 수 없습니다.')));
       return;
     }
     if (_reservations.any((reservation) => reservation.isFixed == true)) {
@@ -251,18 +249,27 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 minimumSize: const Size(60, 32),
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadiusGeometry.circular(8),
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    8,
+                                  ),
                                 ),
                               ),
-                              child: const Text('확정된 예약', style: TextStyle(fontSize: 12)),
+                              child: const Text(
+                                '확정된 예약',
+                                style: TextStyle(fontSize: 12),
+                              ),
                             ),
                             _CustomerBidTile(
                               reservation: fixedReservation,
                               userId: widget.userId,
-                              onTap: fixedReservation.createdById == widget.userId
+                              onTap:
+                                  fixedReservation.createdById == widget.userId
                                   ? () => _modifyBid(fixedReservation)
                                   : null,
                             ),
@@ -278,7 +285,10 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                               ? const Color.fromARGB(229, 255, 153, 0)
                               : Colors.grey,
                           minimumSize: const Size(60, 32),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadiusGeometry.circular(8),
@@ -338,9 +348,11 @@ class _CustomerBidTile extends StatelessWidget {
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
     return ListTile(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.circular(12),
+      ),
       onTap: onTap,
-      tileColor: isMine ?  Colors.blue.withValues(alpha: 0.36) : null, 
+      tileColor: isMine ? Colors.blue.withValues(alpha: 0.36) : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,7 +366,10 @@ class _CustomerBidTile extends StatelessWidget {
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
                   minimumSize: const Size(60, 32),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadiusGeometry.circular(8),
@@ -370,7 +385,7 @@ class _CustomerBidTile extends StatelessWidget {
           ),
         ],
       ),
-      subtitle:  Text(
+      subtitle: Text(
         '${isMine ? '${reservation.customerPhone}\n' : ''}${formatPrice(reservation.bidPrice ?? 0)}',
       ),
       isThreeLine: true,
