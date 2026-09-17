@@ -1,14 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
 
 class ConfirmArrivalTime extends StatefulWidget {
   final int reservationId;
 
-  const ConfirmArrivalTime({
-    super.key,
-    required this.reservationId,
-  });
+  const ConfirmArrivalTime({super.key, required this.reservationId});
 
   @override
   State<ConfirmArrivalTime> createState() => _ConfirmArrivalTimeState();
@@ -31,7 +29,11 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
         arrivalAt: DateTime.now().add(Duration(minutes: selectedMinutes)),
       );
       if (!mounted) return;
-      Navigator.pop(context, true);
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
+        (route) => false,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
