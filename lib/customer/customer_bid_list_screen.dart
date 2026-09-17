@@ -295,7 +295,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(12),
                       itemCount: leftBidList.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      separatorBuilder: (_, __) => const Divider(height: 12),
                       itemBuilder: (context, index) {
                         final reservation = leftBidList[index];
                         return _CustomerBidTile(
@@ -338,14 +338,39 @@ class _CustomerBidTile extends StatelessWidget {
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
     return ListTile(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12)),
       onTap: onTap,
-      tileColor: isMine ?  Colors.blue.withValues(alpha: 0.16) : null,
+      tileColor: isMine ?  Colors.blue.withValues(alpha: 0.36) : null, 
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      title: Text(
-        '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
-        style: const TextStyle(fontWeight: FontWeight.bold),
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isMine)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  minimumSize: const Size(60, 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadiusGeometry.circular(8),
+                  ),
+                ),
+                child: const Text('내 비드', style: TextStyle(fontSize: 12)),
+              ),
+            ),
+
+          Text(
+            '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
-      subtitle: Text(
+      subtitle:  Text(
         '${isMine ? '${reservation.customerPhone}\n' : ''}${formatPrice(reservation.bidPrice ?? 0)}',
       ),
       isThreeLine: true,
