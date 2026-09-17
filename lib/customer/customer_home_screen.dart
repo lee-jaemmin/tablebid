@@ -171,25 +171,88 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         final company = visibleCompanies[index];
-                        return Card(
-                          child: ListTile(
-                            isThreeLine: true,
-                            title: Text(company.name),
-                            subtitle: Text(company.address),
-                            trailing: IconButton(
-                              onPressed: () {
-                                _openNaverMap(company.address);
-                              },
-                              icon: Icon(Icons.place),
-                            ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CustomerCompanyScreen(
-                                  company: company,
-                                  userId: user.uid,
-                                ),
+                        return GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CustomerCompanyScreen(
+                                company: company,
+                                userId: user.uid,
                               ),
+                            ),
+                          ),
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                              bottom: 12,
+                            ), // 배너 사이 간격
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withAlpha(100),
+                              borderRadius: BorderRadius.circular(
+                                18,
+                              ), // 🌟 아이폰 특유의 깊은 곡률
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // 상단 영역: 아이콘 + 앱 이름 + 시간
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    // Container(
+                                    //   padding: const EdgeInsets.all(4),
+                                    //   decoration: BoxDecoration(
+                                    //     color: Colors.black,
+                                    //     borderRadius: BorderRadius.circular(6),
+                                    //   ),
+                                    //   child: const Icon(
+                                    //     Icons.grid_view_rounded,
+                                    //     color: Colors.white,
+                                    //     size: 12,
+                                    //   ),
+                                    // ),
+                                  ],
+                                ),
+                                Text(
+                                  company.name,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      company.address,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () =>
+                                          _openNaverMap(company.address),
+                                      icon: Icon(Icons.place),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         );
