@@ -52,7 +52,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('안내 문구'),
+            const Text('5분 내로 도착 시간 응답을 안 하거나 응답한 시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.'),
             const SizedBox(height: 24),
             Row(
               children: [
@@ -71,7 +71,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                   ? null
                   : _confirmArrivalTime,
               child: _isSubmitting
-                  ? const CupertinoActivityIndicator(color: Colors.black)
+                  ? const CupertinoActivityIndicator(color: Colors.white)
                   : const Text('확인'),
             ),
           ],
