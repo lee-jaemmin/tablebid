@@ -76,7 +76,7 @@ class NotificationHistoryScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12), // 배너 사이 간격
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  color: Colors.grey.withAlpha(100),
                   borderRadius: BorderRadius.circular(18), // 🌟 아이폰 특유의 깊은 곡률
                   boxShadow: [
                     BoxShadow(
