@@ -2,13 +2,14 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/confirm_arrival_time.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
 import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/region_chip.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/company_api.dart';
+import 'package:tablebid/services/reservation_api.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class CustomerHomeScreen extends StatefulWidget {
   const CustomerHomeScreen({super.key});
@@ -17,7 +18,8 @@ class CustomerHomeScreen extends StatefulWidget {
   State<CustomerHomeScreen> createState() => _CustomerHomeScreenState();
 }
 
-class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
+class _CustomerHomeScreenState extends State<CustomerHomeScreen>
+    with WidgetsBindingObserver {
   static const _regions = ['강남', '이태원', '홍대', '신사/압구정', '기타'];
   List<CompanyModel> _companies = [];
   String _selectedRegion = _regions.first;
@@ -27,12 +29,21 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCompanies();
+    WidgetsBinding.instance.addObserver(this);
+    _loadInitialData();
   }
 
-  Future<void> _loadCompanies() async {
+  Future<void> _loadInitialData() async {
     try {
       final companies = await CompanyApi().getCompanies();
+      final fixedReservation = await ReservationApi().reservationUnder();
+      if (fixedReservation != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => ConfirmArrivalTime(reservationId: fixedReservation.id)),
+          (route) => false,
+        );
+      }
       if (!mounted) return;
       setState(() {
         _companies = companies;
@@ -47,9 +58,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
         _hasError = true;
       });
     }
-    print(_companies.length);
   }
-
 
   Future<void> _openNaverMap(String address) async {
     final uri = Uri.https(
@@ -57,14 +66,23 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
       '/p/search/${Uri.encodeComponent(address)}',
     );
 
-    if (!await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    )) {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw Exception('네이버 지도를 열 수 없습니다.');
     }
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadInitialData();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,9 +100,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CustomerSettingScreen(
-                  onUserChanged: null,
-                ),
+                builder: (context) =>
+                    CustomerSettingScreen(onUserChanged: null),
               ),
             ),
           ),
@@ -125,7 +142,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           _isLoading = true;
                           _hasError = false;
                         });
-                        _loadCompanies();
+                        _loadInitialData();
                       },
                       child: const Text('매장 목록 다시 불러오기'),
                     ),
@@ -133,7 +150,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                 : visibleCompanies.isEmpty
                 ? const Center(child: Text('해당 지역에 등록된 매장이 없습니다.'))
                 : RefreshIndicator(
-                    onRefresh: _loadCompanies,
+                    onRefresh: _loadInitialData,
                     child: ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
@@ -146,9 +163,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                             isThreeLine: true,
                             title: Text(company.name),
                             subtitle: Text(company.address),
-                            trailing: IconButton(onPressed: () {
-                                  _openNaverMap(company.address);
-                                }, icon: Icon(Icons.place)),
+                            trailing: IconButton(
+                              onPressed: () {
+                                _openNaverMap(company.address);
+                              },
+                              icon: Icon(Icons.place),
+                            ),
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -169,5 +189,3 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
     );
   }
 }
-
-
