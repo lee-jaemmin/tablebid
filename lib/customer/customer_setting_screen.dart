@@ -165,7 +165,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
     );
     try {
       final user = await UserApi().verifyPhoneNumber();
-      if(!mounted) return;
+      if (!mounted) return;
       setState(() {
         _user = user;
       });
@@ -176,12 +176,12 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      if(widget.onUserChanged != null) {
-        widget.onUserChanged!(user); 
+      if (widget.onUserChanged != null) {
+        widget.onUserChanged!(user);
       }
     } catch (e) {
       print('########### 번호 인증 중 오류 발생: $e');
-      if(!mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('번호 인증 중 오류 발생'),
