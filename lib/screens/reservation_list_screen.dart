@@ -259,6 +259,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       await ReservationApi().updateReservation(
         reservationId: reservation.id,
         isFixed: true,
+        fixedAt: DateTime.now()
       );
       if (!mounted) return;
       Navigator.pop(context);
