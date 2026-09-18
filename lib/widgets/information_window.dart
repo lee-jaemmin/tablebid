@@ -50,9 +50,7 @@ class _InformationWindowState extends State<InformationWindow> {
       text: formatPrice(widget.table.totalPrice),
     );
     _userController = TextEditingController(
-      text: (widget.table.userName == "" || widget.table.userName == "이름 미지정")
-          ? widget.userName
-          : widget.table.userName,
+      text: widget.userName,
     );
     _purchaseList = widget.table.purchaseSummary ?? [];
   }
