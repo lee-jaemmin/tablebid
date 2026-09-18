@@ -40,8 +40,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   Map<String, List<ValueNotifier<TableModel>>> _tableNotifierBySection = {};
   List<String> _sections = [];
   StreamSubscription<WebSocketEvent>? _webSocketEventSubscription;
-  UserModel? _currentUser = null;
-  CompanyModel? _company = null;
+  UserModel? _currentUser;
+  CompanyModel? _company;
   bool _isLoading = true;
   int _refreshCount = 0;
 
@@ -233,13 +233,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final result = await Future.wait([
         CompanyApi().getCompany(_company!.id),
         TableApi().getTables(_company!.id),
+        UserApi().getUser(_currentUser!.id),
       ]);
       if (!mounted) return;
       final company = result[0] as CompanyModel;
       final tables = result[1] as List<TableModel>;
-      setState(() {
+      final user = result[2] as UserModel;
+       setState(() {
         _company = company;
         _setTables(tables);
+        _currentUser = user;
         _refreshCount++;
       });
 
@@ -257,12 +260,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     // 화면 열면 바로 동기화하는 함수
     try {
       final company = _company;
-      if (company == null) return;
+      final currentUser = _currentUser;
+      if (company == null || currentUser == null) return;
 
       final tables = await TableApi().getTables(company.id);
+      final user = await UserApi().getUser(currentUser.id);
       if (!mounted) return;
       setState(() {
         _setTables(tables);
+        _currentUser = user;
         _refreshCount++;
       });
 
@@ -371,9 +377,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         SidebarMenu(
                           icon: Icons.person_3,
                           name: '직원 관리',
-                          onTapFunc: () {
+                          onTapFunc: () async {
                             Navigator.pop(context);
-                            Navigator.push(
+                            await Navigator.push<void> (
                               context,
                               MaterialPageRoute(
                                 builder: (context) => StaffmanagementScreen(
@@ -381,6 +387,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 ),
                               ),
                             );
+                            await _refreshHomeData();
                           },
                         ),
                         Gaps.v20(context),
