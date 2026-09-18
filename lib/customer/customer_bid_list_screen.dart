@@ -375,7 +375,7 @@ class _CustomerBidTile extends StatelessWidget {
                     borderRadius: BorderRadiusGeometry.circular(8),
                   ),
                 ),
-                child: const Text('내 비드', style: TextStyle(fontSize: 12)),
+                child: const Text('내 입찰', style: TextStyle(fontSize: 12)),
               ),
             ),
 

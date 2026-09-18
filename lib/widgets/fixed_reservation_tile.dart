@@ -43,7 +43,7 @@ class FixedReservationTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
-                '비드 수락 시간: ${reservation.fixedAt == null ? '--:--' : DateFormat('HH:mm').format(reservation.fixedAt!)}',
+                '입찰 수락 시간: ${reservation.fixedAt == null ? '--:--' : DateFormat('HH:mm').format(reservation.fixedAt!)}',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 4),
@@ -81,10 +81,12 @@ class FixedReservationTile extends StatelessWidget {
                 ),
                 ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                   minimumSize: const Size(44, 28),
                   padding: EdgeInsets.all(1),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(8)),
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
+               
                 ),
                   onPressed: onNoshow, child: Text('노쇼')),
               ],
