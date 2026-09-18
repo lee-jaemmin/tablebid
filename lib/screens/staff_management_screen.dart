@@ -51,25 +51,41 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     final bool confirm =
         await showDialog(
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (dialogContext) => AlertDialog(
             title: const Text("사장 권한 위임"),
             content: Text(
               "'$newOwnerName' 님에게 사장 권한을 넘기시겠습니까?\n위임 후 대표님은 '일반 직원' 권한으로 변경되며, 이후 회원 탈퇴가 가능합니다.",
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text("취소", style: TextStyle(color: Colors.black)),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text(
-                  "위임 확정",
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: const BorderSide(color: Colors.white),
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () => Navigator.pop(dialogContext, false),
+                      child: const Text(
+                        "취소",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () => Navigator.pop(dialogContext, true),
+                      child: const Text(
+                        "위임 확정",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -88,30 +104,20 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     );
 
     try {
-      // new Owner 등록
-      final newUser = await UserApi().getUser(newOwnerUid);
-      await UserApi().updateUser(userId: newUser.id, role: 'owner');
-
-      // 기존 사장(나)의 권한을 일반 직원으로 강등
-      final me = await UserApi().getUser(myUid);
-      await UserApi().updateUser(userId: me.id, role: 'user');
-
-      if (context.mounted) {
-        Navigator.pop(context); // 로딩창 끄기
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("권한 위임이 완료되었습니다.")),
-        );
-        Navigator.pop(context); // 직원 관리 화면 닫고 메인으로 돌아가기
-      }
-      await loadData();
+      await UserApi().changeOwner(targetUserId: newOwnerUid);
+      if(!mounted) return;
+      Navigator.pop(context);
+      Navigator.pop(context);
     } catch (e) {
       if (context.mounted) {
+        if(!mounted) return;
         Navigator.pop(context); // 로딩창 끄기
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("위임 실패: $e")));
       }
     }
+    await loadData();
   }
 
   /// [Func] 권한 변경
@@ -190,6 +196,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
                   trailing: isMe
                       ? null
                       : PopupMenuButton<String>(
+                          color: Colors.white,
                           onSelected: (value) {
                             if (value == 'admin') _updateRole(uid, 'admin');
                             if (value == 'user') _updateRole(uid, 'user');
@@ -203,11 +210,12 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
                               value: role == 'admin' ? 'user' : 'admin',
                               child: Text(
                                 role == 'admin' ? "일반 직원으로 변경" : "관리자 권한 부여",
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
                             PopupMenuItem(
                               value: 'kick',
-                              child: Text('내보내기'),
+                              child: Text('내보내기', style: TextStyle(color: Colors.black),),
                             ),
                             const PopupMenuItem(
                               value: 'transfer',
