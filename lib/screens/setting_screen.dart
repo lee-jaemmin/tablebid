@@ -316,33 +316,52 @@ class _SettingScreenState extends State<SettingScreen> {
         if (memberCount >= 2) {
           showDialog(
             context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('사장님 권한 위임 필요'),
+            builder: (dialogContext) => AlertDialog(
+              title: const Text('권한 위임 필요'),
               content: const Text(
                 '현재 매장의 사장(Owner) 권한을 가지고 계십니다. '
                 '탈퇴하시려면 먼저 다른 직원에게 사장 권한을 위임해야 합니다.\n\n확인 버튼을 누르면 직원 관리 화면으로 이동합니다.',
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context); // 팝업 닫기
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StaffmanagementScreen(
-                          companyId: currentUser.companyId!,
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          side: const BorderSide(color: Colors.white),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: const Text(
+                          '취소',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-                    );
-                  },
-                  child: const Text('확인', style: TextStyle(color: Colors.blue)),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => StaffmanagementScreen(
+                                companyId: currentUser.companyId!,
+                              ),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          '확인',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
