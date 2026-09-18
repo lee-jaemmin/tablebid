@@ -103,23 +103,18 @@ class UserApi {
   }
 
   Future<UserModel> removeUserFromCompany({
-    required String userId,
+    required String targetUserId,
   }) async {
-    final response = await http.patch(
-      Uri.parse('${ApiClient.baseUrl}/users/$userId'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'company_id': null,
-        'role': null,
-      }),
+    final url = Uri.parse('${ApiClient.baseUrl}/remove/$targetUserId');
+
+    final response = await http.post(
+      url,
+      headers: await firebaseAuthHeaders()
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to remove user from company: ${response.body}');
     }
-
     return UserModel.fromJson(jsonDecode(response.body));
   }
 

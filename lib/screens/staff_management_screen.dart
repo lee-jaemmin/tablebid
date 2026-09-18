@@ -147,7 +147,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     if (confirm) {
       try {
         final user = await UserApi().getUser(uid);
-        await UserApi().removeUserFromCompany(userId: user.id);
+        await UserApi().removeUserFromCompany(targetUserId: user.id);
         await loadData();
       } catch (e) {
         print(e);
