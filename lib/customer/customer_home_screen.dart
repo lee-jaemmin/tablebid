@@ -171,7 +171,40 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       separatorBuilder: (_, __) => const SizedBox(height: 8),
                       itemBuilder: (context, index) {
                         final company = visibleCompanies[index];
-                        return GestureDetector(
+                        return Card(
+                          child: ListTile(
+                            isThreeLine: true,
+                            title: Text(company.name),
+                            subtitle: Text(company.address),
+                            trailing: IconButton(
+                              onPressed: () {
+                                _openNaverMap(company.address);
+                              },
+                              icon: const Icon(Icons.place),
+                            ),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CustomerCompanyScreen(
+                                  company: company,
+                                  userId: user.uid,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/* 회사별 컨테이너 디자인
+return GestureDetector(
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -231,7 +264,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                                     ).colorScheme.onSurface,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
@@ -256,12 +288,4 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                             ),
                           ),
                         );
-                      },
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+*/
