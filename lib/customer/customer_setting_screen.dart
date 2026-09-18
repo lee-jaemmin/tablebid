@@ -201,7 +201,8 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 12, color: Colors.white),
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 12, color: Colors.white, height: 2),
       ),
     );
   }
