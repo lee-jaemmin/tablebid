@@ -184,7 +184,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         if (!mounted) return;
         if (e.toString().contains("Table already reserved")) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('비딩 진행 중인 테이블이 있어 비딩 마감 일괄 설정에 실패하였습니다.')),
+            SnackBar(content: Text('경매 진행 중인 테이블이 있어 경매 마감 시간 일괄 설정에 실패하였습니다.')),
           );
         }
       }

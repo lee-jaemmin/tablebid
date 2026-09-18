@@ -97,7 +97,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     }
     if (_reservations.any((reservation) => reservation.isFixed == true)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.')),
+        const SnackBar(content: Text('예약이 확정된 테이블은 경매에 참여할 수 없습니다.')),
       );
       return;
     }
@@ -117,8 +117,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('비딩 취소'),
-        content: const Text('내 비딩을 취소하시겠습니까?'),
+        title: const Text('입찰 취소'),
+        content: const Text('내 입찰을 취소하시겠습니까?'),
         actions: [
           Row(
             children: [
@@ -165,7 +165,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('비딩 취소 중 오류가 발생했습니다.')));
+      ).showSnackBar(const SnackBar(content: Text('입찰 취소 중 오류가 발생했습니다.')));
     }
   }
 
@@ -200,11 +200,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.table.tablename} 비딩'),
+        title: Text('${widget.table.tablename} 경매'),
         actions: [
           IconButton(
             onPressed: _addBid,
-            tooltip: '비딩 추가',
+            tooltip: '입찰 추가',
             icon: const Icon(Icons.add),
           ),
           IconButton(
@@ -226,11 +226,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                   });
                   _loadReservations();
                 },
-                child: const Text('비딩 내역 다시 불러오기'),
+                child: const Text('입찰 내역 다시 불러오기'),
               ),
             )
           : _reservations.isEmpty
-          ? const Center(child: Text('비딩 내역이 없습니다.'))
+          ? const Center(child: Text('입찰 내역이 없습니다.'))
           : RefreshIndicator(
               onRefresh: _loadReservations,
               child: SingleChildScrollView(
@@ -295,7 +295,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                           ),
                         ),
                         child: Text(
-                          fixedReservation == null ? '비딩 중' : '비딩 마감',
+                          fixedReservation == null ? '입찰 중' : '경매 마감',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ),
@@ -392,7 +392,7 @@ class _CustomerBidTile extends StatelessWidget {
       trailing: onDelete == null
           ? null
           : IconButton(
-              tooltip: '내 비딩 삭제',
+              tooltip: '내 입찰 삭제',
               onPressed: onDelete,
               icon: const Icon(Icons.remove_circle, color: Colors.red),
             ),

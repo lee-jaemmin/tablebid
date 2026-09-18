@@ -203,7 +203,7 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: '비딩 제안가 (단위: 원)'),
+                  decoration: InputDecoration(labelText: '입찰가 (단위: 원)'),
                   inputFormatters: [PriceFormatters()],
                 ),
                 SizedBox(height: 12),

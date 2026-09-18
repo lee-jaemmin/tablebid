@@ -112,7 +112,7 @@ class ReservationCard extends StatelessWidget {
                           )
                         : hasReservation ?
                         const Text(
-                            '비딩 중',
+                            '입찰 중',
                             style: TextStyle(fontSize: 12, color: Colors.black),
                           ) 
                           :

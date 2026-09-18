@@ -41,8 +41,8 @@ class CustomerTableGrid extends StatelessWidget {
             : isBidClosed
             ? '경매 마감'
             : table.hasReservations
-            ? '비딩 중'
-            : '비딩 참여 가능';
+            ? '입찰 중'
+            : '입찰 가능';
         final showBidEndAt =
             table.bidAvailable && !isInUse && !table.isReserved && !isBidClosed;
         final color = !table.bidAvailable

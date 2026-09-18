@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
 
@@ -15,6 +16,44 @@ class ConfirmArrivalTime extends StatefulWidget {
 class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
   int? _selectedMinutes;
   bool _isSubmitting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _showAnimation();
+      }
+    });
+    // 이거 없으면 initState끝나기전에 함수 실행
+    // => context찾고 이래서 전체 흐름이 중단됨.
+  }
+
+  Future<void> _showAnimation() async {
+      await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (lottieContext) {
+        return Center(
+          child: Lottie.asset(
+            'assets/lottie/sold.json',
+            repeat: false,
+            // lottieObject: 로티 파일즈 객체
+            // 이게 로딩 되면 onLoaded실행
+            // duration: 애니메이션 길이
+            // 만큼 기다렸다가 콜백 (pop) 실행
+            onLoaded: (lottieObject) {
+              Future.delayed(lottieObject.duration, () {
+                if (lottieContext.mounted) {
+                  Navigator.pop(lottieContext);
+                }
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> _confirmArrivalTime() async {
     final selectedMinutes = _selectedMinutes;

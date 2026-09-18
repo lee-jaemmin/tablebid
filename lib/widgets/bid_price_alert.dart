@@ -131,7 +131,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
       navigator.pop(); // info 내리기
       messenger.showSnackBar(
         SnackBar(
-          content: Text("비딩 마감 시간이 변경되었습니다."),
+          content: Text("경매 마감 시간이 변경되었습니다."),
           duration: Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
         ),
@@ -158,7 +158,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: '비딩 최소가 (단위: 원)'),
+                  decoration: InputDecoration(labelText: '최소 입찰가 (단위: 원)'),
                   inputFormatters: [PriceFormatters()],
                 ),
                 SizedBox(height: 12),
@@ -176,7 +176,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                       _bidEndAtController.text,
                       style: TextStyle(fontSize: 16),
                     ),
-                    decoration: InputDecoration(labelText: '비딩 마감 시간'),
+                    decoration: InputDecoration(labelText: '경매 마감 시간'),
                   ),
                 ),
                 SizedBox(height: 12),

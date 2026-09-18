@@ -168,7 +168,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       final messenger = ScaffoldMessenger.of(context);
       Navigator.pop(context, true);
       messenger.showSnackBar(
-        SnackBar(content: Text('비딩 등록 성공: ${widget.table.tablename}')),
+        SnackBar(content: Text('입찰 성공: ${widget.table.tablename}')),
       );
     } catch (e) {
       if (e.toString().contains("Too many reservations")) {
@@ -187,7 +187,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       if (!mounted) return;
       setState(() {
         print("예약 등록 중 오류: $e");
-        _errorText = '비딩 등록 중 오류가 발생했습니다.';
+        _errorText = '입찰 등록 중 오류가 발생했습니다.';
         _isSubmitting = false;
       });
     }
@@ -202,7 +202,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
             behavior: HitTestBehavior.opaque,
             onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
             child: AlertDialog(
-              title: Text('${widget.table.tablename} 비딩 참여'),
+              title: Text('${widget.table.tablename} 경매 참여'),
               content: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: SingleChildScrollView(
@@ -257,7 +257,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                         controller: _priceController,
                         keyboardType: TextInputType.number,
                         decoration: const InputDecoration(
-                          labelText: '비딩 제안가 (단위: 원)',
+                          labelText: '입찰가 (단위: 원)',
                         ),
                         inputFormatters: [PriceFormatters()],
                       ),

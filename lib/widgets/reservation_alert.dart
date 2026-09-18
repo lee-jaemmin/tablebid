@@ -154,7 +154,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                           context: context,
                           builder: (dialogContext) {
                             return AlertDialog(
-                              title: Text('경매(비딩) 기능 끄기'),
+                              title: Text('경매 기능 끄기'),
                               content: Text(
                                 '${widget.table.tablename}번 테이블의 경매 기능을 off 하시겠습니까?',
                               ),
@@ -235,7 +235,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                           context: context,
                           builder: (dialogContext) {
                             return AlertDialog(
-                              title: Text('경매(비딩) 기능 켜기'),
+                              title: Text('경매 기능 켜기'),
                               content: Text(
                                 '${widget.table.tablename}번 테이블의 경매 기능을 on 하시겠습니까?',
                               ),
@@ -352,7 +352,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
-                  decoration: InputDecoration(labelText: '비딩 제안가 (단위: 원)'),
+                  decoration: InputDecoration(labelText: '입찰가 (단위: 원)'),
                   inputFormatters: [PriceFormatters()],
                 ),
                 SizedBox(height: 12),

@@ -119,7 +119,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     if (_tableReserved == true) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('예약이 확정된 테이블은 비딩에 참여할 수 없습니다.'),
+          content: Text('예약이 확정된 테이블은 경매에 참여할 수 없습니다.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -211,7 +211,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           builder: (context) => AlertDialog(
             title: const Text('예약 확정'),
             content: Text(
-              '${table.tablename}번 테이블 예약을 이 예약으로 확정하시겠습니까?\n예약이 확정된 테이블은 더 이상 비딩을 받을 수 없습니다.',
+              '${table.tablename}번 테이블 예약을 이 예약으로 확정하시겠습니까?\n예약이 확정된 테이블은 더 이상 입찰을 받을 수 없습니다.',
             ),
             actions: [
               Row(
@@ -338,7 +338,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           builder: (context) => AlertDialog(
             title: const Text('예약 확정 취소'),
             content: Text(
-              '${table.tablename}번 테이블에 확정된 이 예약을 취소하시겠습니까?\n예약이 취소된 테이블은 이제 비딩을 받을 수 있습니다.',
+              '${table.tablename}번 테이블에 확정된 이 예약을 취소하시겠습니까?\n예약이 취소된 테이블은 이제 입찰을 받을 수 있습니다.',
             ),
             actions: [
               Row(
@@ -715,7 +715,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                         ? ElevatedButton(
                             onPressed: () {},
                             child: Text(
-                              '비딩 마감',
+                              '경매 마감',
                               style: TextStyle(fontSize: 12),
                             ),
                             style: ElevatedButton.styleFrom(
@@ -733,7 +733,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                           )
                         : ElevatedButton(
                             onPressed: () {},
-                            child: Text('비딩 중', style: TextStyle(fontSize: 12)),
+                            child: Text('입찰 중', style: TextStyle(fontSize: 12)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(
                                 229,
