@@ -7,7 +7,7 @@ import 'package:tablebid/screens/reservation_purchase_screen.dart';
 import 'package:tablebid/services/api_client.dart';
 
 class ReservationApi {
-  Future<ReservationModel> getReservation(String reservationId) async {
+  Future<ReservationModel> getReservation(int reservationId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
     final response = await http.get(url, headers: await firebaseAuthHeaders());
