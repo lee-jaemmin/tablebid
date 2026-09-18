@@ -107,10 +107,7 @@ class UserApi {
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/remove/$targetUserId');
 
-    final response = await http.post(
-      url,
-      headers: await firebaseAuthHeaders()
-    );
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode != 200) {
       throw Exception('Failed to remove user from company: ${response.body}');
@@ -118,9 +115,7 @@ class UserApi {
     return UserModel.fromJson(jsonDecode(response.body));
   }
 
-  Future<void> deleteUser({
-    required String userId,
-  }) async {
+  Future<void> deleteUser({required String userId}) async {
     final url = Uri.parse('${ApiClient.baseUrl}/users/$userId');
 
     final response = await http.delete(url);
@@ -131,6 +126,17 @@ class UserApi {
     throw Exception(
       'Failed to delete User: ${response.statusCode} ${response.body}',
     );
+  }
+
+  Future<UserModel> changeOwner({required String targetUserId}) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/change-owner/$targetUserId');
+
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to change owner: ${response.body}');
+    }
+    return UserModel.fromJson(jsonDecode(response.body));
   }
 
   Future<UserModel> setUserAsCustomer() async {
@@ -158,5 +164,4 @@ class UserApi {
       'Failed to verify phonenumber: ${response.statusCode} ${response.body}',
     );
   }
-
 }
