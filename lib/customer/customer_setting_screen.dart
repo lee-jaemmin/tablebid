@@ -85,7 +85,6 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       await user.delete();
       await UserApi().deleteUser(userId: uid);
       if (!context.mounted) return;
-      Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')));
