@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
+import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/widgets/price_formatter.dart';
 
 class ConfirmArrivalTime extends StatefulWidget {
   final int reservationId;
@@ -16,39 +18,63 @@ class ConfirmArrivalTime extends StatefulWidget {
 class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
   int? _selectedMinutes;
   bool _isSubmitting = false;
+  ReservationModel? _reservation;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _showAnimation();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _getReservation();
+
+      if (mounted && _reservation != null) {
+        await _showAnimation();
       }
     });
-    // 이거 없으면 initState끝나기전에 함수 실행
-    // => context찾고 이래서 전체 흐름이 중단됨.
+  }
+
+  Future<void> _getReservation() async {
+    try {
+      final r = await ReservationApi().getReservation(widget.reservationId);
+      setState(() {
+        _reservation = r;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> _showAnimation() async {
-      await showDialog<void>(
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (lottieContext) {
-        return Center(
-          child: Lottie.asset(
-            'assets/lottie/sold.json',
-            repeat: false,
-            // lottieObject: 로티 파일즈 객체
-            // 이게 로딩 되면 onLoaded실행
-            // duration: 애니메이션 길이
-            // 만큼 기다렸다가 콜백 (pop) 실행
-            onLoaded: (lottieObject) {
-              Future.delayed(lottieObject.duration, () {
-                if (lottieContext.mounted) {
-                  Navigator.pop(lottieContext);
-                }
-              });
-            },
+        return Material(
+          color: Colors.transparent,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Lottie.asset(
+                'assets/lottie/sold.json',
+                repeat: false,
+                // lottieObject: 로티 파일즈 객체
+                // 이게 로딩 되면 onLoaded실행
+                // duration: 애니메이션 길이
+                // 만큼 기다렸다가 콜백 (pop) 실행
+                onLoaded: (lottieObject) {
+                  Future.delayed(Duration(seconds: 3), () {
+                    if (lottieContext.mounted) {
+                      Navigator.pop(lottieContext);
+                    }
+                  });
+                },
+              ),
+              Text(
+                formatPrice(_reservation!.bidPrice!),
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
         );
       },
@@ -84,39 +110,43 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('도착 예정 시간 선택')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Text('5분 내로 도착 시간 응답을 안 하거나 응답한 시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.'),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(child: _buildArrivalButton(5, '5분 내 도착')),
-                const SizedBox(width: 12),
-                Expanded(child: _buildArrivalButton(10, '10분 내 도착')),
-              ],
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black,
+    return _isLoading
+        ? Scaffold(body: Center(child: CupertinoActivityIndicator()))
+        : Scaffold(
+            appBar: AppBar(title: const Text('도착 예정 시간 선택')),
+            body: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    '5분 내로 도착 시간 응답을 안 하거나 응답한 시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.',
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: _buildArrivalButton(5, '5분 내 도착')),
+                      const SizedBox(width: 12),
+                      Expanded(child: _buildArrivalButton(10, '10분 내 도착')),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                    onPressed: _selectedMinutes == null || _isSubmitting
+                        ? null
+                        : _confirmArrivalTime,
+                    child: _isSubmitting
+                        ? const CupertinoActivityIndicator(color: Colors.white)
+                        : const Text('확인'),
+                  ),
+                ],
               ),
-              onPressed: _selectedMinutes == null || _isSubmitting
-                  ? null
-                  : _confirmArrivalTime,
-              child: _isSubmitting
-                  ? const CupertinoActivityIndicator(color: Colors.white)
-                  : const Text('확인'),
             ),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
   Widget _buildArrivalButton(int minutes, String label) {
