@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/log_model.dart';
+import 'package:tablebid/screens/purchase_screen.dart';
 import 'api_client.dart';
 
 class LogApi {
   Future<List<LogModel>> getLogs(String tableId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}/purchase-logs');
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/tables/${tableId}/purchase-logs',
+    );
 
     final response = await http.get(url);
 
@@ -21,26 +25,29 @@ class LogApi {
 
   Future<void> createLogAndPurchases({
     required String tableId,
-    int? itemId,
-    int? setMenuId,
-    required int quantity,
-    required String userId,
     required String batchId,
+    required String userId,
+    required List<SelectedItem> newPurchases,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/register-purchase');
 
     final body = {
       'table_id': tableId,
-      if(itemId != null) 'item_id': itemId,
-      if(setMenuId != null) 'set_menu_id': setMenuId,
-      'quantity': quantity,
-      'user_id': userId,
       'batch_id': batchId,
+      'items': newPurchases.map((purchase) {
+        return {
+          if (purchase.productType == ProductType.item)
+            'item_id': purchase.itemId
+          else
+            'set_menu_id': purchase.itemId,
+          'quantity': purchase.quantity,
+        };
+      }).toList(),
     };
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
@@ -52,9 +59,7 @@ class LogApi {
     );
   }
 
-  Future<void> deleteLogs({
-    required String tableId,
-  }) async {
+  Future<void> deleteLogs({required String tableId}) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId/purchase-logs');
 
     final response = await http.delete(url);
@@ -68,9 +73,7 @@ class LogApi {
     );
   }
 
-  Future<void> deleteLogAndPurchase({
-    required int logId,
-  }) async {
+  Future<void> deleteLogAndPurchase({required int logId}) async {
     final url = Uri.parse('${ApiClient.baseUrl}/purchase-logs/$logId');
 
     final response = await http.delete(url);

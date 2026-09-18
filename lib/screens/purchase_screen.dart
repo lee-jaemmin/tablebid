@@ -218,26 +218,11 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       );
       final batchId = DateTime.now().microsecondsSinceEpoch
           .toString(); // 플러터에서 batch id 생성
-      await Future.wait(
-        items.map((item) {
-          if (item.productType == ProductType.item) {
-            return LogApi().createLogAndPurchases(
-              tableId: widget.tableId,
-              itemId: item.itemId,
-              quantity: item.quantity,
-              userId: widget.userId,
-              batchId: batchId,
-            );
-          } else {
-            return LogApi().createLogAndPurchases(
-              tableId: widget.tableId,
-              setMenuId: item.itemId,
-              quantity: item.quantity,
-              userId: widget.userId,
-              batchId: batchId,
-            );
-          }
-        }),
+      await LogApi().createLogAndPurchases(
+        tableId: widget.tableId,
+        batchId: batchId,
+        userId: widget.userId,
+        newPurchases: _newPurchases,
       );
       if (!mounted) return;
       Navigator.pop(context);
