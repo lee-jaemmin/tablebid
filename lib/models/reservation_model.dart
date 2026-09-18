@@ -41,8 +41,8 @@ class ReservationModel {
       bidPrice: json['bid_price'],
       isFixed: json['is_fixed'],
       createdById: json['created_by_id'],
-      fixedAt: json['fixedAt'] == null ? null : DateTime.parse(json['fixedAt']).toLocal(),
-      arrivalAt: json['arrivalAt'] == null ? null : DateTime.parse(json['arrivalAt']).toLocal(),
+      fixedAt: json['fixed_at'] == null ? null : DateTime.parse(json['fixed_at']).toLocal(),
+      arrivalAt: json['arrival_at'] == null ? null : DateTime.parse(json['arrival_at']).toLocal(),
     );
   }
 }
