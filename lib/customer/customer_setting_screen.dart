@@ -127,7 +127,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
   void _showWithdrawDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('회원 탈퇴'),
         content: const Text(
           '애플 앱스토어 규정 및 2026 보안 가이드라인에 따라, 탈퇴 즉시 귀하의 모든 개인정보와 식별 데이터는 서버에서 영구 삭제(익명화)됩니다. '
@@ -135,16 +135,36 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
           style: TextStyle(fontSize: 14),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _withdrawMembership(context);
-            },
-            child: const Text('탈퇴하기', style: TextStyle(color: Colors.red)),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    _withdrawMembership(context);
+                  },
+                  child: const Text(
+                    '탈퇴하기',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

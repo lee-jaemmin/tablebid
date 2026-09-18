@@ -342,13 +342,35 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               "정말로 GRID를 떠나시겠습니까?\n모든 데이터가 즉시 삭제되며 복구할 수 없습니다.",
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text("취소", style: TextStyle(color: Colors.black)),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text("탈퇴하기", style: TextStyle(color: Colors.red)),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: const BorderSide(color: Colors.white),
+                        backgroundColor: Colors.transparent,
+                      ),
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text(
+                        "취소",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text(
+                        "탈퇴하기",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
