@@ -83,7 +83,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 _tables[index] = updatedTable;
               }
             });
-             _loadTables(widget.companyId, showErrorState: false);
+            _loadTables(widget.companyId, showErrorState: false);
           }
         } catch (e) {
           print('예약 실시간 업데이트 처리 실패: $e');
@@ -98,19 +98,20 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   Future<void> _showCupertinoTimerPicker(BuildContext context) async {
     final threshold = DateTime.now().add(const Duration(minutes: 1));
-    final minimumDateTime = DateTime(
-      threshold.year,
-      threshold.month,
-      threshold.day,
-      threshold.hour,
-      threshold.minute,
-    ).add(
-      threshold.second > 0 ||
-              threshold.millisecond > 0 ||
-              threshold.microsecond > 0
-          ? const Duration(minutes: 1)
-          : Duration.zero,
-    );
+    final minimumDateTime =
+        DateTime(
+          threshold.year,
+          threshold.month,
+          threshold.day,
+          threshold.hour,
+          threshold.minute,
+        ).add(
+          threshold.second > 0 ||
+                  threshold.millisecond > 0 ||
+                  threshold.microsecond > 0
+              ? const Duration(minutes: 1)
+              : Duration.zero,
+        );
     DateTime? selectedDateTime = minimumDateTime;
     // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
     await showCupertinoModalPopup<void>(
@@ -128,7 +129,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Text(
                       '테이블 마감 시간 일괄 설정',
-                      style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   Expanded(
@@ -154,8 +158,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
       if (selectedDateTime!.isBefore(DateTime.now())) {
         selectedDateTime = selectedDateTime!.add(Duration(days: 1));
       } // 지금보다 늦은 오전 선택 시
-      final messenger = ScaffoldMessenger.of(context);
-      final navigator = Navigator.of(context);
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -167,24 +169,25 @@ class _ReservationScreenState extends State<ReservationScreen> {
           widget.companyId,
           selectedDateTime!,
         );
+        if(!mounted) return;
+        Navigator.pop(context);
+        Navigator.pop(context); // 꼼수. 실시간 로딩하기 싫어서 일부러 홈으로 보냄.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("경매 마감 시간 일괄 설정 완료"),
+            duration: Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
       } catch (e) {
-          navigator.pop(); // 로딩창 끄기
-        navigator.pop(); // info 내리기
-        if(e.toString().contains("Reserved table exists")) {
+        Navigator.pop(context);
+        if (!mounted) return;
+        if (e.toString().contains("Table already reserved")) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('비딩 진행 중인 테이블이 있어 비딩 마감 일괄 설정에 실패하였습니다.'))
+            SnackBar(content: Text('비딩 진행 중인 테이블이 있어 비딩 마감 일괄 설정에 실패하였습니다.')),
           );
         }
       }
-      navigator.pop(); // 로딩창 끄기
-      navigator.pop(); // info 내리기
-      messenger.showSnackBar(
-        SnackBar(
-          content: Text("경매 마감 시간 일괄 설정 완료"),
-          duration: Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
     }
   }
 
