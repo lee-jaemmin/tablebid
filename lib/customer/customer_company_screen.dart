@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/confirm_arrival_time.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_list_screen.dart';
 import 'package:tablebid/customer/customer_setting_screen.dart';
@@ -10,6 +11,7 @@ import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
+import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
@@ -56,6 +58,32 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
         _isTableLoading = false;
         _hasError = true;
       });
+    }
+  }
+
+  Future<void> _refresh() async {
+    await Future.wait([
+      _checkUnder(),
+      _loadTables(),
+    ]);
+  }
+
+  Future<void> _checkUnder() async {
+    try {
+      final result = await ReservationApi().reservationUnder();
+      if (!mounted) return;
+      if (result != null) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ConfirmArrivalTime(reservationId: result.id),
+          ),
+          (route) => false,
+        );
+      }
+    } catch(e) {
+      print(e);
     }
   }
 
@@ -201,6 +229,11 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
           title: Text(widget.company.name),
           actions: [
             IconButton(
+              tooltip: '새로고침',
+              icon: const Icon(Icons.refresh),
+              onPressed: _refresh,
+            ),
+            IconButton(
               tooltip: '설정',
               icon: const Icon(Icons.settings),
               onPressed: () => Navigator.push(
@@ -245,7 +278,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
                       (a, b) => naturalSortCompare(a.tablename, b.tablename),
                     );
               return RefreshIndicator(
-                onRefresh: _loadTables,
+                onRefresh: _refresh,
                 child: CustomerTableGrid(
                   tables: tables,
                   onTableTap: _openTable,
