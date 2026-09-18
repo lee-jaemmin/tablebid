@@ -50,7 +50,12 @@ class _InformationWindowState extends State<InformationWindow> {
       text: formatPrice(widget.table.totalPrice),
     );
     _userController = TextEditingController(
-      text: widget.userName,
+      text:
+          (widget.table.userName == null ||
+              widget.table.userName == "" ||
+              widget.table.userName == "이름 미지정")
+          ? widget.userName
+          : widget.table.userName,
     );
     _purchaseList = widget.table.purchaseSummary ?? [];
   }
@@ -101,7 +106,7 @@ class _InformationWindowState extends State<InformationWindow> {
         phonenumber: _phoneController.text.trim(),
         persons: int.tryParse(_personsController.text.trim()) ?? 0,
         remark: _remarksController.text.trim(),
-        userName: _userController.text.trim(),
+        userName: widget.userName,
         registeredAt: sendRegisterTime ? DateTime.now() : null,
       );
 
