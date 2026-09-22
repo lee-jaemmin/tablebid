@@ -25,6 +25,16 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _isLoginLoading = false;
 
+  Future<String?> _getFcmTokenSafely() async {
+    if (kIsWeb) return null;
+    try {
+      return await FirebaseMessaging.instance.getToken();
+    } catch (e) {
+      print('FCM 토큰 발급 실패, 로그인은 계속 진행: $e');
+      return null;
+    }
+  }
+
   Future<bool> getFastApiUser(String userId) async {
     try {
       await UserApi().getUser(userId);
@@ -154,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
 
       final auth.User firebaseUser = userCredential.user!;
-      fcmtoken = await FirebaseMessaging.instance.getToken();
+      fcmtoken = await _getFcmTokenSafely();
       final email = firebaseUser.email ?? realEmail ?? dummyEmail;
 
       print('>>>>>>>>>> 카카오 로그인 Firebase uid: ${firebaseUser.uid}');
@@ -285,7 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final userDocRef = FirebaseFirestore.instance
             .collection('users')
             .doc(firebaseUser.uid);
-        final fcmtoken = await FirebaseMessaging.instance.getToken();
+        final fcmtoken = await _getFcmTokenSafely();
         final email = firebaseUser.email ?? appleCredential.email;
 
         // 애플: '최초 1회' 가입 시에만 '이름'을 던져줍니다.
