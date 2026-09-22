@@ -773,16 +773,18 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       //   (sum, item) => (sum += item.unitPrice * item.quantity),
                       // );
                       return GestureDetector(
-                        onTap: () => _showReservationModifyAlert(
-                          context,
-                          widget.table,
-                          reservation.id,
-                          reservation.reservationTime,
-                          reservation.customerName,
-                          reservation.customerPhone,
-                          reservation.bidPrice,
-                          // 이미 채워져 있는 값 보내기
-                        ),
+                        onTap: reservation.createdById == widget.userId
+                            ? () => _showReservationModifyAlert(
+                                context,
+                                widget.table,
+                                reservation.id,
+                                reservation.reservationTime,
+                                reservation.customerName,
+                                reservation.customerPhone,
+                                reservation.bidPrice,
+                                // 이미 채워져 있는 값 보내기
+                              )
+                            : null,
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 4,

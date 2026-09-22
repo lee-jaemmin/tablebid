@@ -228,7 +228,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                         inputFormatters: [PhoneNumberFormatter()],
                         readOnly: true,
                         decoration: InputDecoration(
-                          labelText: '(필수) 손님 번호',
+                          labelText: '(필수) 전화 번호',
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.copy, size: 20),
                             onPressed: () {

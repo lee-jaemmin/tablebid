@@ -5,6 +5,7 @@ import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_purchase_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/table_api.dart';
+import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
@@ -36,6 +37,29 @@ class _ReservationAlertState extends State<ReservationAlert> {
   String? _errorText;
   bool _isSubmitting = false;
 
+  Future<void> _loadUserPhoneNumber() async {
+    try {
+      final user = await UserApi().getUser(widget.userId);
+      if (!mounted) return;
+      final phoneNumber = user.phonenumber;
+      if (phoneNumber == null || phoneNumber.trim().isEmpty) return;
+      var digits = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+      if (digits.startsWith('82')) {
+        digits = '0${digits.substring(2)}';
+      }
+      if (digits.length == 11) {
+        _phoneController.text =
+            '${digits.substring(0, 3)}-'
+            '${digits.substring(3, 7)}-'
+            '${digits.substring(7)}';
+      } else {
+        _phoneController.text = phoneNumber;
+      }
+    } catch (e) {
+      print('직원 전화번호 로딩 중 오류 발생: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +83,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
       now.hour,
       (now.minute / 5).round() * 5,
     );
+    _loadUserPhoneNumber();
   }
 
   @override
@@ -322,7 +347,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   keyboardType: TextInputType.phone,
                   inputFormatters: [PhoneNumberFormatter()],
                   decoration: InputDecoration(
-                    labelText: '(필수) 손님 번호',
+                    labelText: '(필수) 전화 번호',
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.copy, size: 20),
                       onPressed: () {

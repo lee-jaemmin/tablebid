@@ -173,7 +173,7 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
                   keyboardType: TextInputType.phone,
                   inputFormatters: [PhoneNumberFormatter()],
                   decoration: InputDecoration(
-                    labelText: '(필수) 손님 번호',
+                    labelText: '(필수) 전화 번호',
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.copy, size: 20),
                       onPressed: () {
