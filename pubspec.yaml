@@ -88,10 +88,6 @@ flutter_native_splash:
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
-  fonts:
-    - family: NotoSansKR
-      fonts:
-        - asset: assets/fonts/NotoSansKR-Subset.ttf
 
   assets:
       - assets/lottie/
