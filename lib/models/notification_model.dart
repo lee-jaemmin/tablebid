@@ -22,7 +22,7 @@ class NotificationModel {
       title: json['title'],
       body: json['body'],
       type: json['type'],
-      createdAt: DateTime.parse(json['created_at']),
+      createdAt: DateTime.parse(json['created_at']).toLocal(),
     );
   }
 }
