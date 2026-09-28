@@ -5,13 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
+import 'package:tablebid/customer/customer_bid_modify_alert.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
-import 'package:tablebid/widgets/reservation_modify_alert.dart';
 
 class CustomerBidListScreen extends StatefulWidget {
   final String companyId;
@@ -172,7 +172,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   Future<void> _modifyBid(ReservationModel reservation) async {
     await showDialog<bool>(
       context: context,
-      builder: (context) => ReservationModifyAlert(
+      builder: (context) => CustomerBidModifyAlert(
         companyId: widget.companyId,
         table: widget.table,
         reservationId: reservation.id,
@@ -181,6 +181,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
         customerName: reservation.customerName,
         phonenumber: reservation.customerPhone,
         bidPrice: reservation.bidPrice,
+        isFixed: reservation.isFixed,
       ),
     );
     if (!mounted) return;
