@@ -95,7 +95,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       if (!mounted) return;
       setState(() {
         _company = updatedCompany;
-        _sections = updatedCompany.sections;
+        _sections = sections;
         _tables = updatedTables;
       });
     } catch (e) {
@@ -112,7 +112,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       builder: (optionDialogContext) => AlertDialog(
         title: const Text('섹션 추가 옵션'),
         content: const Text(
-          '섹션에 해당하는 테이블도 같이 만들까요?\n이 작업에는 약 20초 정도가 소요됩니다.\n섹션만 만들 시 모든 테이블을 직접 생성하셔야합니다.',
+          '이 작업에는 약 20초 정도가 소요됩니다.',
           style: TextStyle(fontSize: 16),
         ),
         actions: [
@@ -121,25 +121,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
               Expanded(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  onPressed: () => Navigator.pop(optionDialogContext, false),
-                  child: const Text(
-                    '섹션만',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () => Navigator.pop(optionDialogContext, true),
-                  child: const Text('테이블까지'),
+                  child: const Text('확인'),
                 ),
               ),
             ],
