@@ -164,6 +164,35 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     );
   }
 
+  void _showManual(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (optionDialogContext) => AlertDialog(
+        title: const Text('도움말'),
+        content: const Text(
+          '클릭: 섹션/테이블 이름 변경\n길게 누르기: 섹션 삭제',
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () => Navigator.pop(optionDialogContext, true),
+                  child: const Text('확인'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showAddSectionDialog(List<String> currentSections) {
     final controller = TextEditingController();
 
@@ -490,7 +519,10 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text('클릭: 섹션/테이블 이름 변경\n길게 누르기: 섹션 삭제'),
+                child: IconButton(
+                  onPressed: () => _showManual(context),
+                  icon: Icon(Icons.help_outline_outlined),
+                ),
               ),
             ],
             bottom: TabBar(
@@ -518,7 +550,9 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     ),
                   ),
                 ),
-                const Tab(icon: Icon(Icons.add_circle_rounded, color: Colors.blue)),
+                const Tab(
+                  icon: Icon(Icons.add_circle_rounded, color: Colors.blue),
+                ),
               ],
               onTap: (index) {
                 if (index == sections.length + 1) {
