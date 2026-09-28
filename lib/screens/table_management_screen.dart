@@ -58,54 +58,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     }
   }
 
-  Future<void> _updateSections(
-    List<String> sections,
-    List<TableModel>? tables,
-    String? newName, {
-    bool createTables = true,
-    bool renameTables = true,
-  }) async {
-    try {
-      final updatedCompany = await CompanyApi().updateCompany(
-        companyId: widget.companyId,
-        sections: sections,
-      );
-      if (tables != null) {
-        int i = 1;
-        for (final table in tables) {
-          await TableApi().updateTable(
-            tableId: table.id,
-            section: newName,
-            tableName: renameTables ? '${newName}-$i' : null,
-          );
-          i += 1;
-        }
-      } else if (createTables) {
-        if (newName != null) {
-          for (int i = 0; i < 10; i++) {
-            await TableApi().createTable(
-              companyId: widget.companyId,
-              section: newName,
-              tablename: '${newName}-${i + 1}',
-            );
-          }
-        }
-      }
-      final updatedTables = await TableApi().getTables(widget.companyId);
-      if (!mounted) return;
-      setState(() {
-        _company = updatedCompany;
-        _sections = sections;
-        _tables = updatedTables;
-      });
-    } catch (e) {
-      print('updateSection: 오류 발생 $e');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('오류 발생')));
-    }
-  }
-
   Future<bool?> _showSectionAddOptions(BuildContext context) {
     return showDialog<bool>(
       context: context,
@@ -170,7 +122,10 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
       builder: (optionDialogContext) => AlertDialog(
         title: const Text('도움말'),
         content: const Text(
-          '클릭: 섹션/테이블 이름 변경\n길게 누르기: 섹션 삭제',
+          '<섹션>\n'
+          '클릭: 섹션 이동\n길게 누르기: 섹션 수정/삭제\n\n'
+          '<테이블>\n'
+          '클릭: 테이블 수정',
           style: TextStyle(fontSize: 16),
         ),
         actions: [
@@ -193,7 +148,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     );
   }
 
-  void _showAddSectionDialog(List<String> currentSections) {
+  void _showAddSectionDialog() {
     final controller = TextEditingController();
 
     showDialog(
@@ -234,16 +189,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                     if (newSection.isEmpty) return;
 
-                    if (currentSections.contains(newSection)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('이미 존재하는 섹션입니다.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-
                     final createTables = await _showSectionAddOptions(
                       dialogContext,
                     );
@@ -261,14 +206,11 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                       ),
                     );
                     try {
-                      final updatedSections = [...currentSections, newSection];
-                      await _updateSections(
-                        updatedSections,
-                        null,
-                        newSection,
-                        createTables: createTables,
+                      await CompanyApi().addSection(
+                        companyId: widget.companyId,
+                        addedSection: newSection,
                       );
-
+                      await _loadData();
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 입력창
                     } catch (e) {
@@ -292,7 +234,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     );
   }
 
-  void _confirmDeleteSection(String sectionName, List<String> currentSections) {
+  Future<void> _confirmDeleteSection(String sectionName) async {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -334,22 +276,13 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     );
 
                     try {
-                      final updatedSections = currentSections
-                          .where((section) => section != sectionName)
-                          .toList();
-
-                      final toDeleteTables = _tables.where(
-                        (table) => table.section == sectionName,
+                      await CompanyApi().deleteSection(
+                        companyId: widget.companyId,
+                        removedSection: sectionName,
                       );
-
-                      await _updateSections(updatedSections, null, null);
-                      for (final table in toDeleteTables) {
-                        await TableApi().deleteTable(tableId: table.id);
-                      }
-
-                      navigator.pop(); // 로딩창
-                      navigator.pop(); // 확인창
-                      _loadData();
+                      await _loadData();
+                      Navigator.pop(context);
+                      navigator.pop(context);
                     } catch (e) {
                       print('>>>>> 섹션 삭제 실패: $e');
                       navigator.pop();
@@ -377,16 +310,15 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     );
   }
 
-  void _showRenameSectionDialog(
+  Future<void> _showRenameSectionDialog(
     String currentName,
-    List<String> currentSections,
-  ) {
+  ) async {
     final controller = TextEditingController(text: currentName);
 
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('섹션 이름 수정'),
+        title: const Text('섹션 관리'),
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(hintText: '새 섹션 이름을 입력하세요'),
@@ -396,13 +328,13 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  onPressed: () => Navigator.pop(dialogContext),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () {
+                    Navigator.pop(dialogContext);
+                    _confirmDeleteSection(currentName);
+                  },
                   child: const Text(
-                    '취소',
+                    '섹션 삭제',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -415,18 +347,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                   ),
                   onPressed: () async {
                     final newName = controller.text.trim();
-
-                    if (newName.isEmpty || newName == currentName) return;
-
-                    if (currentSections.contains(newName)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('이미 존재하는 섹션입니다.'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
 
                     final renameTables = await _showSectionRenameOptions(
                       dialogContext,
@@ -446,29 +366,16 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     );
 
                     try {
-                      final updatedSections = currentSections
-                          .map(
-                            (section) =>
-                                section == currentName ? newName : section,
-                          )
-                          .toList(); // 기존 섹션에서 바꿀 대상(currentName)찾아서 newName으로 변경.
-
-                      final updatedTables = _tables
-                          .where((table) => table.section == currentName)
-                          .toList();
-
-                      await _updateSections(
-                        updatedSections,
-                        updatedTables,
-                        newName,
-                        renameTables: renameTables,
+                      await CompanyApi().modifySection(
+                        companyId: widget.companyId,
+                        oldName: currentName,
+                        newName: newName,
                       );
-
+                      await _loadData();
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 수정창
                     } catch (e) {
                       navigator.pop();
-
                       messenger.showSnackBar(
                         SnackBar(
                           content: Text('섹션 수정 실패: $e'),
@@ -528,35 +435,55 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             bottom: TabBar(
               indicatorSize: TabBarIndicatorSize.tab,
               indicatorWeight: 4,
+              dividerColor: Colors.transparent,
               labelStyle: const TextStyle(fontSize: 16),
-              labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
+              labelPadding: EdgeInsets.zero,
               tabAlignment: TabAlignment.start,
               isScrollable: true,
               tabs: [
-                const Tab(text: '전체'),
+                const Tab(
+                  child: SizedBox(
+                    height: 46,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Center(child: Text('전체')),
+                    ),
+                  ),
+                ),
                 ...sections.map(
                   (section) => Tab(
-                    child: InkWell(
-                      onTap: () => _showRenameSectionDialog(section, sections),
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onLongPress: () =>
-                          _confirmDeleteSection(section, sections),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
+                          _showRenameSectionDialog(section),
+                      child: SizedBox(
+                        height: 46,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Center(child: Text(section)),
                         ),
-                        child: Text(section),
                       ),
                     ),
                   ),
                 ),
                 const Tab(
-                  icon: Icon(Icons.add_circle_rounded, color: Colors.blue),
+                  child: SizedBox(
+                    height: 46,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Center(
+                        child: Icon(
+                          Icons.add_circle_rounded,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
               onTap: (index) {
                 if (index == sections.length + 1) {
-                  _showAddSectionDialog(sections);
+                  _showAddSectionDialog();
                 }
               },
             ),

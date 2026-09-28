@@ -55,23 +55,21 @@ class CompanyApi {
     );
   }
 
-  Future<CompanyModel> updateCompany({
+  Future<CompanyModel> modifySection({
     required String companyId,
-    String? name,
-    String? region,
-    List<String>? sections,
+    required String oldName,
+    required String newName,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId');
+    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/modify-section');
 
     final body = {
-      if (name != null) 'name': name,
-      if (region != null) 'region': region,
-      if (sections != null) 'sections': sections,
+      'old_name': oldName,
+      'new_name': newName,
     };
 
     final response = await http.patch(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
@@ -80,7 +78,47 @@ class CompanyApi {
       return CompanyModel.fromJson(data);
     }
     throw Exception(
-      'Failed to update Company : ${response.statusCode} ${response.body}',
+      'Failed to update Section : ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<CompanyModel> addSection({
+    required String companyId,
+    required String addedSection
+  }) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/add-section/$addedSection');
+
+    final response = await http.post(
+      url,
+      headers: await firebaseAuthHeaders(),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return CompanyModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to add section : ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<CompanyModel> deleteSection({
+    required String companyId,
+    required String removedSection
+  }) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/remove-section/$removedSection');
+
+    final response = await http.post(
+      url,
+      headers: await firebaseAuthHeaders(),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return CompanyModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to remove section : ${response.statusCode} ${response.body}',
     );
   }
 
