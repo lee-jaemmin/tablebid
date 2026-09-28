@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tablebid/methods/natural_sort.dart';
@@ -65,7 +66,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     bool renameTables = true,
   }) async {
     try {
-      await CompanyApi().updateCompany(
+      final updatedCompany = await CompanyApi().updateCompany(
         companyId: widget.companyId,
         sections: sections,
       );
@@ -90,7 +91,13 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           }
         }
       }
-      await _loadData();
+      final updatedTables = await TableApi().getTables(widget.companyId);
+      if (!mounted) return;
+      setState(() {
+        _company = updatedCompany;
+        _sections = updatedCompany.sections;
+        _tables = updatedTables;
+      });
     } catch (e) {
       print('updateSection: 오류 발생 $e');
       ScaffoldMessenger.of(
@@ -119,7 +126,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                   ),
                   onPressed: () => Navigator.pop(optionDialogContext, false),
                   child: const Text(
-                    '섹션만 만들기',
+                    '섹션만',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
@@ -132,7 +139,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     foregroundColor: Colors.black,
                   ),
                   onPressed: () => Navigator.pop(optionDialogContext, true),
-                  child: const Text('예'),
+                  child: const Text('테이블까지'),
                 ),
               ),
             ],
@@ -249,7 +256,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
 
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 입력창
-                      _loadData();
                     } catch (e) {
                       navigator.pop();
                       print('>>>>>>>>>>>>>>> e: $e');
@@ -475,7 +481,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(body: Center(child: CupertinoActivityIndicator()));
     } else {
       final company = _company;
       if (company == null) {
@@ -526,7 +532,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     ),
                   ),
                 ),
-                const Tab(icon: Icon(Icons.add, color: Colors.blue)),
+                const Tab(icon: Icon(Icons.add_circle_rounded, color: Colors.blue)),
               ],
               onTap: (index) {
                 if (index == sections.length + 1) {
