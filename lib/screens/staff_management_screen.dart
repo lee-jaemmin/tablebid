@@ -27,6 +27,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
       if (!mounted) return;
       setState(() {
         users = fectchedUsers;
+        users.sort((a, b) => a.userName.compareTo(b.userName));
         isLoading = false;
       });
     } catch (e) {
