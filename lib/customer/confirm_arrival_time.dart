@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/models/reservation_model.dart';
@@ -113,21 +114,19 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
     return _isLoading
         ? Scaffold(body: Center(child: CupertinoActivityIndicator()))
         : Scaffold(
-            appBar: AppBar(title: const Text('도착 예정 시간 선택')),
+            appBar: AppBar(title: const Text('도착 확정 안내')),
             body: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    '5분 내로 도착 시간 응답을 안 하거나 응답한 시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.',
+                  Text(
+                    '고객님의 도착 예정 시간은 ${DateFormat("HH:mm").format(_reservation!.reservationTime!)}입니다.\n시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.',
                   ),
                   const SizedBox(height: 24),
                   Row(
                     children: [
-                      Expanded(child: _buildArrivalButton(5, '5분 내 도착')),
-                      const SizedBox(width: 12),
-                      Expanded(child: _buildArrivalButton(10, '10분 내 도착')),
+                      Expanded(child: _buildArrivalButton(0, '확인')),
                     ],
                   ),
                   const SizedBox(height: 24),
