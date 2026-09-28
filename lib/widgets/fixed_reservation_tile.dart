@@ -48,7 +48,7 @@ class FixedReservationTile extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '상태: ${reservation.arrivalAt == null ? '응답 대기 중' : '${DateFormat('HH:mm').format(reservation.arrivalAt!)} 도착 예정'}',
+                '상태: ${reservation.arrivalAt == null ? '고객 응답 대기 중' : '${DateFormat('HH:mm').format(reservation.arrivalAt!)} 도착 예정'}',
                 style: const TextStyle(fontSize: 16),
               ),
             ],
