@@ -58,34 +58,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     }
   }
 
-  Future<bool?> _showSectionAddOptions(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (optionDialogContext) => AlertDialog(
-        title: const Text('섹션 추가 옵션'),
-        content: const Text(
-          '이 작업에는 약 20초 정도가 소요됩니다.',
-          style: TextStyle(fontSize: 16),
-        ),
-        actions: [
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
-                  onPressed: () => Navigator.pop(optionDialogContext, true),
-                  child: const Text('확인'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<bool?> _showSectionRenameOptions(BuildContext context) {
     return showDialog<bool>(
@@ -188,11 +160,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                     final newSection = controller.text.trim();
 
                     if (newSection.isEmpty) return;
-
-                    final createTables = await _showSectionAddOptions(
-                      dialogContext,
-                    );
-                    if (createTables == null || !dialogContext.mounted) return;
 
                     final navigator = Navigator.of(dialogContext);
                     final messenger = ScaffoldMessenger.of(context);
