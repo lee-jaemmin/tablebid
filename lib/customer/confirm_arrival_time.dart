@@ -83,8 +83,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
   }
 
   Future<void> _confirmArrivalTime() async {
-    final selectedMinutes = _selectedMinutes;
-    if (selectedMinutes == null || _isSubmitting) return;
+    if (_reservation == null) return;
 
     setState(() => _isSubmitting = true);
     final messenger = ScaffoldMessenger.of(context);
@@ -92,7 +91,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
     try {
       await ReservationApi().updateReservation(
         reservationId: widget.reservationId,
-        arrivalAt: DateTime.now().add(Duration(minutes: selectedMinutes)),
+        arrivalAt: _reservation!.reservationTime,
       );
       if (!mounted) return;
       Navigator.pushAndRemoveUntil(
@@ -124,20 +123,12 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                     '고객님의 도착 예정 시간은 ${DateFormat("HH:mm").format(_reservation!.reservationTime!)}입니다.\n시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.',
                   ),
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(child: _buildArrivalButton(0, '확인')),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                     ),
-                    onPressed: _selectedMinutes == null || _isSubmitting
-                        ? null
-                        : _confirmArrivalTime,
+                    onPressed: _confirmArrivalTime,
                     child: _isSubmitting
                         ? const CupertinoActivityIndicator(color: Colors.white)
                         : const Text('확인'),
@@ -146,20 +137,5 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
               ),
             ),
           );
-  }
-
-  Widget _buildArrivalButton(int minutes, String label) {
-    final isSelected = _selectedMinutes == minutes;
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.white : Colors.transparent,
-        foregroundColor: isSelected ? Colors.black : Colors.white,
-        side: const BorderSide(color: Colors.white),
-      ),
-      onPressed: _isSubmitting
-          ? null
-          : () => setState(() => _selectedMinutes = minutes),
-      child: Text(label),
-    );
   }
 }
