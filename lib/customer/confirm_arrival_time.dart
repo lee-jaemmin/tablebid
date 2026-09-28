@@ -120,7 +120,9 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '고객님의 도착 예정 시간은 ${DateFormat("HH:mm").format(_reservation!.reservationTime!)}입니다.\n시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.',
+                    '고객님의 도착 예정 시간은 ${DateFormat("HH:mm").format(_reservation!.reservationTime!)}입니다.\n\n'
+                    '시간 내에 도착하지 못할 시 매장의 사정에 따라 예약이 취소될 수 있음을 알려드립니다.\n\n'
+                    '도착 예정 시간 2시간 전까지는 예약 취소가 가능하나, 이후에는 취소가 불가합니다.', style: TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 24),
                   ElevatedButton(
