@@ -518,8 +518,8 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       ),
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text(
-                        '네',
-                        style: TextStyle(color: Colors.black),
+                        '예',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
