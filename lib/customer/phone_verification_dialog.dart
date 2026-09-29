@@ -226,7 +226,7 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
               labelText: '인증번호',
               helperText: _codeSent
                   ? '6자리 인증번호 입력'
-                  : '전화 번호 입력 후 인증하기를 눌러주세요.',
+                  : '전화 번호 입력 후 전송하기를 눌러주세요.',
               errorText: _errorText,
             ),
           ),
