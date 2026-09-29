@@ -67,3 +67,5 @@ android/app/google-services.json
 *.mode2v3
 *.perspectivev3
 xcuserdata/
+android/key.properties
+android/upload-keystore.jks
