@@ -373,6 +373,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         Gaps.v20(context),
                       ],
+                      SidebarMenu(
+                        icon: Icons.gavel,
+                        name: '경매(예약) 관리',
+                        onTapFunc: () async {
+                          Navigator.pop(context);
+                          if (!context.mounted) return;
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReservationScreen(
+                                companyId: company.id,
+                                userId: currentUser.id,
+                              ),
+                            ),
+                          );
+                          if (!mounted) return;
+                          await _syncTablesOnResume();
+                        },
+                      ),
+                      Gaps.v20(context),
                       if (currentRole == 'owner') ...[
                         SidebarMenu(
                           icon: Icons.person_3,
@@ -429,26 +449,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         Gaps.v20(context),
                       ],
-                      SidebarMenu(
-                        icon: Icons.alarm,
-                        name: '예약',
-                        onTapFunc: () async {
-                          Navigator.pop(context);
-                          if (!context.mounted) return;
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReservationScreen(
-                                companyId: company.id,
-                                userId: currentUser.id,
-                              ),
-                            ),
-                          );
-                          if (!mounted) return;
-                          await _syncTablesOnResume();
-                        },
-                      ),
-                      Gaps.v20(context),
+                      
                       SidebarMenu(
                         icon: Icons.rotate_left,
                         name: '히스토리',
