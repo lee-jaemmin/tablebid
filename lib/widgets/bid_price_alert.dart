@@ -189,6 +189,77 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
     }
   }
 
+  Future<void> _changeBidAvailability(bool bidAvailable) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(bidAvailable ? '경매 기능 켜기' : '경매 기능 끄기'),
+        content: Text(
+          '${widget.table.tablename}번 테이블의 경매 기능을 ${bidAvailable ? 'on' : 'off'} 하시겠습니까?',
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    side: BorderSide(color: Colors.white),
+                  ),
+                  child: const Text('예', style: TextStyle(color: Colors.black)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog(
+      context: context,
+      builder: (context) => const CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
+    try {
+      final updatedTable = await TableApi().updateTable(
+        tableId: widget.table.id,
+        bidAvailable: bidAvailable,
+      );
+      if (!mounted) return;
+      widget.onTableChanged(updatedTable);
+      navigator.pop(); // 로딩바
+      navigator.pop(); // 윈도우
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop(); // 로딩바
+      print('경매 ${bidAvailable ? '키는' : '끄는'} 중 에러: $e');
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('경매 기능 ${bidAvailable ? '키는' : '끄는'} 중 오류 발생: $e'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -197,7 +268,22 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
       child: AlertDialog(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [Text('${widget.table.tablename} 경매 설정 변경')],
+          children: [
+            Expanded(child: Text('${widget.table.tablename} 경매 설정 변경')),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: widget.table.bidAvailable
+                    ? Colors.red
+                    : Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadiusGeometry.circular(12),
+                ),
+              ),
+              onPressed: () =>
+                  _changeBidAvailability(!widget.table.bidAvailable),
+              child: Text(widget.table.bidAvailable ? '경매 끄기' : '경매 켜기'),
+            ),
+          ],
         ),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
