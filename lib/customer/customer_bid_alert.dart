@@ -139,6 +139,17 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       });
       return;
     }
+
+    int bidPrice = int.parse(_priceController.text.replaceAll(',','').replaceAll('원', ''));
+    int standard = widget.table.leastBidPrice ?? 0;
+
+    if (bidPrice < standard) {
+      setState(() {
+        _errorText = '테이블 최소 금액보다 낮은 액수는 입찰 불가합니다.\n최소 금액: ${formatPrice(standard)}';
+      });
+      return;
+    }
+
     if (_isSubmitting) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || user.uid != widget.userId) {
@@ -212,14 +223,14 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                       if (offerProducts.isNotEmpty) ...[
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('제공 품목: $offerProducts'),
+                          child: Text('제공 품목: $offerProducts', style: TextStyle(fontSize: 18, color: Colors.lightBlueAccent)),
                         ),
                         const SizedBox(height: 12),
                       ],
                       TextField(
                         controller: _nameController,
                         decoration: const InputDecoration(
-                          labelText: '(필수) 손님 이름',
+                          labelText: '(필수) 이름',
                         ),
                       ),
                       TextField(
@@ -250,9 +261,12 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                         onTap: _selectReservationTime,
                         decoration: const InputDecoration(
                           labelText: '(필수) 예약 시간',
+                          helperText: "도착 예정 시간 2시간 전부터는\n예약 수정/삭제가 불가하니 유의바랍니다.",
+                          helperStyle: TextStyle(color: Colors.lightBlueAccent, fontSize: 14),
                           suffixIcon: Icon(Icons.access_time),
                         ),
                       ),
+                      SizedBox(height: 12,),
                       TextField(
                         controller: _priceController,
                         keyboardType: TextInputType.number,

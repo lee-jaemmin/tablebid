@@ -132,7 +132,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                     ),
                     onPressed: _confirmArrivalTime,
                     child: _isSubmitting
-                        ? const CupertinoActivityIndicator(color: Colors.white)
+                        ? const CupertinoActivityIndicator(color: Colors.black)
                         : const Text('확인'),
                   ),
                 ],
