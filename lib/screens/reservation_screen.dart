@@ -112,13 +112,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ? const Duration(minutes: 1)
               : Duration.zero,
         );
-    DateTime? selectedDateTime = minimumDateTime;
-    // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
-    await showCupertinoModalPopup<void>(
+    DateTime selectedDateTime = minimumDateTime;
+    final confirmedDateTime = await showCupertinoModalPopup<DateTime>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Container(
-          height: 400,
+          height: 450,
           child: Material(
             color: CupertinoColors.systemBackground.resolveFrom(context),
             child: SafeArea(
@@ -145,6 +145,38 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       },
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              side: const BorderSide(color: Colors.white),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              '취소',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                            ),
+                            onPressed: () =>
+                                Navigator.pop(context, selectedDateTime),
+                            child: const Text('확인'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -153,10 +185,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
       },
     );
 
-    // 팝업이 닫히면 서버로 전송
-    if (selectedDateTime != null) {
-      if (selectedDateTime!.isBefore(DateTime.now())) {
-        selectedDateTime = selectedDateTime!.add(Duration(days: 1));
+    if (confirmedDateTime != null) {
+      selectedDateTime = confirmedDateTime;
+      if (selectedDateTime.isBefore(DateTime.now())) {
+        selectedDateTime = selectedDateTime.add(Duration(days: 1));
       } // 지금보다 늦은 오전 선택 시
       showDialog(
         context: context,
@@ -167,7 +199,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       try {
         await CompanyApi().setTablesBidEndAt(
           widget.companyId,
-          selectedDateTime!,
+          selectedDateTime,
         );
         if(!mounted) return;
         Navigator.pop(context);
@@ -238,7 +270,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           actions: [
             _isEditingMode
                 ? Padding(
-                    padding: EdgeInsets.all(8),
+                    padding: EdgeInsets.symmetric(horizontal: 2.0),
                     child: IconButton(
                       onPressed: () => _showCupertinoTimerPicker(context),
                       icon: Icon(Icons.timer),
@@ -259,8 +291,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         _isEditingMode = !_isEditingMode;
                       }),
                       child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('완료', style: TextStyle(fontSize: 16)),
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+                        child: Text('완료', style: TextStyle(fontSize: 16, color: Colors.lightGreenAccent,fontWeight: FontWeight.bold)),
                       ),
                     ),
             ),

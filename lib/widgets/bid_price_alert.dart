@@ -79,34 +79,84 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
           ? const Duration(minutes: 1)
           : Duration.zero,
     );
-    DateTime? selectedDateTime = minimumDateTime;
+    DateTime selectedDateTime = minimumDateTime;
 
-    // await => 빈 공간을 터치해 팝업을 닫을 때까지 기다림
-    await showCupertinoModalPopup<void>(
+    final confirmedDateTime = await showCupertinoModalPopup<DateTime>(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return Container(
-          height: 500, // 상단바가 빠졌으니 높이를 살짝 줄임
-          color: CupertinoColors.systemBackground.resolveFrom(context),
-          child: SafeArea(
-            top: false,
-            child: CupertinoDatePicker(
-              mode: CupertinoDatePickerMode.time, // mm:ss
-              initialDateTime: minimumDateTime,
-              minimumDate: minimumDateTime,
-              onDateTimeChanged: (DateTime newDateTime) {
-                selectedDateTime = newDateTime;
-              },
+          height: 450,
+          child: Material(
+            color: CupertinoColors.systemBackground.resolveFrom(context),
+            child: SafeArea(
+              top: false,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      '경매 마감 시간 설정',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.time, // mm:ss
+                      initialDateTime: minimumDateTime,
+                      minimumDate: minimumDateTime,
+                      onDateTimeChanged: (DateTime newDateTime) {
+                        selectedDateTime = newDateTime;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                              side: const BorderSide(color: Colors.white),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              '취소',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                            ),
+                            onPressed: () =>
+                                Navigator.pop(context, selectedDateTime),
+                            child: const Text('확인'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
       },
     );
 
-    // 팝업이 닫히면 서버로 전송
-    if (selectedDateTime != null) {
-      if (selectedDateTime!.isBefore(DateTime.now())) {
-        selectedDateTime = selectedDateTime!.add(Duration(days: 1));
+    if (confirmedDateTime != null) {
+      selectedDateTime = confirmedDateTime;
+      if (selectedDateTime.isBefore(DateTime.now())) {
+        selectedDateTime = selectedDateTime.add(Duration(days: 1));
       } // 지금보다 늦은 오전 선택 시
       final messenger = ScaffoldMessenger.of(context);
       final navigator = Navigator.of(context);
