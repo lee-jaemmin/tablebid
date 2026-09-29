@@ -56,23 +56,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       // 1. 카카오 로그인 인증
-      final bool isInstalled = await kakao.isKakaoTalkInstalled();
-
-      if (isInstalled) {
-        try {
-          await kakao.UserApi.instance.loginWithKakaoTalk();
-        } catch (e) {
-          if (e is PlatformException && e.code == 'CANCELED') {
-            if (context.mounted) {
-              setState(() => _isLoginLoading = false);
-            }
-            return;
-          }
-
-          await kakao.UserApi.instance.loginWithKakaoAccount();
-        }
-      } else {
+      if (kIsWeb) {
         await kakao.UserApi.instance.loginWithKakaoAccount();
+      } else {
+        final bool isInstalled = await kakao.isKakaoTalkInstalled();
+        if (!isInstalled) {
+          await kakao.UserApi.instance.loginWithKakaoAccount();
+        } else {
+          try {
+            await kakao.UserApi.instance.loginWithKakaoTalk();
+          } catch (e) {
+            if (e is PlatformException && e.code == 'CANCELED') {
+              if (context.mounted) {
+                setState(() => _isLoginLoading = false);
+              }
+              return;
+            }
+
+            await kakao.UserApi.instance.loginWithKakaoAccount();
+          }
+        }
       }
 
       // 2. 카카오 유저 정보 획득
