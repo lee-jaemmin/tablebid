@@ -313,12 +313,12 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
     final offerProducts = widget.table.offerProducts?.trim() ?? '';
     return _isLoading
         ? const CupertinoActivityIndicator()
-        : GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-            child: AlertDialog(
-              title: Text('${widget.table.tablename} 경매 수정'),
-              content: SizedBox(
+        : AlertDialog(
+            title: Text('${widget.table.tablename} 경매 수정'),
+            content: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: SizedBox(
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: SingleChildScrollView(
                   child: Column(
@@ -389,48 +389,46 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
                   ),
                 ),
               ),
-              actions: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        onPressed: _isSubmitting
-                            ? null
-                            : _deleteReservation,
-                        child: const Text(
-                          '삭제',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
-                        onPressed: _isSubmitting ? null : _submit,
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CupertinoActivityIndicator(
-                                  color: Colors.black,
-                                ),
-                              )
-                            : const Text(
-                                '수정',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
+            actions: [
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: _isSubmitting ? null : _deleteReservation,
+                      child: const Text(
+                        '삭제',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: _isSubmitting ? null : _submit,
+                      child: _isSubmitting
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CupertinoActivityIndicator(
+                                color: Colors.black,
+                              ),
+                            )
+                          : const Text(
+                              '수정',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           );
   }
 }
