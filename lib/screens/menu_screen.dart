@@ -154,6 +154,11 @@ class _MenuScreenState extends State<MenuScreen> {
       appBar: AppBar(
         title: Text('메뉴 관리'),
         actions: [
+          IconButton(
+            tooltip: '새로고침',
+            onPressed: _isLoading ? null : () => _loadData(forceRefresh: true),
+            icon: const Icon(Icons.refresh),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 2.0),
             child: IconButton(

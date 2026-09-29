@@ -262,6 +262,14 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
         title: Text('${widget.tableName} 구매내역'),
         actions: [
           Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: IconButton(
+              tooltip: '새로고침',
+              onPressed: _isLoading ? null : () => _loadMenu(forceRefresh: true),
+              icon: const Icon(Icons.refresh),
+            ),
+          ),
+          Padding(
             padding: EdgeInsets.only(right: 20),
             child: GestureDetector(
               onTap: () {
