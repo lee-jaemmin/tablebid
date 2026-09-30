@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tablebid/customer/confirm_arrival_time.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
 import 'package:tablebid/customer/customer_setting_screen.dart';
@@ -74,10 +75,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     }
   }
 
-   Future<void> _openInsta(String instaUrl) async {
+  Future<void> _openInsta(String instaUrl) async {
     final uri = Uri.tryParse(instaUrl.trim());
 
-    if (uri == null || uri.scheme != 'https' || !uri.host.endsWith('instagram.com')) {
+    if (uri == null ||
+        uri.scheme != 'https' ||
+        !uri.host.endsWith('instagram.com')) {
       throw Exception('올바른 인스타그램 주소가 아닙니다.');
     }
 
@@ -189,17 +192,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                             title: Text(company.name),
                             subtitle: Text(company.address),
                             trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    _openNaverMap(company.address);
+                                    if (company.instaUrl == null) return;
+                                    _openInsta(company.instaUrl!);
                                   },
-                                  icon: const Icon(Icons.place),
+                                  icon: const FaIcon(FontAwesomeIcons.instagram),
                                 ),
                                 IconButton(
                                   onPressed: () {
-                                    if(company.instaUrl == null) return;
-                                    _openInsta(company.instaUrl!);
+                                    _openNaverMap(company.address);
                                   },
                                   icon: const Icon(Icons.place),
                                 ),

@@ -336,20 +336,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('인스타그램 주소'),
-        content: TextFormField(
-          initialValue: editedUrl,
-          onChanged: (value) => editedUrl = value,
-          keyboardType: TextInputType.url,
-          autocorrect: false,
-          decoration: const InputDecoration(
-            hintText: 'https://www.instagram.com/...',
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white54),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              initialValue: editedUrl,
+              onChanged: (value) => editedUrl = value,
+              keyboardType: TextInputType.url,
+              autocorrect: false,
+              decoration: const InputDecoration(
+                hintText: 'https://www.instagram.com/...',
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white54),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white, width: 2),
+                ),
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2),
-            ),
-          ),
+            SizedBox(height: 12,),
+            Text('매장 인스타 > 상단 점 세개 > 프로필 URL 복사')
+          ],
         ),
         actions: [
           Row(
