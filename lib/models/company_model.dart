@@ -36,7 +36,7 @@ class CompanyModel {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       floorImagePath: json['floor_image_path'],
-      instaUrl: json['insta']
+      instaUrl: json['insta'],
     );
   }
 }

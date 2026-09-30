@@ -202,11 +202,16 @@ class CompanyApi {
     );
   }
 
-  Future<CompanyModel> uploadInsta(String companyId) async {
+  Future<CompanyModel> uploadInsta(String companyId, String instaUrl) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/companies/$companyId/upload-insta',
     );
-    final response = await http.patch(url, headers: await firebaseAuthHeaders());
+    final body = {"insta": instaUrl};
+    final response = await http.patch(
+      url,
+      body: jsonEncode(body),
+      headers: await firebaseAuthHeaders(),
+    );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);

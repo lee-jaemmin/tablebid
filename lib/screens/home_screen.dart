@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tablebid/constants/gaps.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   CompanyModel? _company;
   bool _isLoading = true;
   int _refreshCount = 0;
+  TextEditingController _instaUrlCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -86,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _company = company;
         _setTables(tables);
         _currentUser = user;
+        _instaUrlCtrl.text = company.instaUrl ?? '';
         _isLoading = false;
       });
       _subscribeToWebSocket(companyId);
@@ -239,7 +242,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       final company = result[0] as CompanyModel;
       final tables = result[1] as List<TableModel>;
       final user = result[2] as UserModel;
-       setState(() {
+      setState(() {
         _company = company;
         _setTables(tables);
         _currentUser = user;
@@ -307,6 +310,84 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> sendInstaUrl(String instaUrl) async {
+
+    try {
+      final updatedCompany = await CompanyApi().uploadInsta(
+        _company!.id,
+        instaUrl,
+      );
+      if (!mounted) return;
+      setState(() {
+        _company = updatedCompany;
+        _instaUrlCtrl.text = updatedCompany.instaUrl ?? '';
+      });
+    } catch (e) {
+      print("인스타 업로드 오류: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('인스타 주소 업로드 중 오류가 발생했습니다.')));
+    }
+  }
+
+  Future<void> _showInstaUrlDialog() async {
+    var editedUrl = _instaUrlCtrl.text;
+    final instaUrl = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('인스타그램 주소'),
+        content: TextFormField(
+          initialValue: editedUrl,
+          onChanged: (value) => editedUrl = value,
+          keyboardType: TextInputType.url,
+          autocorrect: false,
+          decoration: const InputDecoration(
+            hintText: 'https://www.instagram.com/...',
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white54),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.white, width: 2),
+            ),
+          ),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    side: const BorderSide(color: Colors.white),
+                  ),
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text(
+                    '취소',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                  ),
+                  onPressed: () =>
+                      Navigator.pop(dialogContext, editedUrl.trim()),
+                  child: const Text('저장'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (instaUrl == null) return;
+    await sendInstaUrl(instaUrl);
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -314,6 +395,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     for (final notifier in _tableNotifierById.values) {
       notifier.dispose();
     }
+    _instaUrlCtrl.dispose();
     super.dispose();
   }
 
@@ -372,7 +454,42 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           },
                         ),
                         Gaps.v20(context),
+                        if (currentRole != 'customer' &&
+                            currentRole != null) ...[
+                          Material(
+                            color: Colors.transparent,
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 8,
+                              ),
+                              leading: const FaIcon(
+                                FontAwesomeIcons.instagram,
+                                size: 16,
+                              ),
+                              title: const Text(
+                                '인스타그램',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              subtitle: Text(
+                                company.instaUrl?.isNotEmpty == true
+                                    ? company.instaUrl!
+                                    : '프로필 주소를 등록해주세요.',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              trailing: const Icon(Icons.edit_outlined),
+                              onTap: _showInstaUrlDialog,
+                            ),
+                          ),
+                          Gaps.v20(context),
+                        ],
                       ],
+
                       SidebarMenu(
                         icon: Icons.gavel,
                         name: '경매(예약) 관리',
@@ -399,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           name: '직원 관리',
                           onTapFunc: () async {
                             Navigator.pop(context);
-                            await Navigator.push<void> (
+                            await Navigator.push<void>(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => StaffmanagementScreen(
@@ -449,7 +566,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ),
                         Gaps.v20(context),
                       ],
-                      
+
                       SidebarMenu(
                         icon: Icons.rotate_left,
                         name: '히스토리',
@@ -526,20 +643,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               },
             ),
             ...sections.map((section) {
-                  return RefreshIndicator(
-                    onRefresh: _refreshHomeData,
-                    child: TableGridView(
-                      key: ValueKey('$section-$_refreshCount'),
-                      companyId: company.id,
-                      tableNotifiers:
-                          _tableNotifierBySection[section] ?? const [],
-                      visibleFields: currentUser.cardfields,
-                      userId: currentUser.id,
-                      userName: currentUser.userName,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                    ),
-                  );
-                }),
+              return RefreshIndicator(
+                onRefresh: _refreshHomeData,
+                child: TableGridView(
+                  key: ValueKey('$section-$_refreshCount'),
+                  companyId: company.id,
+                  tableNotifiers: _tableNotifierBySection[section] ?? const [],
+                  visibleFields: currentUser.cardfields,
+                  userId: currentUser.id,
+                  userName: currentUser.userName,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                ),
+              );
+            }),
           ],
         ),
       ),
