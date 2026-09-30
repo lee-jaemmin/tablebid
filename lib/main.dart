@@ -51,7 +51,7 @@ Future<void> _initAsyncTasks() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   const initializationSettings = InitializationSettings(
-    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    android: AndroidInitializationSettings('ic_launcher_foreground'),
     iOS: DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -95,7 +95,7 @@ Future<void> _initAsyncTasks() async {
               channel.id,
               channel.name,
               channelDescription: channel.description,
-              icon: '@mipmap/ic_launcher',
+              icon: 'ic_launcher_foreground',
               importance: Importance.high,
               priority: Priority.high,
             ),
