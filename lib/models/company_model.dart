@@ -8,6 +8,7 @@ class CompanyModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String? floorImagePath;
+  final String? instaUrl;
 
   CompanyModel({
     required this.id,
@@ -19,6 +20,7 @@ class CompanyModel {
     required this.createdAt,
     required this.updatedAt,
     this.floorImagePath,
+    this.instaUrl,
   });
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class CompanyModel {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       floorImagePath: json['floor_image_path'],
+      instaUrl: json['insta']
     );
   }
 }

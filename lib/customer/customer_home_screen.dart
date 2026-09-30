@@ -74,6 +74,18 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
     }
   }
 
+   Future<void> _openInsta(String instaUrl) async {
+    final uri = Uri.tryParse(instaUrl.trim());
+
+    if (uri == null || uri.scheme != 'https' || !uri.host.endsWith('instagram.com')) {
+      throw Exception('올바른 인스타그램 주소가 아닙니다.');
+    }
+
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('인스타그램을 열 수 없습니다.');
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -176,11 +188,22 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                             isThreeLine: true,
                             title: Text(company.name),
                             subtitle: Text(company.address),
-                            trailing: IconButton(
-                              onPressed: () {
-                                _openNaverMap(company.address);
-                              },
-                              icon: const Icon(Icons.place),
+                            trailing: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    _openNaverMap(company.address);
+                                  },
+                                  icon: const Icon(Icons.place),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    if(company.instaUrl == null) return;
+                                    _openInsta(company.instaUrl!);
+                                  },
+                                  icon: const Icon(Icons.place),
+                                ),
+                              ],
                             ),
                             onTap: () => Navigator.push(
                               context,

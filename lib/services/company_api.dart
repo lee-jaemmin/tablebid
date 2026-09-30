@@ -60,12 +60,11 @@ class CompanyApi {
     required String oldName,
     required String newName,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/modify-section');
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/companies/$companyId/modify-section',
+    );
 
-    final body = {
-      'old_name': oldName,
-      'new_name': newName,
-    };
+    final body = {'old_name': oldName, 'new_name': newName};
 
     final response = await http.patch(
       url,
@@ -84,14 +83,13 @@ class CompanyApi {
 
   Future<CompanyModel> addSection({
     required String companyId,
-    required String addedSection
+    required String addedSection,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/add-section/$addedSection');
-
-    final response = await http.post(
-      url,
-      headers: await firebaseAuthHeaders(),
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/companies/$companyId/add-section/$addedSection',
     );
+
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -104,14 +102,13 @@ class CompanyApi {
 
   Future<CompanyModel> deleteSection({
     required String companyId,
-    required String removedSection
+    required String removedSection,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/companies/$companyId/remove-section/$removedSection');
-
-    final response = await http.post(
-      url,
-      headers: await firebaseAuthHeaders(),
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/companies/$companyId/remove-section/$removedSection',
     );
+
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -155,13 +152,11 @@ class CompanyApi {
 
   Future<UserModel> joinCompanyWithCode(String code) async {
     final url = Uri.parse('${ApiClient.baseUrl}/join-with-code');
-    final body =  {
-      'code': code
-    };
+    final body = {'code': code};
     final response = await http.post(
       url,
       headers: await firebaseAuthHeaders(),
-      body: jsonEncode(body)
+      body: jsonEncode(body),
     );
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
@@ -174,14 +169,11 @@ class CompanyApi {
 
   Future<void> toggleTablesBid(String companyId, bool bidAvailable) async {
     final url = Uri.parse('${ApiClient.baseUrl}/toggle-tables-bid');
-    final body = {
-      'company_id': companyId,
-      'bid_available': bidAvailable
-    };
+    final body = {'company_id': companyId, 'bid_available': bidAvailable};
     final response = await http.patch(
       url,
       headers: await firebaseAuthHeaders(),
-      body: jsonEncode(body)
+      body: jsonEncode(body),
     );
     if (response.statusCode == 200) {
       return;
@@ -195,18 +187,33 @@ class CompanyApi {
     final url = Uri.parse('${ApiClient.baseUrl}/set-tables-bid-end-at');
     final body = {
       'company_id': companyId,
-      'bid_end_at': bidEndAt.toUtc().toIso8601String()
+      'bid_end_at': bidEndAt.toUtc().toIso8601String(),
     };
     final response = await http.patch(
       url,
       headers: await firebaseAuthHeaders(),
-      body: jsonEncode(body)
+      body: jsonEncode(body),
     );
     if (response.statusCode == 200) {
       return;
     }
     throw Exception(
       'Failed to set Bid End At: ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<CompanyModel> uploadInsta(String companyId) async {
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/companies/$companyId/upload-insta',
+    );
+    final response = await http.patch(url, headers: await firebaseAuthHeaders());
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return CompanyModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to upload insta: ${response.statusCode} ${response.body}',
     );
   }
 }
