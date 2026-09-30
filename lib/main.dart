@@ -137,7 +137,8 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'tablebid',
+      title: 'TABLEBID',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'NotoSansKR',
         brightness: Brightness.dark,

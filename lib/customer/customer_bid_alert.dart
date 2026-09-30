@@ -172,7 +172,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
         tableId: widget.table.id,
         customerName: _nameController.text.trim(),
         customerPhone: _phoneController.text.trim(),
-        bidPrice: int.tryParse(_priceController.text.replaceAll(',', '')),
+        bidPrice: bidPrice,
         idToken: token,
       );
       if (!mounted) return;

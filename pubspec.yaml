@@ -75,7 +75,7 @@ flutter_launcher_icons:
 flutter_native_splash:
   color: "#ffffff" # 배경색 (흰색)
   image: assets/images/tablebid_logo.png # 중앙에 띄울 로고 경로
-  fullscreen: true
+  fullscreen: false
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
