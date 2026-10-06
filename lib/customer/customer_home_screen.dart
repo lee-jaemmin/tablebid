@@ -179,7 +179,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                   const SizedBox(width: 12),
                   const Expanded(
                     child: Text(
-                      '더 편리하게 이용하려면\nTABLEBID 앱을 설치해보세요.',
+                      '더 편리한 이용을 원하시면\nTABLEBID 앱을 설치해보세요.',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -251,7 +251,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                         final company = visibleCompanies[index];
                         return Card(
                           child: ListTile(
-                            isThreeLine: true,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12)),
+                            tileColor: const Color(0xFF2C2C2E).withValues(alpha:1),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             title: Text(company.name),
                             subtitle: Text(company.address),
                             trailing: Row(
