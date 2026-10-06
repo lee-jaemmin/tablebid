@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tablebid/customer/confirm_arrival_time.dart';
@@ -26,12 +28,45 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   String _selectedRegion = _regions.first;
   bool _isLoading = true;
   bool _hasError = false;
+  String? _storeUrl;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _loadInitialData();
+    _loadStoreUrl();
+  }
+
+  Future<void> _loadStoreUrl() async {
+    if (!kIsWeb) return;
+    final field = switch (defaultTargetPlatform) {
+      TargetPlatform.iOS => 'ios_url',
+      TargetPlatform.android => 'aos_url',
+      _ => null,
+    };
+    if (field == null) return;
+
+    try {
+      final document = await FirebaseFirestore.instance
+          .collection('config')
+          .doc('app_version')
+          .get();
+      final data = document.data();
+      final storeUrl = data?[field];
+      if (!mounted || storeUrl is! String || storeUrl.trim().isEmpty) return;
+      setState(() => _storeUrl = storeUrl.trim());
+    } catch (e) {
+      print('스토어 주소 로딩 오류: $e');
+    }
+  }
+
+  Future<void> _openStore() async {
+    final uri = Uri.tryParse(_storeUrl ?? '');
+    if (uri == null) return;
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('앱 스토어를 열 수 없습니다.');
+    }
   }
 
   Future<void> _loadInitialData() async {
@@ -132,6 +167,37 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       ),
       body: Column(
         children: [
+          if (kIsWeb && _storeUrl != null)
+            Container(
+              margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2C2C2E),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white24),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.phone_iphone, color: Colors.white),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      '더 편리하게 이용하려면\nTABLEBID 앱을 설치해보세요.',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                    onPressed: _openStore,
+                    child: const Text('설치'),
+                  ),
+                ],
+              ),
+            ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.all(12),
