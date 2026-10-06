@@ -264,6 +264,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
           ),
         ),
         body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
           children: [
             CompanyFloorImage(
               company: widget.company,
