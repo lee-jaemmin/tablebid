@@ -40,12 +40,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
   Future<void> _loadStoreUrl() async {
     if (!kIsWeb) return;
-    final field = switch (defaultTargetPlatform) {
-      TargetPlatform.iOS => 'ios_url',
-      TargetPlatform.android => 'aos_url',
-      _ => null,
-    };
-    if (field == null) return;
+    final field = defaultTargetPlatform == TargetPlatform.iOS
+        ? 'ios_url'
+        : 'aos_url';
 
     try {
       final document = await FirebaseFirestore.instance
@@ -167,7 +164,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       ),
       body: Column(
         children: [
-          if (kIsWeb && _storeUrl != null)
+          if (kIsWeb)
             Container(
               margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
               padding: const EdgeInsets.all(14),
@@ -192,7 +189,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                     ),
-                    onPressed: _openStore,
+                    onPressed: _storeUrl == null ? null : _openStore,
                     child: const Text('설치'),
                   ),
                 ],
