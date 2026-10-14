@@ -142,7 +142,8 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
         .toList();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('매장 선택'),
+        title: const Text('매장 선택', style: TextStyle(color: Colors.black)),
+        
         actions: [
           IconButton(
             tooltip: '새로고침',
@@ -197,7 +198,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 24),
             child: Row(
               children: _regions.map((region) {
                 return Padding(
@@ -252,7 +253,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                         return Card(
                           child: ListTile(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12)),
-                            tileColor: const Color(0xFF2C2C2E).withValues(alpha:1),
+                            tileColor: Colors.white,
                             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             title: Text(company.name),
                             subtitle: Text(company.address),

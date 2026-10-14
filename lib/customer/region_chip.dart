@@ -18,12 +18,12 @@ class RegionChip extends StatelessWidget {
       duration: const Duration(milliseconds: 100),
       decoration: BoxDecoration(
         color: isSelected
-            ? const Color.fromARGB(255, 112, 10, 10)
-            : Colors.transparent,
+            ? Theme.of(context).colorScheme.primary
+            : Theme.of(context).primaryColor,
         borderRadius: BorderRadius.circular(50),
         border: !isSelected
-            ? Border.all(color: Colors.grey.shade300)
-            : Border.all(color: Color.fromARGB(255, 112, 10, 10)),
+            ? Border.all(color: Theme.of(context).colorScheme.surface)
+            : Border.all(color: Theme.of(context).primaryColor),
       ),
       child: InkWell(
         onTap: onTap,
@@ -34,7 +34,7 @@ class RegionChip extends StatelessWidget {
             child: Text(
               region,
               textAlign: TextAlign.center,
-              style: const TextStyle(height: 1),
+              style: TextStyle(height: 1, color: isSelected ? Theme.of(context).primaryColor : Colors.grey.shade500),
             ),
           ),
         ),

@@ -26,7 +26,7 @@ class AuthTextfield extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.grey.shade500),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: TextFormField(

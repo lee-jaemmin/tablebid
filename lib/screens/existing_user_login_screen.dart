@@ -170,6 +170,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
         // 🌟 뒤로 가기를 위한 투명 앱바 추가
         appBar: AppBar(
           elevation: 0,
+          backgroundColor: Theme.of(context).colorScheme.surface,
         ),
         body: Center(
           child: SingleChildScrollView(
@@ -184,7 +185,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -192,7 +193,6 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     "이전에 가입하신 이메일로 로그인해주세요.",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 50),
@@ -204,10 +204,10 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 16),
+                  
                   if (!_isEmailValid && _emailController.text.isNotEmpty)
                     const Padding(
-                      padding: EdgeInsets.only(top: 8, left: 15),
+                      padding: EdgeInsets.only(left: 15),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
@@ -216,7 +216,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                         ),
                       ),
                     ),
-
+                  SizedBox(height: 16),
                   // 비밀번호
                   AuthTextfield(
                     controller: _passwordController,
@@ -233,10 +233,10 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     child: ElevatedButton(
                       onPressed: _isFormValid() ? _submit : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).primaryColor,
                         disabledBackgroundColor: Colors.grey.shade300,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
@@ -247,7 +247,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                               "로그인",
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: Colors.white,
                               ),
                             ) : 
                             const Text(

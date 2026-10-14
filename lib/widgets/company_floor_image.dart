@@ -163,9 +163,9 @@ class _CompanyFloorImageState extends State<CompanyFloorImage>
       ).showSnackBar(SnackBar(content: Text(_messageForError(e))));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이미지 업로드 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('이미지 업로드 중 오류가 발생했습니다.')));
     } finally {
       if (mounted) {
         setState(() {
@@ -234,7 +234,7 @@ class _CompanyFloorImageState extends State<CompanyFloorImage>
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  foregroundColor: Colors.black
+                  foregroundColor: Colors.black,
                 ),
                 onPressed: _pickAndUpload,
                 child: const Text('+ 이미지 추가하기'),

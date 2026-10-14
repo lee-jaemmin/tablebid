@@ -490,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onTap: _showLegacyEmailLogin,
                   child: const Text(
                     "기존 이메일로 로그인하기",
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Colors.black, fontSize: 16),
                   ),
                 ),
               ],

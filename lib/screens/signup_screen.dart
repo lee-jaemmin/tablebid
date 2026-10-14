@@ -253,19 +253,19 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: ElevatedButton(
                       onPressed: isLoading ? null : _submit,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
                       child: isLoading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
+                          ? const CircularProgressIndicator()
+                          : Text(
                               "가입 및 입장하기",
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.black,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

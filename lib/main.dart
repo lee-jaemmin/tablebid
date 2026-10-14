@@ -2,7 +2,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:tablebid/constants/sizes.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
@@ -141,23 +141,23 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'NotoSansKR',
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.black,
-        colorScheme: const ColorScheme.dark(
-          primary: Colors.white,
-          surface: Colors.black,
-          onSurface: Colors.white,
-          secondary: Color(0xffecb88d)
+        scaffoldBackgroundColor: Color(0xfff5f5f5),
+        colorScheme: const ColorScheme.light(
+          primary: Color.fromARGB(255, 89, 121, 218), // cursor color
+          surface: Color.fromARGB(255, 247, 247, 247), // textfield color, background
+          onSurface: Colors.black,
+          secondary: Color(0xffecb88d),
         ),
-        primaryColor: Colors.white,
+        primaryColor: Color.fromARGB(255, 234, 239, 253),
         appBarTheme: const AppBarTheme(
-          foregroundColor: Colors.white,
-          backgroundColor: Colors.black,
-          elevation: 0,
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          backgroundColor: Color.fromARGB(255, 247, 247, 247),
+          
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: Sizes.size18,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         inputDecorationTheme: const InputDecorationTheme(
@@ -172,7 +172,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
         ),
         // 진행바 색
         progressIndicatorTheme: const ProgressIndicatorThemeData(
-          color: Colors.white,
+          color: Color.fromARGB(255, 234, 239, 253),
         ),
         // BottomNavigationBar 색
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -182,7 +182,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           type: BottomNavigationBarType.fixed,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: const Color(0xFF2C2C2E).withValues(alpha:1),
+          backgroundColor: const Color(0xFF2C2C2E).withValues(alpha: 1),
           surfaceTintColor: Colors.white.withValues(alpha: 0.04),
           elevation: 24,
           shadowColor: Colors.black87,

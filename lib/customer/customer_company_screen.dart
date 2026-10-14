@@ -6,6 +6,7 @@ import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_list_screen.dart';
 import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/customer_table_grid.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -62,10 +63,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
   }
 
   Future<void> _refresh() async {
-    await Future.wait([
-      _checkUnder(),
-      _loadTables(),
-    ]);
+    await Future.wait([_checkUnder(), _loadTables()]);
   }
 
   Future<void> _checkUnder() async {
@@ -76,13 +74,12 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ConfirmArrivalTime(reservationId: result.id),
+            builder: (context) => ConfirmArrivalTime(reservationId: result.id),
           ),
           (route) => false,
         );
       }
-    } catch(e) {
+    } catch (e) {
       print(e);
     }
   }
@@ -250,17 +247,41 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
               ),
             ),
           ],
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorWeight: 4,
-            labelStyle: const TextStyle(fontSize: 16),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-            tabAlignment: TabAlignment.start,
-            isScrollable: true,
-            tabs: [
-              const Tab(text: '전체'),
-              ...sections.map((section) => Tab(text: section)),
-            ],
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(64),
+            child: Builder(
+              builder: (tabContext) {
+                final ctrl = DefaultTabController.of(tabContext);
+                final labels = ['전체', ...sections];
+                return AnimatedBuilder(
+                  animation: ctrl,
+                  builder: (context, child) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: List.generate(labels.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: 56),
+                              child: SectionChip(
+                                region: labels[index],
+                                isSelected: ctrl.index == index,
+                                onTap: () => ctrl.animateTo(index),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
         body: TabBarView(
