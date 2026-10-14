@@ -297,7 +297,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         ),
                         child: Text(
                           fixedReservation == null ? '입찰 중' : '경매 마감',
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ),
                     ),

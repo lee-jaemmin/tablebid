@@ -82,7 +82,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
     super.dispose();
   }
 
-    String formatKoreanPhoneNumber(String? value) {
+  String formatKoreanPhoneNumber(String? value) {
     if (value == null || value.trim().isEmpty) return '';
 
     var digits = value.replaceAll(RegExp(r'[^0-9]'), '');
@@ -140,12 +140,15 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
       return;
     }
 
-    int bidPrice = int.parse(_priceController.text.replaceAll(',','').replaceAll('원', ''));
+    int bidPrice = int.parse(
+      _priceController.text.replaceAll(',', '').replaceAll('원', ''),
+    );
     int standard = widget.table.leastBidPrice ?? 0;
 
     if (bidPrice < standard) {
       setState(() {
-        _errorText = '테이블 최소 금액보다 낮은 액수는 입찰 불가합니다.\n최소 금액: ${formatPrice(standard)}';
+        _errorText =
+            '테이블 최소 금액보다 낮은 액수는 입찰 불가합니다.\n최소 금액: ${formatPrice(standard)}';
       });
       return;
     }
@@ -223,15 +226,19 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                       if (offerProducts.isNotEmpty) ...[
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('제공 품목: $offerProducts', style: TextStyle(fontSize: 18, color: Colors.lightBlueAccent)),
+                          child: Text(
+                            '제공 품목: $offerProducts',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 12),
                       ],
                       TextField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: '(필수) 이름',
-                        ),
+                        decoration: const InputDecoration(labelText: '(필수) 이름'),
                       ),
                       TextField(
                         controller: _phoneController,
@@ -259,14 +266,18 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                         controller: _timeController,
                         readOnly: true,
                         onTap: _selectReservationTime,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           labelText: '(필수) 예약 시간',
-                          helperText: "도착 예정 시간 2시간 전부터는\n예약 수정/삭제가 불가하니 유의바랍니다.",
-                          helperStyle: TextStyle(color: Colors.lightBlueAccent, fontSize: 14),
+                          helperText:
+                              "도착 예정 시간 2시간 전부터는\n예약 수정/삭제가 불가하니 유의바랍니다.",
+                          helperStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontSize: 14,
+                          ),
                           suffixIcon: Icon(Icons.access_time),
                         ),
                       ),
-                      SizedBox(height: 12,),
+                      SizedBox(height: 12),
                       TextField(
                         controller: _priceController,
                         keyboardType: TextInputType.number,
@@ -291,25 +302,15 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          side: const BorderSide(color: Colors.white),
-                          backgroundColor: Colors.transparent,
-                        ),
                         onPressed: _isSubmitting
                             ? null
                             : () => Navigator.pop(context, false),
-                        child: const Text(
-                          '취소',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: Text('취소'),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
+                      child: OutlinedButton(
                         onPressed: _isSubmitting ? null : _submit,
                         child: _isSubmitting
                             ? const SizedBox(
@@ -321,7 +322,7 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                               )
                             : const Text(
                                 '등록',
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(color: Colors.white),
                               ),
                       ),
                     ),

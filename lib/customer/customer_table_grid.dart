@@ -54,8 +54,8 @@ class CustomerTableGrid extends StatelessWidget {
             : isBidClosed
             ? Colors.grey[500]
             : table.hasReservations
-            ? const Color.fromARGB(229, 255, 153, 0)
-            : Colors.grey[100];
+            ? const Color.fromARGB(227, 239, 202, 145)
+            : Colors.white;
         return Card(
           color: color,
           child: InkWell(

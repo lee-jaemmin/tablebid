@@ -327,7 +327,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
                       if (offerProducts.isNotEmpty) ...[
                         Align(
                           alignment: Alignment.centerLeft,
-                          child: Text('제공 품목: $offerProducts'),
+                          child: Text('제공 품목: $offerProducts', style: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.primary),),
                         ),
                         const SizedBox(height: 12),
                       ],

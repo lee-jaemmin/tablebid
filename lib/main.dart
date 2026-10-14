@@ -144,7 +144,12 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
         scaffoldBackgroundColor: Color(0xfff5f5f5),
         colorScheme: const ColorScheme.light(
           primary: Color.fromARGB(255, 89, 121, 218), // cursor color
-          surface: Color.fromARGB(255, 247, 247, 247), // textfield color, background
+          surface: Color.fromARGB(
+            255,
+            247,
+            247,
+            247,
+          ), // textfield color, background
           onSurface: Colors.black,
           secondary: Color(0xffecb88d),
         ),
@@ -153,7 +158,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           centerTitle: true,
           foregroundColor: Colors.black,
           backgroundColor: Color.fromARGB(255, 247, 247, 247),
-          
+
           titleTextStyle: TextStyle(
             fontWeight: FontWeight.w800,
             fontSize: Sizes.size18,
@@ -163,12 +168,12 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
         inputDecorationTheme: const InputDecorationTheme(
           border: UnderlineInputBorder(),
           enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white54),
+            borderSide: BorderSide(color: Colors.grey),
           ),
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.white, width: 2),
+            borderSide: BorderSide(color: Colors.black, width: 2),
           ),
-          floatingLabelStyle: TextStyle(color: Colors.white),
+          floatingLabelStyle: TextStyle(color: Colors.black),
         ),
         // 진행바 색
         progressIndicatorTheme: const ProgressIndicatorThemeData(
@@ -182,14 +187,29 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           type: BottomNavigationBarType.fixed,
         ),
         dialogTheme: DialogThemeData(
-          backgroundColor: const Color(0xFF2C2C2E).withValues(alpha: 1),
-          surfaceTintColor: Colors.white.withValues(alpha: 0.04),
+          backgroundColor: Color.fromARGB(255, 247, 247, 247),
+          surfaceTintColor: Colors.white,
           elevation: 24,
           shadowColor: Colors.black87,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
             side: BorderSide(color: Colors.white.withValues(alpha: 0.24)),
           ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            side: BorderSide(color: Color.fromARGB(255, 234, 239, 253),),
+            backgroundColor: Color.fromARGB(255, 234, 239, 253),
+            foregroundColor: Color.fromARGB(255, 89, 121, 218),
+          ), // 취소
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 89, 121, 218),
+            side: BorderSide(color: Color.fromARGB(255, 89, 121, 218)),
+            foregroundColor: Colors.white
+          ), // 취소
         ),
       ),
       home: SplashScreen(),
