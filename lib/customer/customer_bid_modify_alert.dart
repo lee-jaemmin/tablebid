@@ -407,10 +407,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
+                    child: OutlinedButton(
                       onPressed: _isSubmitting ? null : _submit,
                       child: _isSubmitting
                           ? const SizedBox(
@@ -422,7 +419,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
                             )
                           : const Text(
                               '수정',
-                              style: TextStyle(color: Colors.black),
+                              
                             ),
                     ),
                   ),

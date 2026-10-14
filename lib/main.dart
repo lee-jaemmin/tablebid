@@ -200,7 +200,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           style: ElevatedButton.styleFrom(
             elevation: 0,
             side: BorderSide(color: Color.fromARGB(255, 234, 239, 253),),
-            backgroundColor: Color.fromARGB(255, 234, 239, 253),
+            backgroundColor: Colors.grey.shade200,
             foregroundColor: Color.fromARGB(255, 89, 121, 218),
           ), // 취소
         ),

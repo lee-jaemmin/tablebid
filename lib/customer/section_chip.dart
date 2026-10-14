@@ -23,7 +23,7 @@ class SectionChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(50),
         border: !isSelected
             ? Border.all(color: Colors.grey.shade500)
-            : Border.all(color: Colors.black),
+            : Border.all(color: Theme.of(context).colorScheme.primary),
       ),
       child: InkWell(
         onTap: onTap,
@@ -34,7 +34,7 @@ class SectionChip extends StatelessWidget {
             child: Text(
               region,
               textAlign: TextAlign.center,
-              style: TextStyle(height: 1, color: isSelected ? Colors.black : Colors.grey.shade500),
+              style: TextStyle(height: 1, color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade500),
             ),
           ),
         ),

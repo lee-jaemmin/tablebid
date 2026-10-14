@@ -263,7 +263,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                               ),
                               child: const Text(
                                 '확정된 예약',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(fontSize: 12, color: Colors.white),
                               ),
                             ),
                             _CustomerBidTile(
@@ -353,7 +353,7 @@ class _CustomerBidTile extends StatelessWidget {
         borderRadius: BorderRadiusGeometry.circular(12),
       ),
       onTap: onTap,
-      tileColor: isMine ? Colors.blue.withValues(alpha: 0.36) : null,
+      tileColor: isMine ? Colors.blue.withValues(alpha: 0.24) : null,
       contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +395,7 @@ class _CustomerBidTile extends StatelessWidget {
           : IconButton(
               tooltip: '내 입찰 삭제',
               onPressed: onDelete,
-              icon: const Icon(Icons.remove_circle, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Colors.red),
             ),
     );
   }

@@ -233,7 +233,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     child: ElevatedButton(
                       onPressed: _isFormValid() ? _submit : null,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).primaryColor,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         disabledBackgroundColor: Colors.grey.shade300,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
