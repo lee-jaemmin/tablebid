@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:tablebid/constants/gaps.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -347,10 +348,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               decoration: const InputDecoration(
                 hintText: 'https://www.instagram.com/...',
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white54),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white, width: 2),
+                  borderSide: BorderSide(color: Colors.grey, width: 2),
                 ),
               ),
             ),
@@ -363,24 +364,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: const BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+             
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () =>
                       Navigator.pop(dialogContext, editedUrl.trim()),
                   child: const Text('저장'),
@@ -442,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Scaffold(
         key: _scaffoldKey,
         endDrawer: Drawer(
-          backgroundColor: Color(0xFF2C2C2E),
+          backgroundColor:Colors.grey.shade200,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 100.0),
             child: SingleChildScrollView(
@@ -478,8 +473,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                                 '인스타그램',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ),
                               subtitle: Text(
@@ -623,18 +617,41 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               ),
             ),
           ],
-          bottom: TabBar(
-            indicatorSize: TabBarIndicatorSize.tab,
-            indicatorWeight: 4,
-            dividerColor: Colors.transparent,
-            labelStyle: const TextStyle(fontSize: 16),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-            tabAlignment: TabAlignment.start,
-            isScrollable: true,
-            tabs: [
-              const Tab(text: '전체'),
-              ...sections.map((s) => Tab(text: s)),
-            ],
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(64),
+            child: Builder(
+              builder: (tabContext) {
+                final ctrl = DefaultTabController.of(tabContext);
+                final labels = ['전체', ...sections];
+                return AnimatedBuilder(
+                  animation: ctrl,
+                  builder: (context, child) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      child: Row(
+                        children: List.generate(labels.length, (index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(minWidth: 56),
+                              child: SectionChip(
+                                region: labels[index],
+                                isSelected: ctrl.index == index,
+                                onTap: () => ctrl.animateTo(index),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
         body: TabBarView(

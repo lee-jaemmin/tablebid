@@ -46,13 +46,13 @@ class CustomerTableGrid extends StatelessWidget {
         final showBidEndAt =
             table.bidAvailable && !isInUse && !table.isReserved && !isBidClosed;
         final color = !table.bidAvailable
-            ? Colors.grey[500]
+            ? Colors.grey[400]
             : isInUse
-            ? Colors.grey[500]
+            ? Colors.grey[400]
             : table.isReserved
-            ? Colors.grey[500]
+            ? Colors.grey[400]
             : isBidClosed
-            ? Colors.grey[500]
+            ? Colors.grey[400]
             : table.hasReservations
             ? const Color.fromARGB(227, 239, 202, 145)
             : Colors.white;

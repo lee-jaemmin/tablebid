@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -120,6 +121,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         return Container(
           height: 450,
           child: Material(
+            borderRadius: BorderRadius.circular(50),
             color: CupertinoColors.systemBackground.resolveFrom(context),
             child: SafeArea(
               top: false,
@@ -151,24 +153,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              side: const BorderSide(color: Colors.white),
-                            ),
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              '취소',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            child: const Text('취소'),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
+                          child: OutlinedButton(
                             onPressed: () =>
                                 Navigator.pop(context, selectedDateTime),
                             child: const Text('확인'),
@@ -201,7 +192,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
           widget.companyId,
           selectedDateTime,
         );
-        if(!mounted) return;
+        if (!mounted) return;
         Navigator.pop(context);
         Navigator.pop(context); // 꼼수. 실시간 로딩하기 싫어서 일부러 홈으로 보냄.
         ScaffoldMessenger.of(context).showSnackBar(
@@ -216,7 +207,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
         if (!mounted) return;
         if (e.toString().contains("Table already reserved")) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('경매 진행 중인 테이블이 있어 경매 마감 시간 일괄 설정에 실패하였습니다.')),
+            SnackBar(
+              content: Text('경매 진행 중인 테이블이 있어 경매 마감 시간 일괄 설정에 실패하였습니다.'),
+            ),
           );
         }
       }
@@ -266,7 +259,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: !_isEditingMode,
-          title: !_isEditingMode ? const Text('경매(예약) 관리') : const Text('경매 설정 변경'),
+          title: !_isEditingMode
+              ? const Text('경매(예약) 관리')
+              : const Text('경매 설정 변경'),
           actions: [
             _isEditingMode
                 ? Padding(
@@ -284,29 +279,67 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       onPressed: () => setState(() {
                         _isEditingMode = !_isEditingMode;
                       }),
-                      icon: Icon(Icons.settings, color: Colors.white),
+                      icon: Icon(Icons.settings),
                     )
                   : GestureDetector(
                       onTap: () => setState(() {
                         _isEditingMode = !_isEditingMode;
                       }),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        child: Text('완료', style: TextStyle(fontSize: 16, color: Colors.lightGreenAccent,fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.only(
+                          right: 12.0,
+                          left: 8.0,
+                          top: 8.0,
+                          bottom: 8.0,
+                        ),
+                        child: Text(
+                          '완료',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
             ),
           ],
           bottom: sections.isEmpty
               ? null
-              : TabBar(
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorWeight: 4,
-                  labelStyle: const TextStyle(fontSize: 16),
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  tabAlignment: TabAlignment.start,
-                  isScrollable: true,
-                  tabs: sections.map((s) => Tab(text: s)).toList(),
+              : PreferredSize(
+                  preferredSize: Size.fromHeight(64),
+                  child: Builder(
+                    builder: (tabContext) {
+                      final ctrl = DefaultTabController.of(tabContext);
+                      return AnimatedBuilder(
+                        animation: ctrl,
+                        builder: (context, child) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: List.generate(sections.length, (index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(minWidth: 56),
+                                    child: SectionChip(
+                                      region: sections[index],
+                                      isSelected: ctrl.index == index,
+                                      onTap: () => ctrl.animateTo(index),
+                                    ),
+                                  ),
+                                );
+                              }),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
         ),
         body: sections.isEmpty

@@ -43,7 +43,7 @@ class _NotificationBellState extends State<NotificationBell> {
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Icon(
           _isPushOn ? Icons.notifications_active : Icons.notifications_off,
-          color: _isPushOn ? Colors.white : Colors.white, // 켜지면 검은색, 꺼지면 회색
+          color: _isPushOn ? Colors.black : Colors.black, // 켜지면 검은색, 꺼지면 회색
         ),
       ),
     );

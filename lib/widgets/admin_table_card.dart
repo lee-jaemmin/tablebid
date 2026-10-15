@@ -175,8 +175,9 @@ class AdminTableCard extends StatelessWidget {
           child: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300)
             ),
             child: Text(
               table.tablename,

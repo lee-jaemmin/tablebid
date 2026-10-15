@@ -38,11 +38,11 @@ class ReservationCard extends StatelessWidget {
           ? isReserved
                 ? Colors.green.shade200
                 : isBidClosed
-                ? Colors.grey[500]
+                ? Colors.grey[400]
                 : hasReservation
                 ? Color.fromARGB(229, 255, 153, 0)
                 : Colors.grey[100]
-          : Colors.grey[500],
+          : Colors.grey[400],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
         onTap: isBidClosed && !isReserved ? null : () {

@@ -186,24 +186,18 @@ class _CompanyFloorImageState extends State<CompanyFloorImage>
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                
                   onPressed: () => Navigator.pop(dialogContext, false),
                   child: const Text(
                     '아니요',
-                    style: TextStyle(color: Colors.white),
+                   
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () => Navigator.pop(dialogContext, true),
                   child: const Text('예'),
                 ),

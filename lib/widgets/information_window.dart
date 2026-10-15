@@ -393,12 +393,16 @@ class _InformationWindowState extends State<InformationWindow> {
               children: [
                 TextField(
                   controller: _customerController,
-                  decoration: const InputDecoration(labelText: '손님 이름'),
+                  decoration: const InputDecoration(
+                    labelText: '이름',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 TextField(
                   controller: _phoneController,
                   decoration: InputDecoration(
                     labelText: '전화 번호',
+                    labelStyle: TextStyle(color: Colors.grey),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.copy, size: 20),
                       onPressed: () {
@@ -439,23 +443,36 @@ class _InformationWindowState extends State<InformationWindow> {
                   ),
                 TextField(
                   controller: _totalPriceController,
-                  decoration: const InputDecoration(labelText: '총 가격'),
+                  decoration: const InputDecoration(
+                    labelText: '총 가격',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
+
                   readOnly: true,
                 ),
                 TextField(
                   controller: _personsController,
-                  decoration: const InputDecoration(labelText: '인원'),
+                  decoration: const InputDecoration(
+                    labelText: '인원',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                   keyboardType: TextInputType.number,
                 ),
                 TextField(
                   controller: _userController,
-                  decoration: const InputDecoration(labelText: '스태프'),
+                  decoration: const InputDecoration(
+                    labelText: '스태프',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                 ),
                 TextField(
                   controller: _remarksController,
-                  decoration: const InputDecoration(labelText: '비고'),
+                  decoration: const InputDecoration(
+                    labelText: '비고',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                 ),
@@ -471,11 +488,11 @@ class _InformationWindowState extends State<InformationWindow> {
                   ),
                   onPressed: _openPurchaseScreen,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF904E55),
-                    side: BorderSide(
-                      color: Color.fromARGB(255, 112, 10, 10),
+                    backgroundColor: Theme.of(context).primaryColor,
+                    side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(12),
                     ),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(12))
                   ),
                 ),
               ],
@@ -490,7 +507,7 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.grey),
                   ),
                 ),
               ),
@@ -527,16 +544,16 @@ class _InformationWindowState extends State<InformationWindow> {
                   },
                   child: const Text(
                     '이동',
-                    style: TextStyle(color: Colors.lightBlue),
+                    style: TextStyle(color: Color.fromARGB(255, 234, 178, 94)),
                   ),
                 ),
               ),
               Expanded(
                 child: TextButton(
                   onPressed: _registerTable,
-                  child: const Text(
+                  child: Text(
                     '등록',
-                    style: TextStyle(color: Color(0xffecb88d)),
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
                   ),
                 ),
               ),

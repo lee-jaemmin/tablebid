@@ -66,19 +66,20 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
     }
 
     final threshold = DateTime.now().add(const Duration(minutes: 1));
-    final minimumDateTime = DateTime(
-      threshold.year,
-      threshold.month,
-      threshold.day,
-      threshold.hour,
-      threshold.minute,
-    ).add(
-      threshold.second > 0 ||
-              threshold.millisecond > 0 ||
-              threshold.microsecond > 0
-          ? const Duration(minutes: 1)
-          : Duration.zero,
-    );
+    final minimumDateTime =
+        DateTime(
+          threshold.year,
+          threshold.month,
+          threshold.day,
+          threshold.hour,
+          threshold.minute,
+        ).add(
+          threshold.second > 0 ||
+                  threshold.millisecond > 0 ||
+                  threshold.microsecond > 0
+              ? const Duration(minutes: 1)
+              : Duration.zero,
+        );
     DateTime selectedDateTime = minimumDateTime;
 
     final confirmedDateTime = await showCupertinoModalPopup<DateTime>(
@@ -281,7 +282,10 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
               ),
               onPressed: () =>
                   _changeBidAvailability(!widget.table.bidAvailable),
-              child: Text(widget.table.bidAvailable ? '경매 끄기' : '경매 켜기'),
+              child: Text(
+                widget.table.bidAvailable ? '경매 끄기' : '경매 켜기',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),
@@ -325,23 +329,13 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
                   onPressed: () async {
                     setState(() {
                       _isSubmitting = true;
@@ -374,14 +368,14 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                     }
                   },
                   child: _isSubmitting
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 18,
                           height: 18,
                           child: CupertinoActivityIndicator(
                             color: Colors.black,
                           ),
                         )
-                      : const Text('등록', style: TextStyle(color: Colors.black)),
+                      : const Text('등록'),
                 ),
               ),
             ],

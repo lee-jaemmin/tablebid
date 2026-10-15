@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -97,18 +98,17 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           '<섹션>\n'
           '클릭: 섹션 이동\n길게 누르기: 섹션 수정/삭제\n\n'
           '<테이블>\n'
-          '클릭: 테이블 수정',
+          '클릭: 테이블 수정\n\n'
+          '<이미지>\n'
+          '클릭: 이미지 교체',
           style: TextStyle(fontSize: 16),
         ),
         actions: [
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () => Navigator.pop(optionDialogContext, true),
                   child: const Text('확인'),
                 ),
@@ -399,60 +399,63 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                 ),
               ),
             ],
-            bottom: TabBar(
-              indicatorSize: TabBarIndicatorSize.tab,
-              indicatorWeight: 4,
-              dividerColor: Colors.transparent,
-              labelStyle: const TextStyle(fontSize: 16),
-              labelPadding: EdgeInsets.zero,
-              tabAlignment: TabAlignment.start,
-              isScrollable: true,
-              tabs: [
-                const Tab(
-                  child: SizedBox(
-                    height: 46,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Center(child: Text('전체')),
-                    ),
-                  ),
-                ),
-                ...sections.map(
-                  (section) => Tab(
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onLongPress: () =>
-                          _showRenameSectionDialog(section),
-                      child: SizedBox(
-                        height: 46,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Center(child: Text(section)),
+            bottom: PreferredSize(
+              preferredSize: Size.fromHeight(64),
+              child: Builder(
+                builder: (tabContext) {
+                  final ctrl = DefaultTabController.of(tabContext);
+                  final labels = ['전체', ...sections];
+                  return AnimatedBuilder(
+                    animation: ctrl,
+                    builder: (context, child) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-                const Tab(
-                  child: SizedBox(
-                    height: 46,
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Center(
-                        child: Icon(
-                          Icons.add_circle_rounded,
-                          color: Colors.green,
+                        child: Row(
+                          children: [
+                            ...List.generate(labels.length, (index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 56),
+                                  child: GestureDetector(
+                                    onLongPress: index == 0
+                                        ? null
+                                        : () => _showRenameSectionDialog(
+                                            sections[index - 1],
+                                          ),
+                                    child: SectionChip(
+                                      region: labels[index],
+                                      isSelected: ctrl.index == index,
+                                      onTap: () => ctrl.animateTo(index),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }),
+                            SizedBox(
+                              width: 56,
+                              child: IconButton(
+                                onPressed: () {
+                                  ctrl.animateTo(sections.length + 1);
+                                  _showAddSectionDialog();
+                                },
+                                icon: const Icon(
+                                  Icons.add_circle_rounded,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              onTap: (index) {
-                if (index == sections.length + 1) {
-                  _showAddSectionDialog();
-                }
-              },
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
           body: TabBarView(

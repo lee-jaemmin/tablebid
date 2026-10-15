@@ -239,7 +239,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                   title: const Text('이름'),
                   trailing: Text(_user?.userName ?? ''),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: Colors.grey.shade100),
                 ListTile(
                   leading: const Icon(Icons.warning_amber, size: 18),
                   title: const Text('No Show'),
@@ -249,7 +249,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                     Colors.orange,
                   ),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: Colors.grey.shade100),
                 ListTile(
                   leading: const Icon(Icons.phone_android, size: 18),
                   title: const Text('번호 인증'),
@@ -259,13 +259,13 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                     _user?.phoneVerified == true ? Colors.green : Colors.red,
                   ),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: Colors.grey.shade100,),
                 ListTile(
                   leading: const Icon(Icons.logout, size: 18),
                   title: const Text('로그아웃'),
                   onTap: () => _signOutAndNavigate(context),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: Colors.grey.shade100),
                 ListTile(
                   leading: const Icon(
                     Icons.person_remove,
@@ -278,7 +278,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                   ),
                   onTap: () => _showWithdrawDialog(context),
                 ),
-                const Divider(height: 1),
+                Divider(height: 1, color: Colors.grey.shade100),
               ],
             ),
     );
