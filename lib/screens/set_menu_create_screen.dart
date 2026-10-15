@@ -20,10 +20,7 @@ class SelectedComponents {
 class SetMenuCreateScreens extends StatefulWidget {
   final String companyId;
 
-  const SetMenuCreateScreens({
-    super.key,
-    required this.companyId,
-  });
+  const SetMenuCreateScreens({super.key, required this.companyId});
 
   @override
   State<SetMenuCreateScreens> createState() => _SetMenuCreateScreenState();
@@ -112,7 +109,6 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final keywords = _searchKeywords.trim().toLowerCase();
@@ -123,9 +119,7 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
         _items.where((item) => item.categoryId == _selectedCategoryId).toList()
           ..sort((a, b) => a.itemName.compareTo(b.itemName));
     return Scaffold(
-      appBar: AppBar(
-        title: Text('세트 메뉴 생성'),
-      ),
+      appBar: AppBar(title: Text('세트 메뉴 생성')),
       body: Stack(
         children: [
           if (_isLoading)
@@ -136,52 +130,91 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
             Column(
               children: [
                 _ComponentSummary(components: _selectedComponents),
-                const Divider(height: 1),
+
                 Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .35, // 기기의 반
-                        child: ListView.builder(
-                          itemCount: _categories.length,
-                          itemBuilder: (context, index) {
-                            final category = _categories[index];
-                            final isSelected =
-                                category.id == _selectedCategoryId;
-                            return Material(
-                              color: Colors.transparent,
-                              child: ListTile(
-                                dense: true,
-                                selected: isSelected,
-                                selectedTileColor: Color.fromARGB(
-                                  255,
-                                  112,
-                                  10,
-                                  10,
-                                ),
-                                // 버건디
-                                title: Text(category.categoryName),
-                                onTap: () {
-                                  // 현재 선택 카테고리
-                                  setState(() {
-                                    _selectedCategoryId = category.id;
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const VerticalDivider(width: 1), // 세로선
-                      Expanded(
-                        child: _searchController.text.isNotEmpty
-                            ? matchedItems.isEmpty
-                                  ? Center(child: Text('검색된 상품이 없습니다.'))
-                                  : Wrap(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: _categories.length,
+                              itemBuilder: (context, index) {
+                                final category = _categories[index];
+                                final isSelected =
+                                    category.id == _selectedCategoryId;
+                                return Material(
+                                  color: Colors.transparent,
+                                  child: ListTile(
+                                    dense: true,
+                                    selected: isSelected,
+                                    selectedTileColor: Theme.of(
+                                      context,
+                                    ).primaryColor,
+                                    title: Text(category.categoryName),
+                                    onTap: () {
+                                      // 현재 선택 카테고리
+                                      setState(() {
+                                        _selectedCategoryId = category.id;
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const VerticalDivider(
+                            width: 1,
+                            color: Colors.grey,
+                          ), // 세로선
+                          Expanded(
+                            child: _searchController.text.isNotEmpty
+                                ? matchedItems.isEmpty
+                                      ? Center(child: Text('검색된 상품이 없습니다.'))
+                                      : Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: matchedItems.map((item) {
+                                            final componentIndex =
+                                                _selectedComponents.indexWhere(
+                                                  (element) =>
+                                                      element.itemId == item.id,
+                                                );
+                                            final quantity =
+                                                componentIndex == -1
+                                                ? 0
+                                                : _selectedComponents[componentIndex]
+                                                      .quantity;
+                                            return PurchaseItemChip(
+                                              itemName: item.itemName,
+                                              isSelected: _selectedComponents
+                                                  .any(
+                                                    (component) =>
+                                                        component.itemId ==
+                                                        item.id,
+                                                  ),
+                                              onTap: () async {
+                                                _addComponent(item);
+                                              },
+                                              quantity: quantity,
+                                            );
+                                          }).toList(),
+                                        )
+                                // 검색어 없음.
+                                : SingleChildScrollView(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Wrap(
                                       spacing: 8,
                                       runSpacing: 8,
-                                      children: matchedItems.map((item) {
+                                      children: categorySelectedItems.map((
+                                        item,
+                                      ) {
                                         final componentIndex =
                                             _selectedComponents.indexWhere(
                                               (element) =>
@@ -203,39 +236,12 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                                           quantity: quantity,
                                         );
                                       }).toList(),
-                                    )
-                            // 검색어 없음.
-                            : SingleChildScrollView(
-                                padding: const EdgeInsets.all(12),
-                                child: Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: categorySelectedItems.map((item) {
-                                    final componentIndex = _selectedComponents
-                                        .indexWhere(
-                                          (element) =>
-                                              element.itemId == item.id,
-                                        );
-                                    final quantity = componentIndex == -1
-                                        ? 0
-                                        : _selectedComponents[componentIndex]
-                                              .quantity;
-                                    return PurchaseItemChip(
-                                      itemName: item.itemName,
-                                      isSelected: _selectedComponents.any(
-                                        (component) =>
-                                            component.itemId == item.id,
-                                      ),
-                                      onTap: () async {
-                                        _addComponent(item);
-                                      },
-                                      quantity: quantity,
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
+                                    ),
+                                  ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 Padding(
@@ -246,19 +252,32 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         hintText: '메뉴 검색',
-                        suffixIcon: Icon(Icons.search),
+                        hintStyle: TextStyle(color: Colors.grey),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey.shade600,
+                        ),
+                        
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Colors.grey),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xffecb88d),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
                             width: 2.0,
                           ),
                         ),
@@ -283,8 +302,8 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
               Expanded(
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    side: BorderSide(color: Colors.black),
-                    foregroundColor: Colors.black,
+                    side: BorderSide(color: Colors.red),
+                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                     minimumSize: const Size(double.infinity, 52),
                     shape: RoundedRectangleBorder(
@@ -301,7 +320,7 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 16),
               Expanded(
                 child: FilledButton(
                   style: FilledButton.styleFrom(
@@ -338,40 +357,52 @@ class _ComponentSummary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       color: Theme.of(context).dialogTheme.backgroundColor,
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '선택 구성품 목록',
-                  style: TextStyle(
-                    color: Color(0xffecb88d),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                components.isEmpty
-                    ? SizedBox(height: 50, child: Text('선택된 세트 메뉴 구성품이 없습니다.'))
-                    : SizedBox(
-                        height: 50,
-                        child: ListView.builder(
-                          itemCount: components.length,
-                          itemBuilder: (context, index) {
-                            final cmpnt = components[index];
-                            return Text(
-                              '${cmpnt.itemName} ${cmpnt.quantity}개',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            );
-                          },
-                        ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '선택 구성품 목록',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
                       ),
-              ],
-            ),
+                    ),
+                    const SizedBox(height: 6),
+                    components.isEmpty
+                        ? SizedBox(
+                            height: 50,
+                            child: Text('선택된 세트 메뉴 구성품이 없습니다.'),
+                          )
+                        : SizedBox(
+                            height: 50,
+                            child: ListView.builder(
+                              itemCount: components.length,
+                              itemBuilder: (context, index) {
+                                final cmpnt = components[index];
+                                return Text(
+                                  '${cmpnt.itemName} ${cmpnt.quantity}개',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                            ),
+                          ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

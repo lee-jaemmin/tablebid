@@ -150,8 +150,7 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
           else
             Column(
               children: [
-                SizedBox(child: Text('클릭: 메뉴 활성화/비활성화')),
-                Divider(color: Colors.white),
+                SizedBox(height: 12),
                 Expanded(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -167,12 +166,7 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
                             return ListTile(
                               dense: true,
                               selected: isSelected,
-                              selectedTileColor: Color.fromARGB(
-                                255,
-                                112,
-                                10,
-                                10,
-                              ),
+                              selectedTileColor: Theme.of(context).primaryColor,
                               title: Text(category.categoryName),
                               onTap: () {
                                 setState(() {
@@ -183,7 +177,7 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
                           },
                         ),
                       ),
-                      const VerticalDivider(width: 1), // 세로 선
+                      const VerticalDivider(width: 1, color: Colors.grey,), // 세로 선
                       Expanded(
                         child: _selectedCategoryId == -1
                             ? _setMenus.isEmpty

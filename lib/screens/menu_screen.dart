@@ -154,49 +154,81 @@ class _MenuScreenState extends State<MenuScreen> {
       appBar: AppBar(
         title: Text('메뉴 관리'),
         actions: [
-          IconButton(
-            tooltip: '새로고침',
-            onPressed: _isLoading ? null : () => _loadData(forceRefresh: true),
-            icon: const Icon(Icons.refresh),
-          ),
           Padding(
-            padding: const EdgeInsets.only(right: 2.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: IconButton(
               onPressed: () {
-                showDialog(
+                showDialog<void>(
                   context: context,
-                  builder: (context) => MenuWindow(
-                    companyId: widget.companyId,
-                    categories: _categories,
-                    loadData: () =>_loadData(forceRefresh: true),
+                  builder: (optionDialogContext) => AlertDialog(
+                    title: const Text('도움말'),
+                    content: const Text(
+                      '<클릭>\n'
+                      '메뉴 비활성화\n\n'
+                      '<길게 누르기>\n'
+                      '메뉴 속성 수정\n\n',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    actions: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () =>
+                                  Navigator.pop(optionDialogContext, true),
+                              child: const Text('확인'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 );
               },
-              icon: Icon(Icons.add, size: 30),
+              icon: Icon(Icons.help_outline),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              onPressed: () async {
-                final result = await showDialog<InactiveMenuResult>(
-                  context: context,
-                  builder: (context) =>
-                      InactiveMenuScreen(companyId: widget.companyId),
-                );
-                if (result?.changed == true) {
-                  await _loadData(forceRefresh: true);
-                  if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('메뉴 활성화: ${result?.itemName}'),
-                      behavior: SnackBarBehavior.floating,
+          PopupMenuButton(
+            color: Colors.grey.shade300,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: Text('새로 고침'),
+                onTap: _isLoading ? null : () => _loadData(forceRefresh: true),
+              ),
+              PopupMenuItem(
+                child: Text('메뉴 추가'),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => MenuWindow(
+                      companyId: widget.companyId,
+                      categories: _categories,
+                      loadData: () => _loadData(forceRefresh: true),
                     ),
                   );
-                }
-              },
-              icon: Icon(Icons.visibility_off, size: 24),
-            ),
+                },
+              ),
+              PopupMenuItem(
+                child: Text('비활성화 메뉴 보기'),
+                onTap: () async {
+                  final result = await showDialog<InactiveMenuResult>(
+                    context: context,
+                    builder: (context) =>
+                        InactiveMenuScreen(companyId: widget.companyId),
+                  );
+                  if (result?.changed == true) {
+                    await _loadData(forceRefresh: true);
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('메뉴 활성화: ${result?.itemName}'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ],
           ),
         ],
       ),
@@ -209,8 +241,7 @@ class _MenuScreenState extends State<MenuScreen> {
           else
             Column(
               children: [
-                SizedBox(child: Text('터치: 메뉴 활성화/비활성화\n길게 누르기: 메뉴 속성 수정.')),
-                Divider(color: Colors.white, thickness: 2),
+                SizedBox(height: 24),
                 Expanded(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -226,12 +257,7 @@ class _MenuScreenState extends State<MenuScreen> {
                             return ListTile(
                               dense: true,
                               selected: isSelected,
-                              selectedTileColor: Color.fromARGB(
-                                255,
-                                112,
-                                10,
-                                10,
-                              ),
+                              selectedTileColor: Theme.of(context).primaryColor,
                               title: Text(category.categoryName),
                               onTap: () {
                                 setState(() {
@@ -242,7 +268,10 @@ class _MenuScreenState extends State<MenuScreen> {
                           },
                         ),
                       ),
-                      const VerticalDivider(width: 1), // 세로 선
+                      const VerticalDivider(
+                        width: 1,
+                        color: Colors.grey,
+                      ), // 세로 선
                       Expanded(
                         child: _selectedCategoryId == -1
                             ? _setMenus.isEmpty
@@ -288,7 +317,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                                   SetMenuModifyWindow(
                                                     companyId: widget.companyId,
                                                     setMenu: setMenu,
-                                                    loadData: () => _loadData(forceRefresh: true),
+                                                    loadData: () => _loadData(
+                                                      forceRefresh: true,
+                                                    ),
                                                   ),
                                             );
                                           },
@@ -317,7 +348,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     trailing: item.isActive
                                         ? const Icon(
                                             Icons.toggle_on,
-                                            color: Colors.lightGreenAccent,
+                                            color: Colors.green,
                                           )
                                         : const Icon(
                                             Icons.toggle_off,
@@ -331,7 +362,8 @@ class _MenuScreenState extends State<MenuScreen> {
                                         context: context,
                                         builder: (context) => MenuModifyWindow(
                                           companyId: widget.companyId,
-                                          loadData: () => _loadData(forceRefresh: true),
+                                          loadData: () =>
+                                              _loadData(forceRefresh: true),
                                           item: item,
                                         ),
                                       );

@@ -151,7 +151,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
             247,
           ), // textfield color, background
           onSurface: Colors.black,
-          secondary: Color(0xffecb88d),
+          secondary: Color.fromARGB(255, 234, 239, 253),
         ),
         primaryColor: Color.fromARGB(255, 234, 239, 253),
         appBarTheme: const AppBarTheme(

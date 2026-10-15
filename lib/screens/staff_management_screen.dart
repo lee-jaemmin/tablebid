@@ -177,7 +177,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
           ? const Center(child: Text("소속된 직원이 없습니다."))
           : ListView.separated(
               itemCount: users.length,
-              separatorBuilder: (context, index) => const Divider(height: 1),
+              separatorBuilder: (context, index) =>  Divider(height: 1, color: Colors.grey.shade100,),
               itemBuilder: (context, index) {
                 final user = users[index];
                 final String uid = user.id;

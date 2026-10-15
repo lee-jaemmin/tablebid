@@ -137,13 +137,19 @@ class _ReservationAlertState extends State<MenuWindow> {
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: '메뉴 이름'),
+                  decoration: const InputDecoration(
+                    labelText: '메뉴 이름',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 TextField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,
                   inputFormatters: [PriceFormatters()],
-                  decoration: const InputDecoration(labelText: '가격'),
+                  decoration: const InputDecoration(
+                    labelText: '가격',
+                    labelStyle: TextStyle(color: Colors.grey),
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,14 +172,31 @@ class _ReservationAlertState extends State<MenuWindow> {
                   ],
                 ),
                 SizedBox(height: 10),
+                Row(
+                  children: [Text('카테고리 선택', style: TextStyle(fontSize: 16))],
+                ),
+                SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: widget.categories.map((category) {
                     final isSelected = category.id == _selectedCategoryId;
                     return ChoiceChip(
-                      selectedColor: Color(0xffecb88d),
-                      label: Text(category.categoryName),
+                      checkmarkColor: Theme.of(context).colorScheme.primary,
+                      side: BorderSide(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.grey,
+                      ),
+                      selectedColor: Theme.of(context).primaryColor,
+                      label: Text(
+                        category.categoryName,
+                        style: TextStyle(
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.primary
+                              : Colors.grey,
+                        ),
+                      ),
                       selected: isSelected,
                       onSelected: (_) async {
                         setState(() {
@@ -190,9 +213,8 @@ class _ReservationAlertState extends State<MenuWindow> {
                           );
                           if (!mounted || selectedComponents == null) return;
                           setState(() {
-                            _selectedComponents = selectedComponents;  
+                            _selectedComponents = selectedComponents;
                           });
-                          
                         }
                       },
                     );
@@ -220,23 +242,13 @@ class _ReservationAlertState extends State<MenuWindow> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
                   onPressed: () async {
                     if (_nameController.text.isEmpty ||
                         _priceController.text.isEmpty ||
@@ -270,13 +282,7 @@ class _ReservationAlertState extends State<MenuWindow> {
                     }
                     Navigator.pop(context);
                   },
-                  child: const Text(
-                    '등록',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('등록'),
                 ),
               ),
             ],
