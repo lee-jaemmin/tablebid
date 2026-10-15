@@ -270,7 +270,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: Text('${widget.table.tablename} 경매 설정 변경')),
+            Expanded(child: Text('${widget.table.tablename} 경매 설정')),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: widget.table.bidAvailable

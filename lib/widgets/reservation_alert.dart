@@ -170,7 +170,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: '(필수) 손님 이름'),
+                  decoration: const InputDecoration(labelText: '(필수) 손님 이름', labelStyle: TextStyle(color: Colors.grey)),
                 ),
                 TextField(
                   controller: _phoneController,
@@ -178,6 +178,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   inputFormatters: [PhoneNumberFormatter()],
                   decoration: InputDecoration(
                     labelText: '(필수) 전화 번호',
+                    labelStyle: TextStyle(color: Colors.grey),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.copy, size: 20),
                       onPressed: () {
@@ -201,6 +202,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   onTap: () => _selectReservationTime(context),
                   decoration: const InputDecoration(
                     labelText: '(필수) 예약 시간',
+                    labelStyle: TextStyle(color: Colors.grey),
                     suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
                   ),
                 ),
@@ -272,24 +274,13 @@ class _ReservationAlertState extends State<ReservationAlert> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-
+                child: OutlinedButton(
                   onPressed: () async {
                     if (widget.table.bidAvailable == false) {
                       Navigator.pop(context);
@@ -338,7 +329,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                             color: Colors.black,
                           ),
                         )
-                      : const Text('등록', style: TextStyle(color: Colors.black)),
+                      : const Text('등록'),
                 ),
               ),
             ],

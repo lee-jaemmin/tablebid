@@ -33,6 +33,7 @@ class ReservationCard extends StatelessWidget {
         !isEditingMode && bidAvailable && !isReserved && !isBidClosed;
 
     return Card(
+      shadowColor: Colors.transparent,
       // 예약이 있으면 노랑, 없으면 하양
       color: bidAvailable
           ? isReserved
@@ -41,7 +42,7 @@ class ReservationCard extends StatelessWidget {
                 ? Colors.grey[400]
                 : hasReservation
                 ? Color.fromARGB(229, 255, 153, 0)
-                : Colors.grey[100]
+                : Colors.grey.shade200
           : Colors.grey[400],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
@@ -78,6 +79,10 @@ class ReservationCard extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey.shade300),
+            borderRadius: BorderRadius.circular(12)
+          ),
           padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
