@@ -54,9 +54,25 @@ class CustomerTableGrid extends StatelessWidget {
             : isBidClosed
             ? Colors.grey[400]
             : table.hasReservations
-            ? const Color.fromARGB(227, 239, 202, 145)
-            : Colors.white;
+            ? const Color.fromARGB(229, 255, 153, 0)
+            : Colors.grey.shade200;
+        final border = !table.bidAvailable
+            ? Colors.grey[400]
+            : isInUse
+            ? Colors.grey[400]
+            : table.isReserved
+            ? Colors.grey[400]
+            : isBidClosed
+            ? Colors.grey[400]
+            : table.hasReservations
+            ? const Color.fromARGB(229, 255, 153, 0)
+            : Colors.grey.shade300;
         return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(12),
+            side: BorderSide(color: border!)
+          ),
           color: color,
           child: InkWell(
             onTap: table.bidAvailable &&

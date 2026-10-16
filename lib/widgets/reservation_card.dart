@@ -33,6 +33,7 @@ class ReservationCard extends StatelessWidget {
         !isEditingMode && bidAvailable && !isReserved && !isBidClosed;
 
     return Card(
+      margin: EdgeInsets.zero,
       shadowColor: Colors.transparent,
       // 예약이 있으면 노랑, 없으면 하양
       color: bidAvailable
@@ -91,9 +92,11 @@ class ReservationCard extends StatelessWidget {
                 table.tablename,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 16,                
                   color: Colors.black,
                 ),
+                maxLines: 1,
+
               ),
               const SizedBox(height: 8),
               isEditingMode ?
@@ -101,6 +104,7 @@ class ReservationCard extends StatelessWidget {
               : bidAvailable
                   ? isReserved
                         ? Text(
+                          textAlign: TextAlign.center, 
                             DateFormat(
                               'HH:mm',
                             ).format(table.reservedAt!.toLocal()),
@@ -132,6 +136,7 @@ class ReservationCard extends StatelessWidget {
               if (showBidEndAt) ...[
                 const SizedBox(height: 4),
                 Text(
+                  maxLines: 1,
                   '경매 마감 ${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
                   style: const TextStyle(fontSize: 12, color: Colors.black),
                 ),
