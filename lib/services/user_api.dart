@@ -72,24 +72,23 @@ class UserApi {
     );
   }
 
-  Future<UserModel> createUser({
-    required String userId,
+  Future<UserModel> ensureUser({
     required String userName,
     required String email,
     required String? fcmtoken,
     required List<String> cardFields,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/users');
+    final url = Uri.parse('${ApiClient.baseUrl}/users/me');
     final body = {
-      'id': userId,
       'username': userName,
       'email': email,
-      'fcmtoken': fcmtoken,
+      if (fcmtoken != null) 'fcmtoken': fcmtoken,
       'tablecardfields': cardFields,
+      'is_push_on': true,
     };
-    final response = await http.post(
+    final response = await http.put(
       url,
-      headers: {'Content-type': 'application/json'},
+      headers: await firebaseAuthHeaders(forceRefresh: true),
       body: jsonEncode(body),
     );
 
@@ -98,7 +97,7 @@ class UserApi {
       return UserModel.fromJson(data);
     }
     throw Exception(
-      'Failed to create User: ${response.statusCode} ${response.body}',
+      'Failed to ensure User: ${response.statusCode} ${response.body}',
     );
   }
 

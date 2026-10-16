@@ -49,7 +49,15 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
     }
 
     try {
-      final user = await UserApi().getUser(firebaseUser.uid);
+      final user = await UserApi().ensureUser(
+        userName:
+            firebaseUser.displayName ??
+            firebaseUser.email?.split('@').first ??
+            '이름없음',
+        email: firebaseUser.email ?? '',
+        fcmtoken: null,
+        cardFields: ['purchases', 'persons'],
+      );
 
       if (!mounted) return;
       setState(() {

@@ -6,6 +6,7 @@ import 'package:tablebid/constants/gaps.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/screens/password_reset_screen.dart';
+import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
 import 'home_screen.dart';
@@ -66,7 +67,12 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
 
   Future<void> _routeUserByCompanyStatus(User user) async {
     try {
-      final apiUser = await UserApi().getUser(user.uid);
+      final apiUser = await UserApi().ensureUser(
+        userName: user.displayName ?? user.email?.split('@').first ?? '이름없음',
+        email: user.email ?? '',
+        fcmtoken: null,
+        cardFields: ['purchases', 'persons'],
+      );
       String? fcmtoken;
       try {
         await FirebaseMessaging.instance.requestPermission();
@@ -103,7 +109,9 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
 
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(
-          builder: (context) => apiUser.role == 'customer'
+          builder: (context) => apiUser.role == null
+              ? UserTypeSelectionScreen(userId: apiUser.id)
+              : apiUser.role == 'customer'
               ? const CustomerHomeScreen()
               : hasCompany
               ? HomeScreen()
@@ -114,12 +122,10 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
         (context) => false,
       );
     } catch (e) {
-      await FirebaseAuth.instance.signOut();
-
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("등록되지 않았거나 정보를 불러올 수 없는 계정입니다.")),
+        const SnackBar(content: Text("사용자 정보를 연결하지 못했습니다. 다시 시도해주세요.")),
       );
 
       print("라우팅 체크 중 에러: $e");

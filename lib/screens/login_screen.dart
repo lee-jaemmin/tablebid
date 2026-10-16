@@ -170,6 +170,14 @@ class _LoginScreenState extends State<LoginScreen> {
       fcmtoken = await _getFcmTokenSafely();
       final email = firebaseUser.email ?? realEmail ?? dummyEmail;
 
+      if ((firebaseUser.displayName ?? '').isEmpty) {
+        try {
+          await firebaseUser.updateDisplayName(nickname);
+        } catch (e) {
+          print('Firebase 사용자 이름 저장 실패, 로그인은 계속 진행: $e');
+        }
+      }
+
       print('>>>>>>>>>> 카카오 로그인 Firebase uid: ${firebaseUser.uid}');
       print('>>>>>>>>>> Firebase email: ${firebaseUser.email}');
       print('>>>>>>>>>> Kakao uid: $kakaoUid');
@@ -181,19 +189,22 @@ class _LoginScreenState extends State<LoginScreen> {
       final userDocRef = FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid);
-      await userDocRef.set({
-        'email': email,
-        if (fcmtoken != null) 'fcmtoken': fcmtoken,
-        if (isNewUser) 'createdat': FieldValue.serverTimestamp(),
-        'updatedat': FieldValue.serverTimestamp(),
-      });
+      try {
+        await userDocRef.set({
+          'email': email,
+          if (fcmtoken != null) 'fcmtoken': fcmtoken,
+          if (isNewUser) 'createdat': FieldValue.serverTimestamp(),
+          'updatedat': FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        print('Firestore 사용자 정보 저장 실패, 로그인은 계속 진행: $e');
+      }
 
       UserModel user;
       final isInDb = await getFastApiUser(firebaseUser.uid);
       if (isNewUser) {
         // 3-3이면
-        user = await UserApi().createUser(
-          userId: firebaseUser.uid,
+        user = await UserApi().ensureUser(
           userName: nickname,
           email: realEmail!,
           fcmtoken: fcmtoken,
@@ -204,14 +215,19 @@ class _LoginScreenState extends State<LoginScreen> {
         // 토큰 업데이트
         if (isInDb == true) {
           user = await UserApi().getUser(firebaseUser.uid);
-          user = await UserApi().updateUser(
-            userId: firebaseUser.uid,
-            fcmToken: fcmtoken,
-          );
+          if (fcmtoken != null) {
+            try {
+              user = await UserApi().updateUser(
+                userId: firebaseUser.uid,
+                fcmToken: fcmtoken,
+              );
+            } catch (e) {
+              print('FCM 토큰 업데이트 실패, 로그인은 계속 진행: $e');
+            }
+          }
         } else {
           // db에 없으면
-          user = await UserApi().createUser(
-            userId: firebaseUser.uid,
+          user = await UserApi().ensureUser(
             userName: nickname,
             email: email,
             fcmtoken: fcmtoken,
@@ -222,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       setState(() => _isLoginLoading = false);
 
-      if (isNewUser || !isInDb) {
+      if (user.role == null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -302,34 +318,52 @@ class _LoginScreenState extends State<LoginScreen> {
         final email = firebaseUser.email ?? appleCredential.email;
 
         // 애플: '최초 1회' 가입 시에만 '이름'을 던져줍니다.
-        String nickname = '이름없음';
+        String nickname = firebaseUser.displayName ?? '이름없음';
         if (appleCredential.givenName != null ||
             appleCredential.familyName != null) {
           // 성(familyName) + 이름(givenName) 조합 (예: 홍 + 길동)
           nickname =
               '${appleCredential.familyName ?? ''}${appleCredential.givenName ?? ''}';
+          try {
+            await firebaseUser.updateDisplayName(nickname);
+          } catch (e) {
+            print('Firebase 사용자 이름 저장 실패, 로그인은 계속 진행: $e');
+          }
         }
 
         final isInDb = await getFastApiUser(firebaseUser.uid);
 
         if (isInDb == true) {
-          await userDocRef.set({
-            'fcmtoken': fcmtoken,
-            'updatedat': FieldValue.serverTimestamp(),
-          });
-          await UserApi().updateUser(
-            userId: firebaseUser.uid,
-            fcmToken: fcmtoken,
-          );
+          try {
+            await userDocRef.set({
+              if (fcmtoken != null) 'fcmtoken': fcmtoken,
+              'updatedat': FieldValue.serverTimestamp(),
+            });
+          } catch (e) {
+            print('Firestore 사용자 정보 저장 실패, 로그인은 계속 진행: $e');
+          }
+          if (fcmtoken != null) {
+            try {
+              await UserApi().updateUser(
+                userId: firebaseUser.uid,
+                fcmToken: fcmtoken,
+              );
+            } catch (e) {
+              print('FCM 토큰 업데이트 실패, 로그인은 계속 진행: $e');
+            }
+          }
         } else {
-          await userDocRef.set({
-            'email': email,
-            if (fcmtoken != null) 'fcmtoken': fcmtoken,
-            'createdat': FieldValue.serverTimestamp(),
-            'updatedat': FieldValue.serverTimestamp(),
-          });
-          await UserApi().createUser(
-            userId: firebaseUser.uid,
+          try {
+            await userDocRef.set({
+              'email': email,
+              if (fcmtoken != null) 'fcmtoken': fcmtoken,
+              'createdat': FieldValue.serverTimestamp(),
+              'updatedat': FieldValue.serverTimestamp(),
+            });
+          } catch (e) {
+            print('Firestore 사용자 정보 저장 실패, 로그인은 계속 진행: $e');
+          }
+          await UserApi().ensureUser(
             userName: nickname,
             email: email ?? '',
             fcmtoken: fcmtoken,
@@ -347,7 +381,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // companyid비었나 체크
         final String? companyId = user.companyId;
 
-        if (!isInDb) {
+        if (user.role == null) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

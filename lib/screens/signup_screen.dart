@@ -93,6 +93,8 @@ class _SignupScreenState extends State<SignupScreen> {
           } else {
             print('apn token 발급 안되어서 fcm 발급 보류');
           }
+        } else {
+          fcmtoken = await messeging.getToken();
         }
       } catch (e) {
         print('FCM 토큰 발급 보류: $e');
@@ -104,22 +106,31 @@ class _SignupScreenState extends State<SignupScreen> {
             password: inputPassword,
           );
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set({
-            'email': inputEmail,
-            'createdat': FieldValue.serverTimestamp(),
-            'fcmtoken': fcmtoken,
-          });
+      try {
+        await userCredential.user!.updateDisplayName(userName);
+      } catch (e) {
+        print('Firebase 사용자 이름 저장 실패, 가입은 계속 진행: $e');
+      }
 
-      await UserApi().createUser(
-        userId: userCredential.user!.uid,
+      await UserApi().ensureUser(
         email: inputEmail,
         fcmtoken: fcmtoken,
         userName: userName,
         cardFields: ['purchases', 'persons'],
       );
+
+      try {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set({
+              'email': inputEmail,
+              'createdat': FieldValue.serverTimestamp(),
+              if (fcmtoken != null) 'fcmtoken': fcmtoken,
+            });
+      } catch (e) {
+        print('Firestore 사용자 정보 저장 실패, 가입은 계속 진행: $e');
+      }
 
       print('>>>>>>>> 일반 회원가입: 새로 가입한 uid: ${userCredential.user!.uid}');
       Navigator.pushAndRemoveUntil(
