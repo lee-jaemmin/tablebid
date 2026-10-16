@@ -91,19 +91,12 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "취소",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                  child: const Text("취소"),
                 ),
               ),
               SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () {
                     final code = _inviteCodeController.text.trim();
 
@@ -122,9 +115,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                     _joinCompanyWithCode(code);
                     print(">>>>>>>>>>>입력된 코드: ${_inviteCodeController.text}");
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+
                   child: const Text(
                     "입장하기",
                     style: TextStyle(color: Colors.black),
@@ -216,7 +207,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(color: Colors.white),
+                  borderSide: BorderSide(color: Colors.black),
                 ),
                 hintText: "매장 이름은 변경할 수 없으니 신중하게 입력해주세요.",
               ),
@@ -269,20 +260,13 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "취소",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text("취소"),
                 ),
               ),
               SizedBox(width: 16),
               Expanded(
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: _isLoading
                       ? null
                       : () async {
@@ -291,11 +275,6 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                             return; // 매장 이름이 비어있으면 return
                           await _createCompany(); // 매장 생성 로직 실행
                         },
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Colors.white),
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
                   child: _isLoading
                       ? Center(
                           child: CupertinoActivityIndicator(
@@ -339,28 +318,21 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
           builder: (context) => AlertDialog(
             title: const Text("회원 탈퇴"),
             content: const Text(
-              "정말로 GRID를 떠나시겠습니까?\n모든 데이터가 즉시 삭제되며 복구할 수 없습니다.",
+              "정말로 TABLEBID를 떠나시겠습니까?\n모든 데이터가 즉시 삭제되며 복구할 수 없습니다.",
             ),
             actions: [
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        side: const BorderSide(color: Colors.white),
-                        backgroundColor: Colors.transparent,
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        "취소",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text("취소"),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
                       ),
                       onPressed: () => Navigator.pop(context, true),

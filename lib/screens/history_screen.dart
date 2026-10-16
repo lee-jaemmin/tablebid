@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/table_api.dart';
@@ -48,13 +49,40 @@ class HistoryScreen extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: const Text('테이블별 히스토리'),
-              bottom: TabBar(
-                indicatorWeight: 4,
-                labelStyle: TextStyle(fontSize: 16),
-                labelPadding: EdgeInsets.symmetric(horizontal: 20.0),
-                tabAlignment: TabAlignment.start,
-                isScrollable: true,
-                tabs: sections.map((s) => Tab(text: s)).toList(),
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(64),
+                child: Builder(
+                  builder: (tabContext) {
+                    final ctrl = DefaultTabController.of(tabContext);
+                    return AnimatedBuilder(
+                      animation: ctrl,
+                      builder: (context, child) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: List.generate(sections.length, (index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 56),
+                                  child: SectionChip(
+                                    region: sections[index],
+                                    isSelected: ctrl.index == index,
+                                    onTap: () => ctrl.animateTo(index),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
             body: TabBarView(

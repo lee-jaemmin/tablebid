@@ -27,22 +27,16 @@ class _UserTypeSelectionScreenState extends State<UserTypeSelectionScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        side: const BorderSide(color: Colors.white),
-                        backgroundColor: Colors.transparent,
-                      ),
+                      
                       onPressed: () => Navigator.pop(dialogContext, false),
-                      child: const Text('취소', style: TextStyle(color: Colors.white)),
+                      child: const Text('취소'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(dialogContext, true),
-                      child: const Text('확인', style: TextStyle(color: Colors.black)),
+                      child: const Text('확인'),
                     ),
                   ),
                 ],

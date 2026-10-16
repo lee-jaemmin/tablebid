@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:tablebid/models/user_model.dart';
@@ -72,19 +73,28 @@ class _SettingScreenState extends State<SettingScreen> {
           decoration: const InputDecoration(hintText: '새 이름을 입력하세요'),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('취소', style: TextStyle(color: Colors.black)),
-          ),
-          TextButton(
-            onPressed: () async {
-              final newName = controller.text.trim();
-              if (newName.isEmpty || newName == currentName) return;
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('취소'),
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () async {
+                    final newName = controller.text.trim();
+                    if (newName.isEmpty || newName == currentName) return;
 
-              Navigator.pop(dialogContext);
-              await _updateUsername(context, newName);
-            },
-            child: const Text('변경', style: TextStyle(color: Colors.blue)),
+                    Navigator.pop(dialogContext);
+                    await _updateUsername(context, newName);
+                  },
+                  child: const Text('변경'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -101,25 +111,26 @@ class _SettingScreenState extends State<SettingScreen> {
     return fields.length == 2 ? fields : _defaultTableCardFields;
   }
 
-  Future<void> _updateTableCardFields(
-    BuildContext context,
-    List<String> fields,
-  ) async {
+  Future<void> _updateTableCardFields(List<String> fields) async {
     try {
-      final updatedUser = await UserApi().updateUser(
-        userId: _currentUser.id,
-        cardfields: fields,
+      showDialog(
+        context: context,
+        builder: (context) => CupertinoActivityIndicator(),
+        barrierDismissible: false,
       );
+      await UserApi().updateUser(userId: _currentUser.id, cardfields: fields);
+      final updatedUser = await UserApi().getUser(_currentUser.id);
 
-      if (!context.mounted) return;
+      if (!mounted) return;
       setState(() {
         _currentUser = updatedUser;
       });
+      Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('테이블 카드 표시 설정이 변경되었습니다.')));
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('설정 변경 실패: $e')));
@@ -138,47 +149,53 @@ class _SettingScreenState extends State<SettingScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('테이블 카드 표시 설정'),
+              title: const Text('테이블 카드 설정'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: _tableCardFieldLabels.entries.map((entry) {
-                  final isSelected = selected.contains(entry.key);
-                  return CheckboxListTile(
-                    value: isSelected,
-                    title: Text(entry.value),
-                    controlAffinity: ListTileControlAffinity.leading,
-                    onChanged: (checked) {
-                      setDialogState(() {
-                        if (checked == true) {
-                          if (selected.length >= 2) return;
-                          selected.add(entry.key);
-                        } else {
-                          selected.remove(entry.key);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
+                children: [
+                  Text('홈 화면의 테이블에 표시될 정보를 선택합니다.'),
+                  ..._tableCardFieldLabels.entries.map((entry) {
+                    final isSelected = selected.contains(entry.key);
+                    return CheckboxListTile(
+                      value: isSelected,
+                      title: Text(entry.value),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (checked) {
+                        setDialogState(() {
+                          if (checked == true) {
+                            if (selected.length >= 2) return;
+                            selected.add(entry.key);
+                          } else {
+                            selected.remove(entry.key);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ],
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                TextButton(
-                  onPressed: selected.length == 2
-                      ? () async {
-                          Navigator.pop(dialogContext);
-                          await _updateTableCardFields(
-                            context,
-                            selected.toList(),
-                          );
-                        }
-                      : null,
-                  child: const Text('저장', style: TextStyle(color: Colors.blue)),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pop(dialogContext),
+                        child: const Text('취소'),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: selected.length == 2
+                            ? () async {
+                                Navigator.pop(dialogContext);
+                                await _updateTableCardFields(selected.toList());
+                              }
+                            : null,
+                        child: const Text('저장'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -388,7 +405,7 @@ class _SettingScreenState extends State<SettingScreen> {
           '애플 앱스토어 규정 및 2026 보안 가이드라인에 따라, 탈퇴 즉시 귀하의 모든 개인정보와 식별 데이터는 서버에서 영구 삭제(익명화)됩니다. '
           '탈퇴 보류 기간이 없으므로 삭제된 데이터는 복구할 수 없습니다. 정말 탈퇴하시겠습니까?',
           style: TextStyle(fontSize: 14),
-        ),  
+        ),
         actions: [
           Row(
             children: [
@@ -439,7 +456,7 @@ class _SettingScreenState extends State<SettingScreen> {
         'fcmtoken': fcmtoken,
       }, SetOptions(merge: true));
       await UserApi().updateUser(userId: uid, fcmToken: fcmtoken);
-      if(!mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -478,7 +495,7 @@ class _SettingScreenState extends State<SettingScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showUsernameDialog(context, _currentUser.userName),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: Colors.grey.shade100),
           ListTile(
             leading: const Icon(Icons.table_chart, size: 18),
             title: const Text('테이블 카드 표시 항목'),
@@ -486,20 +503,20 @@ class _SettingScreenState extends State<SettingScreen> {
             trailing: const Icon(Icons.chevron_right),
             onTap: () => _showTableCardFieldsDialog(context, tableCardFields),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: Colors.grey.shade100),
           ListTile(
             leading: const Icon(Icons.confirmation_number, size: 18),
             title: const Text('알림이 오지 않나요?'),
             subtitle: const Text('토큰 다시 발급 받기'),
             onTap: () => _reAssignToken(context, _currentUser),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: Colors.grey.shade100),
           ListTile(
             leading: const Icon(Icons.logout, size: 18),
             title: const Text('로그아웃'),
             onTap: () => _signOutAndNavigate(context),
           ),
-          const Divider(height: 1),
+          Divider(height: 1, color: Colors.grey.shade100),
 
           ListTile(
             leading: const Icon(

@@ -34,8 +34,9 @@ class MoveTableGridView extends StatelessWidget {
         return GestureDetector(
           onTap: isAvailable ? () => _confirmMove(context, targetTable) : null,
           child: Card(
-            // 사용 중이면 회색, 이동 가능하면 파란색
-            color: isAvailable ? Colors.blue[100] : Colors.grey[300],
+            elevation: 0,
+              // 사용 중이면 회색, 이동 가능하면 파란색
+            color: isAvailable ? Theme.of(context).primaryColor : Colors.grey[300],
             child: Center(
               child: Text(
                 targetTable.tablename,
@@ -64,25 +65,18 @@ class MoveTableGridView extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(
-                      color: Colors.white,
-                    )
-                  ),
+                  
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                  
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child:OutlinedButton(
+                  
                   onPressed: () async {
                     showDialog(
                       context: context,
@@ -116,8 +110,7 @@ class MoveTableGridView extends StatelessWidget {
                   child: const Text(
                     '이동 확정',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
+                      
                     ),
                   ),
                 ),

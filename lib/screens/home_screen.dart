@@ -260,6 +260,21 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     }
   }
 
+  Future<void> _reloadCurrentUser() async {
+    final currentUser = _currentUser;
+    if (currentUser == null) return;
+
+    try {
+      final updatedUser = await UserApi().getUser(currentUser.id);
+      if (!mounted) return;
+      setState(() {
+        _currentUser = updatedUser;
+      });
+    } catch (e) {
+      print('사용자 설정 새로고침 실패: $e');
+    }
+  }
+
   Future<void> _syncTablesOnResume() async {
     // 화면 열면 바로 동기화하는 함수
     try {
@@ -587,15 +602,16 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       SidebarMenu(
                         icon: Icons.settings,
                         name: '설정',
-                        onTapFunc: () {
+                        onTapFunc: () async {
                           Navigator.pop(context);
-                          Navigator.push(
+                          await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
                                   SettingScreen(initialUser: currentUser),
                             ),
                           );
+                          await _reloadCurrentUser();
                         },
                       ),
                     ],

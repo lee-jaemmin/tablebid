@@ -14,7 +14,7 @@ class HistoryGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    tables.sort((a, b)=>naturalSortCompare(a.tablename, b.tablename));
+    tables.sort((a, b) => naturalSortCompare(a.tablename, b.tablename));
     final size = MediaQuery.of(context).size;
     final orientation = MediaQuery.of(context).orientation;
 
@@ -35,11 +35,8 @@ class HistoryGridView extends StatelessWidget {
       ),
       itemCount: tables.length,
       itemBuilder: (context, index) => GestureDetector(
-        onTap: () => _showHistoryBottomSheet(
-          context,
-          tables[index],
-          tables[index].id,
-        ),
+        onTap: () =>
+            _showHistoryBottomSheet(context, tables[index], tables[index].id),
         child: Card(
           color: Colors.white,
           child: Center(
@@ -65,10 +62,9 @@ class HistoryGridView extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // 높이 조절 가능하게 설정
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       builder: (context) => Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
         height: MediaQuery.of(context).size.height * 0.9, // 화면의 90% 채움
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -77,7 +73,6 @@ class HistoryGridView extends StatelessWidget {
               '${table.tablename} 히스토리',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            const Divider(),
             Expanded(
               child: FutureBuilder<List<TableHistoryModel>>(
                 future: HistoryApi().getHistoriesByTable(tableId),
@@ -123,18 +118,45 @@ class HistoryGridView extends StatelessWidget {
                                   : purchases
                                         .map((purchase) => purchase.itemName)
                                         .join(', ');
-                              return Text(
-                                '구매 목록: $purchaseText\n'
-                                '전화 번호: ${history.customerPhone}\n'
-                                '아웃 스태프: ${history.userName}\n'
-                                '비고: ${history.remark}',
+                              return Text.rich(
+                                TextSpan(
+                                  children: [
+                                    const TextSpan(
+                                      text: '구매 목록\n',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(text: '$purchaseText\n'),
+                                    const TextSpan(
+                                      text: '전화 번호\n',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: '${history.customerPhone}\n',
+                                    ),
+                                    const TextSpan(
+                                      text: '아웃 스태프\n',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(text: '${history.userName}\n'),
+                                    const TextSpan(
+                                      text: '비고\n',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    TextSpan(text: '${history.remark}'),
+                                  ],
+                                ),
                               );
                             },
                           ),
-                          trailing: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade800,
-                            ),
+                          trailing: OutlinedButton(
                             onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -144,13 +166,7 @@ class HistoryGridView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            child: const Text(
-                              '재등록',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            child: const Text('재등록'),
                           ),
                         ),
                       );
