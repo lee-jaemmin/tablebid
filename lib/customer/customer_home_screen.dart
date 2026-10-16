@@ -28,7 +28,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   String _selectedRegion = _regions.first;
   bool _isLoading = true;
   bool _hasError = false;
-  String? _storeUrl;
+  String _storeUrl = 'https://onelink.to/evkxb2';
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   }
 
   Future<void> _openStore() async {
-    final uri = Uri.tryParse(_storeUrl ?? '');
+    final uri = Uri.tryParse(_storeUrl);
     if (uri == null) return;
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw Exception('앱 스토어를 열 수 없습니다.');
@@ -190,7 +190,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                     ),
-                    onPressed: _storeUrl == null ? null : _openStore,
+                    onPressed: _openStore,
                     child: const Text('설치'),
                   ),
                 ],

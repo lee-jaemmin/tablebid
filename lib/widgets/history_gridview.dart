@@ -64,15 +64,17 @@ class HistoryGridView extends StatelessWidget {
       isScrollControlled: true, // 높이 조절 가능하게 설정
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
       builder: (context) => Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: Colors.grey.shade200),
         height: MediaQuery.of(context).size.height * 0.9, // 화면의 90% 채움
         padding: const EdgeInsets.all(20),
+        
         child: Column(
           children: [
             Text(
               '${table.tablename} 히스토리',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            SizedBox(height:12),
             Expanded(
               child: FutureBuilder<List<TableHistoryModel>>(
                 future: HistoryApi().getHistoriesByTable(tableId),

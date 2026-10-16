@@ -221,6 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   // 아이디 입력 (안내 문구 단순화)
                   AuthTextfield(
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     hintText: "이메일 입력",
                     icon: Icons.email,
                   ),
