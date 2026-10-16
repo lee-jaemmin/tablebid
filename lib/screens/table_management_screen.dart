@@ -59,7 +59,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     }
   }
 
-
   Future<bool?> _showSectionRenameOptions(BuildContext context) {
     return showDialog<bool>(
       context: context,
@@ -73,11 +72,8 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                
                   onPressed: () => Navigator.pop(optionDialogContext, true),
                   child: const Text('확인'),
                 ),
@@ -108,7 +104,6 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             children: [
               Expanded(
                 child: OutlinedButton(
-                  
                   onPressed: () => Navigator.pop(optionDialogContext, true),
                   child: const Text('확인'),
                 ),
@@ -277,9 +272,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
     );
   }
 
-  Future<void> _showRenameSectionDialog(
-    String currentName,
-  ) async {
+  Future<void> _showRenameSectionDialog(String currentName) async {
     final controller = TextEditingController(text: currentName);
 
     showDialog(
@@ -308,10 +301,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
                   onPressed: () async {
                     final newName = controller.text.trim();
 
@@ -351,13 +341,7 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
                       );
                     }
                   },
-                  child: const Text(
-                    '수정',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child: const Text('수정'),
                 ),
               ),
             ],

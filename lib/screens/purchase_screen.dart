@@ -300,203 +300,232 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   newPurchases: _newPurchases,
                   logs: _logs,
                 ),
-                const Divider(height: 1),
                 Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * .35, // 기기의 반
-                        child: ListView.builder(
-                          itemCount: _categories.length,
-                          itemBuilder: (context, index) {
-                            final category = _categories[index];
-                            final isSelected =
-                                category.id == _selectedCategoryId;
-                            return Material(
-                              color: Colors.transparent,
-                              child: ListTile(
-                                dense: true,
-                                selected: isSelected,
-                                selectedTileColor: Color.fromARGB(
-                                  255,
-                                  112,
-                                  10,
-                                  10,
-                                ),
-                                // 버건디
-                                title: Text(category.categoryName),
-                                onTap: () {
-                                  // 현재 선택 카테고리
-                                  setState(() {
-                                    _selectedCategoryId = category.id;
-                                  });
-                                },
-                              ),
-                            );
-                          },
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      const VerticalDivider(width: 1), // 세로선
-                      Expanded(
-                        child: _searchController.text.isNotEmpty
-                            ? searchedProducts.isEmpty
-                                  ? const Center(
-                                      child: Text('검색어와 일치하는 상품이 없습니다.'),
-                                    )
-                                  : SingleChildScrollView(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: [
-                                          ...matchedSetMenus.map((setMenu) {
-                                            final purchaseIndex = _newPurchases
-                                                .indexWhere(
-                                                  (element) =>
-                                                      element.itemId ==
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * .35,
+                            child: ListView.builder(
+                              itemCount: _categories.length,
+                              itemBuilder: (context, index) {
+                                final category = _categories[index];
+                                final isSelected =
+                                    category.id == _selectedCategoryId;
+                                return Material(
+                                  color: Colors.transparent,
+                                  child: ListTile(
+                                    dense: true,
+                                    selected: isSelected,
+                                    selectedTileColor: Theme.of(
+                                      context,
+                                    ).primaryColor,
+                                    title: Text(category.categoryName),
+                                    onTap: () {
+                                      // 현재 선택 카테고리
+                                      setState(() {
+                                        _selectedCategoryId = category.id;
+                                      });
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const VerticalDivider(width: 1, color: Colors.grey),
+                          Expanded(
+                            child: _searchController.text.isNotEmpty
+                                ? searchedProducts.isEmpty
+                                      ? const Center(
+                                          child: Text('검색어와 일치하는 상품이 없습니다.'),
+                                        )
+                                      : SingleChildScrollView(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: [
+                                              ...matchedSetMenus.map((setMenu) {
+                                                final purchaseIndex =
+                                                    _newPurchases.indexWhere(
+                                                      (element) =>
+                                                          element.itemId ==
+                                                          setMenu.id,
+                                                    );
+                                                final quantity =
+                                                    purchaseIndex == -1
+                                                    ? 0
+                                                    : _newPurchases[purchaseIndex]
+                                                          .quantity;
+                                                return PurchaseItemChip(
+                                                  itemName: setMenu.setName,
+                                                  isSelected: _newPurchases.any(
+                                                    (purchase) =>
+                                                        purchase.itemId ==
+                                                        setMenu.id,
+                                                  ),
+                                                  onTap: () async {
+                                                    _addSetMenuPurchase(
+                                                      setMenu,
+                                                    );
+                                                    setMenu.hasMixer
+                                                        ? await _showMixerSelectionBottomSheet()
+                                                        : null;
+                                                  },
+                                                  quantity: quantity,
+                                                );
+                                              }),
+                                              ...matchedItems.map((item) {
+                                                final purchaseIndex =
+                                                    _newPurchases.indexWhere(
+                                                      (element) =>
+                                                          element.itemId ==
+                                                          item.id,
+                                                    );
+                                                final quantity =
+                                                    purchaseIndex == -1
+                                                    ? 0
+                                                    : _newPurchases[purchaseIndex]
+                                                          .quantity;
+                                                return PurchaseItemChip(
+                                                  itemName: item.itemName,
+                                                  isSelected: _newPurchases.any(
+                                                    (purchase) =>
+                                                        purchase.itemId ==
+                                                        item.id,
+                                                  ),
+                                                  onTap: () async {
+                                                    _addPurchase(item);
+                                                    item.hasMixer
+                                                        ? await _showMixerSelectionBottomSheet()
+                                                        : null;
+                                                  },
+                                                  quantity: quantity,
+                                                );
+                                              }),
+                                            ],
+                                          ),
+                                        )
+                                : isSetMenuSelected
+                                ? _setMenus.isEmpty
+                                      ? const Center(
+                                          child: Text('등록된 메뉴가 없습니다.'),
+                                        )
+                                      : SingleChildScrollView(
+                                          padding: const EdgeInsets.all(12),
+                                          child: Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: _setMenus.map((setMenu) {
+                                              final purchaseIndex =
+                                                  _newPurchases.indexWhere(
+                                                    (element) =>
+                                                        element.itemId ==
+                                                        setMenu.id,
+                                                  );
+                                              final quantity =
+                                                  purchaseIndex == -1
+                                                  ? 0
+                                                  : _newPurchases[purchaseIndex]
+                                                        .quantity;
+                                              return PurchaseItemChip(
+                                                itemName: setMenu.setName,
+                                                isSelected: _newPurchases.any(
+                                                  (purchase) =>
+                                                      purchase.itemId ==
                                                       setMenu.id,
-                                                );
-                                            final quantity = purchaseIndex == -1
-                                                ? 0
-                                                : _newPurchases[purchaseIndex]
-                                                      .quantity;
-                                            return PurchaseItemChip(
-                                              itemName: setMenu.setName,
-                                              isSelected: _newPurchases.any(
-                                                (purchase) =>
-                                                    purchase.itemId ==
-                                                    setMenu.id,
-                                              ),
-                                              onTap: () async {
-                                                _addSetMenuPurchase(setMenu);
-                                                setMenu.hasMixer
-                                                    ? await _showMixerSelectionBottomSheet()
-                                                    : null;
-                                              },
-                                              quantity: quantity,
-                                            );
-                                          }),
-                                          ...matchedItems.map((item) {
-                                            final purchaseIndex = _newPurchases
-                                                .indexWhere(
-                                                  (element) =>
-                                                      element.itemId == item.id,
-                                                );
-                                            final quantity = purchaseIndex == -1
-                                                ? 0
-                                                : _newPurchases[purchaseIndex]
-                                                      .quantity;
-                                            return PurchaseItemChip(
-                                              itemName: item.itemName,
-                                              isSelected: _newPurchases.any(
-                                                (purchase) =>
-                                                    purchase.itemId == item.id,
-                                              ),
-                                              onTap: () async {
-                                                _addPurchase(item);
-                                                item.hasMixer
-                                                    ? await _showMixerSelectionBottomSheet()
-                                                    : null;
-                                              },
-                                              quantity: quantity,
-                                            );
-                                          }),
-                                        ],
-                                      ),
-                                    )
-                            : isSetMenuSelected
-                            ? _setMenus.isEmpty
-                                  ? const Center(child: Text('등록된 메뉴가 없습니다.'))
-                                  : SingleChildScrollView(
-                                      padding: const EdgeInsets.all(12),
-                                      child: Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: _setMenus.map((setMenu) {
-                                          final purchaseIndex = _newPurchases
-                                              .indexWhere(
-                                                (element) =>
-                                                    element.itemId ==
-                                                    setMenu.id,
+                                                ),
+                                                onTap: () async {
+                                                  _addSetMenuPurchase(setMenu);
+                                                  setMenu.hasMixer
+                                                      ? await _showMixerSelectionBottomSheet()
+                                                      : null;
+                                                },
+                                                quantity: quantity,
                                               );
-                                          final quantity = purchaseIndex == -1
-                                              ? 0
-                                              : _newPurchases[purchaseIndex]
-                                                    .quantity;
-                                          return PurchaseItemChip(
-                                            itemName: setMenu.setName,
-                                            isSelected: _newPurchases.any(
-                                              (purchase) =>
-                                                  purchase.itemId == setMenu.id,
-                                            ),
-                                            onTap: () async {
-                                              _addSetMenuPurchase(setMenu);
-                                              setMenu.hasMixer
-                                                  ? await _showMixerSelectionBottomSheet()
-                                                  : null;
-                                            },
-                                            quantity: quantity,
-                                          );
-                                        }).toList(),
-                                      ),
-                                    )
-                            : SingleChildScrollView(
-                                padding: const EdgeInsets.all(12),
-                                child: Wrap(
-                                  spacing: 8,
-                                  runSpacing: 8,
-                                  children: categorySelectedItems.map((item) {
-                                    final purchaseIndex = _newPurchases
-                                        .indexWhere(
-                                          (element) =>
-                                              element.itemId == item.id,
+                                            }).toList(),
+                                          ),
+                                        )
+                                : SingleChildScrollView(
+                                    padding: const EdgeInsets.all(12),
+                                    child: Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: categorySelectedItems.map((
+                                        item,
+                                      ) {
+                                        final purchaseIndex = _newPurchases
+                                            .indexWhere(
+                                              (element) =>
+                                                  element.itemId == item.id,
+                                            );
+                                        final quantity = purchaseIndex == -1
+                                            ? 0
+                                            : _newPurchases[purchaseIndex]
+                                                  .quantity;
+                                        return PurchaseItemChip(
+                                          itemName: item.itemName,
+                                          isSelected: _newPurchases.any(
+                                            (purchase) =>
+                                                purchase.itemId == item.id,
+                                          ),
+                                          onTap: () async {
+                                            _addPurchase(item);
+                                            item.hasMixer
+                                                ? await _showMixerSelectionBottomSheet()
+                                                : null;
+                                          },
+                                          quantity: quantity,
                                         );
-                                    final quantity = purchaseIndex == -1
-                                        ? 0
-                                        : _newPurchases[purchaseIndex].quantity;
-                                    return PurchaseItemChip(
-                                      itemName: item.itemName,
-                                      isSelected: _newPurchases.any(
-                                        (purchase) =>
-                                            purchase.itemId == item.id,
-                                      ),
-                                      onTap: () async {
-                                        _addPurchase(item);
-                                        item.hasMixer
-                                            ? await _showMixerSelectionBottomSheet()
-                                            : null;
-                                      },
-                                      quantity: quantity,
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
+                                      }).toList(),
+                                    ),
+                                  ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: TapRegion(
                     onTapOutside: (event) =>
                         FocusManager.instance.primaryFocus?.unfocus(),
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         hintText: '메뉴 검색',
-                        suffixIcon: Icon(Icons.search),
+                        hintStyle: TextStyle(color: Colors.grey),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey.shade600,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(color: Colors.grey),
+                          borderSide: const BorderSide(color: Colors.white),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                            color: Color(0xffecb88d),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
                             width: 2.0,
                           ),
                         ),
@@ -521,8 +550,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
               Expanded(
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    side: BorderSide(color: Colors.black),
-                    foregroundColor: Colors.black,
+                    side: BorderSide(color: Colors.red),
+                    foregroundColor: Colors.white,
                     backgroundColor: Colors.red,
                     minimumSize: const Size(double.infinity, 52),
                     shape: RoundedRectangleBorder(
@@ -539,7 +568,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 16),
               Expanded(
                 child: FilledButton(
                   style: FilledButton.styleFrom(
@@ -592,94 +621,103 @@ class _PurchaseSummary extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       color: Theme.of(context).dialogTheme.backgroundColor,
-      child: Row(
-        children: [
-          // Expanded(
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       Text(
-          //         '누적 구매 목록',
-          //         style: TextStyle(
-          //           color: Color(0xffecb88d),
-          //           fontWeight: FontWeight.bold,
-          //         ),
-          //       ),
-          //       const SizedBox(height: 6),
-          //       Text(
-          //         '총 가격: ${formatPrice(totalPrice)}',
-          //         style: TextStyle(fontWeight: FontWeight.bold),
-          //       ),
-          //       if (existingPurchases.isEmpty)
-          //         SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
-          //       else
-          //         SizedBox(
-          //           height: 100,
-          //           child: ListView.builder(
-          //             itemCount: existingPurchases.length,
-          //             itemBuilder: (context, index) {
-          //               final purchase = existingPurchases[index];
-          //               return Text(
-          //                 '${purchase.itemName} ${purchase.quantity} = '
-          //                 '${formatPrice(purchase.unitPrice * purchase.quantity)}',
-          //               );
-          //             },
-          //           ),
-          //         ),
-          //     ],
-          //   ),
-          // ),
-          // const VerticalDivider(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '이번 구매 목록',
-                  style: TextStyle(
-                    color: Color(0xffecb88d),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                if (newPurchases.isEmpty)
-                  latestLogs.isEmpty
-                      ? SizedBox(height: 50, child: Text('아직 구매 내역이 없습니다.'))
-                      : SizedBox(
-                          height: 50,
-                          child: ListView.builder(
-                            itemCount: latestLogs.length,
-                            itemBuilder: (context, index) {
-                              final log = latestLogs[index];
-                              return Text(
-                                '${log.itemName} ${log.quantity} = '
-                                '${formatPrice(log.unitPrice * log.quantity)}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              );
-                            },
-                          ),
-                        )
-                else
-                  SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      itemCount: newPurchases.length,
-                      itemBuilder: (context, index) {
-                        final purchase = newPurchases[index];
-                        return Text(
-                          '${purchase.itemName} ${purchase.quantity} = '
-                          '${formatPrice(purchase.unitPrice * purchase.quantity)}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              // Expanded(
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     children: [
+              //       Text(
+              //         '누적 구매 목록',
+              //         style: TextStyle(
+              //           color: Color(0xffecb88d),
+              //           fontWeight: FontWeight.bold,
+              //         ),
+              //       ),
+              //       const SizedBox(height: 6),
+              //       Text(
+              //         '총 가격: ${formatPrice(totalPrice)}',
+              //         style: TextStyle(fontWeight: FontWeight.bold),
+              //       ),
+              //       if (existingPurchases.isEmpty)
+              //         SizedBox(height: 100, child: Text('아직 구매 내역이 없습니다.'))
+              //       else
+              //         SizedBox(
+              //           height: 100,
+              //           child: ListView.builder(
+              //             itemCount: existingPurchases.length,
+              //             itemBuilder: (context, index) {
+              //               final purchase = existingPurchases[index];
+              //               return Text(
+              //                 '${purchase.itemName} ${purchase.quantity} = '
+              //                 '${formatPrice(purchase.unitPrice * purchase.quantity)}',
+              //               );
+              //             },
+              //           ),
+              //         ),
+              //     ],
+              //   ),
+              // ),
+              // const VerticalDivider(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '이번 구매 목록',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-              ],
-            ),
+                    const SizedBox(height: 6),
+                    if (newPurchases.isEmpty)
+                      latestLogs.isEmpty
+                          ? SizedBox(height: 50, child: Text('아직 구매 내역이 없습니다.'))
+                          : SizedBox(
+                              height: 50,
+                              child: ListView.builder(
+                                itemCount: latestLogs.length,
+                                itemBuilder: (context, index) {
+                                  final log = latestLogs[index];
+                                  return Text(
+                                    '${log.itemName} ${log.quantity} = '
+                                    '${formatPrice(log.unitPrice * log.quantity)}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                },
+                              ),
+                            )
+                    else
+                      SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          itemCount: newPurchases.length,
+                          itemBuilder: (context, index) {
+                            final purchase = newPurchases[index];
+                            return Text(
+                              '${purchase.itemName} ${purchase.quantity} = '
+                              '${formatPrice(purchase.unitPrice * purchase.quantity)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

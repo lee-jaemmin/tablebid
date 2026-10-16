@@ -63,7 +63,8 @@ class _AdminTableGridState extends State<AdminTableGrid> {
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
-            hintText: '섹션-번호 (예)A-1',
+            hintText: '예) A-1',
+            hintStyle: TextStyle(color: Colors.grey)
           ),
         ),
         actions: [
@@ -71,24 +72,18 @@ class _AdminTableGridState extends State<AdminTableGrid> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () async {
                     final tablename = controller.text.trim();
 

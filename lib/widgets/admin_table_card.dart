@@ -33,23 +33,13 @@ class AdminTableCard extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
                   onPressed: () async {
                     final newName = controller.text.trim();
                     if (newName.isEmpty || newName == table.tablename) return;
@@ -85,10 +75,7 @@ class AdminTableCard extends StatelessWidget {
                       );
                     }
                   },
-                  child: const Text(
-                    '수정',
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  child: const Text('수정'),
                 ),
               ),
             ],
@@ -109,12 +96,8 @@ class AdminTableCard extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text('취소', style: TextStyle(color: Colors.white)),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
@@ -124,24 +107,24 @@ class AdminTableCard extends StatelessWidget {
                   onPressed: () async {
                     final navigator = Navigator.of(dialogContext);
                     final messenger = ScaffoldMessenger.of(context);
-                
+
                     showDialog(
                       context: dialogContext,
                       barrierDismissible: false,
                       builder: (context) =>
                           const Center(child: CircularProgressIndicator()),
                     );
-                
+
                     try {
                       await TableApi().deleteTable(tableId: table.id);
-                
+
                       navigator.pop(); // 로딩창
                       navigator.pop(); // 삭제 확인창
-                
+
                       onChanged();
                     } catch (e) {
                       navigator.pop(); // 로딩창
-                
+
                       messenger.showSnackBar(
                         SnackBar(
                           content: Text('삭제 실패: $e'),
@@ -152,10 +135,7 @@ class AdminTableCard extends StatelessWidget {
                   },
                   child: const Text(
                     '삭제',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),
@@ -177,7 +157,7 @@ class AdminTableCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey.shade200,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.grey.shade300)
+              border: Border.all(color: Colors.grey.shade300),
             ),
             child: Text(
               table.tablename,

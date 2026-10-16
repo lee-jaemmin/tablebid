@@ -133,7 +133,7 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
 
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -142,7 +142,8 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Expanded(
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width*.35,
                             child: ListView.builder(
                               itemCount: _categories.length,
                               itemBuilder: (context, index) {
@@ -177,35 +178,38 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                             child: _searchController.text.isNotEmpty
                                 ? matchedItems.isEmpty
                                       ? Center(child: Text('검색된 상품이 없습니다.'))
-                                      : Wrap(
-                                          spacing: 8,
-                                          runSpacing: 8,
-                                          children: matchedItems.map((item) {
-                                            final componentIndex =
-                                                _selectedComponents.indexWhere(
-                                                  (element) =>
-                                                      element.itemId == item.id,
-                                                );
-                                            final quantity =
-                                                componentIndex == -1
-                                                ? 0
-                                                : _selectedComponents[componentIndex]
-                                                      .quantity;
-                                            return PurchaseItemChip(
-                                              itemName: item.itemName,
-                                              isSelected: _selectedComponents
-                                                  .any(
-                                                    (component) =>
-                                                        component.itemId ==
-                                                        item.id,
-                                                  ),
-                                              onTap: () async {
-                                                _addComponent(item);
-                                              },
-                                              quantity: quantity,
-                                            );
-                                          }).toList(),
-                                        )
+                                      : Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Wrap(
+                                            spacing: 8,
+                                            runSpacing: 8,
+                                            children: matchedItems.map((item) {
+                                              final componentIndex =
+                                                  _selectedComponents.indexWhere(
+                                                    (element) =>
+                                                        element.itemId == item.id,
+                                                  );
+                                              final quantity =
+                                                  componentIndex == -1
+                                                  ? 0
+                                                  : _selectedComponents[componentIndex]
+                                                        .quantity;
+                                              return PurchaseItemChip(
+                                                itemName: item.itemName,
+                                                isSelected: _selectedComponents
+                                                    .any(
+                                                      (component) =>
+                                                          component.itemId ==
+                                                          item.id,
+                                                    ),
+                                                onTap: () async {
+                                                  _addComponent(item);
+                                                },
+                                                quantity: quantity,
+                                              );
+                                            }).toList(),
+                                          ),
+                                      )
                                 // 검색어 없음.
                                 : SingleChildScrollView(
                                     padding: const EdgeInsets.all(12),
@@ -245,7 +249,7 @@ class _SetMenuCreateScreenState extends State<SetMenuCreateScreens> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(12.0),
                   child: TapRegion(
                     onTapOutside: (event) =>
                         FocusManager.instance.primaryFocus?.unfocus(),

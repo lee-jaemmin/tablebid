@@ -90,6 +90,7 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
           height: 450,
           child: Material(
             color: CupertinoColors.systemBackground.resolveFrom(context),
+            borderRadius: BorderRadius.circular(50),
             child: SafeArea(
               top: false,
               child: Column(
@@ -120,24 +121,13 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              side: const BorderSide(color: Colors.white),
-                            ),
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              '취소',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            child: const Text('취소'),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor: Colors.black,
-                            ),
+                          child: OutlinedButton(
                             onPressed: () =>
                                 Navigator.pop(context, selectedDateTime),
                             child: const Text('확인'),
@@ -204,25 +194,14 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
               Expanded(
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
+                child: OutlinedButton(
                   onPressed: () => Navigator.pop(dialogContext, true),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    side: BorderSide(color: Colors.white),
-                  ),
-                  child: const Text('예', style: TextStyle(color: Colors.black)),
+                  child: const Text('예'),
                 ),
               ),
             ],
@@ -251,10 +230,10 @@ class _BidPriceAlertState extends State<BidPriceAlert> {
     } catch (e) {
       if (!mounted) return;
       navigator.pop(); // 로딩바
-      print('경매 ${bidAvailable ? '키는' : '끄는'} 중 에러: $e');
+      print('경매 ${bidAvailable ? '켜는' : '끄는'} 중 에러: $e');
       messenger.showSnackBar(
         SnackBar(
-          content: Text('경매 기능 ${bidAvailable ? '키는' : '끄는'} 중 오류 발생: $e'),
+          content: Text('경매 기능 ${bidAvailable ? '켜는' : '끄는'} 중 오류 발생: $e'),
           behavior: SnackBarBehavior.floating,
         ),
       );
