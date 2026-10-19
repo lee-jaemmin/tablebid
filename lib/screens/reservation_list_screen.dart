@@ -733,7 +733,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                           )
                         : ElevatedButton(
                             onPressed: () {},
-                            child: Text('입찰 중', style: TextStyle(fontSize: 12)),
+                            child: Text('입찰 중', style: TextStyle(fontSize: 12, color: Colors.black)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(
                                 229,

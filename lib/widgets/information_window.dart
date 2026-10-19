@@ -440,9 +440,10 @@ class _InformationWindowState extends State<InformationWindow> {
                   ),
                 TextField(
                   controller: _totalPriceController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: '총 가격',
                     labelStyle: TextStyle(color: Colors.grey),
+                    
                   ),
 
                   readOnly: true,
@@ -454,6 +455,7 @@ class _InformationWindowState extends State<InformationWindow> {
                     labelStyle: TextStyle(color: Colors.grey),
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 ),
                 TextField(
                   controller: _userController,

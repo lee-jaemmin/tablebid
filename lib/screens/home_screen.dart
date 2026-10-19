@@ -470,7 +470,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             });
                           },
                         ),
-                        Gaps.v20(context),
+                        Gaps.v4(context),
                         if (currentRole != 'customer' &&
                             currentRole != null) ...[
                           Material(
@@ -502,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                               onTap: _showInstaUrlDialog,
                             ),
                           ),
-                          Gaps.v20(context),
+                          Gaps.v4(context),
                         ],
                       ],
 
@@ -525,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           await _syncTablesOnResume();
                         },
                       ),
-                      Gaps.v20(context),
+                      Gaps.v4(context),
                       if (currentRole == 'owner') ...[
                         SidebarMenu(
                           icon: Icons.person_3,
@@ -543,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             await _refreshHomeData();
                           },
                         ),
-                        Gaps.v20(context),
+                        Gaps.v4(context),
                       ],
                       if (currentRole == "owner" || currentRole == "admin") ...[
                         SidebarMenu(
@@ -565,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             await _refreshHomeData();
                           },
                         ),
-                        Gaps.v20(context),
+                        Gaps.v4(context),
                         SidebarMenu(
                           icon: Icons.restaurant_menu,
                           name: '메뉴 관리',
@@ -580,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             );
                           },
                         ),
-                        Gaps.v20(context),
+                        Gaps.v4(context),
                       ],
 
                       SidebarMenu(
@@ -598,7 +598,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           );
                         },
                       ),
-                      Gaps.v20(context),
+                      Gaps.v4(context),
                       SidebarMenu(
                         icon: Icons.settings,
                         name: '설정',

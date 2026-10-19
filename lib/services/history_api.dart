@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/table_history_model.dart';
 import 'package:tablebid/services/api_client.dart';
 
@@ -18,10 +19,22 @@ class HistoryApi {
     );
   }
 
-  Future<List<TableHistoryModel>> getHistoriesByTable(String tableId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}/histories');
+  Future<List<TableHistoryModel>> getHistoriesByTable({
+    required String tableId,
+    DateTime? startTime,
+    DateTime? endTime,
+  }) async {
+    final end = endTime ?? DateTime.now();
+    final start = startTime ?? end.subtract(const Duration(hours: 3));
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/tables/${tableId}/histories',
+    ).replace(queryParameters: {
+      'start_time': start.toUtc().toIso8601String(),
+      'end_time': end.toUtc().toIso8601String(),
+    });
+    // schema는 귀찮고 path parameter로 넣자니 인코딩이 불안해서 query parameter로 해결
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);

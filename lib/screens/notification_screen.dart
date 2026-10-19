@@ -1,11 +1,131 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tablebid/models/notification_model.dart';
 import 'package:tablebid/services/notification_api.dart';
 
-class NotificationHistoryScreen extends StatelessWidget {
+class NotificationHistoryScreen extends StatefulWidget {
   final String companyId;
 
   const NotificationHistoryScreen({super.key, required this.companyId});
+
+  @override
+  State<NotificationHistoryScreen> createState() =>
+      _NotificationHistoryScreenState();
+}
+
+class _NotificationHistoryScreenState extends State<NotificationHistoryScreen> {
+  late DateTime _startTime;
+  late DateTime _endTime;
+
+  @override
+  void initState() {
+    super.initState();
+    _endTime = DateTime.now();
+    _startTime = _endTime.subtract(const Duration(hours: 3));
+  }
+
+  Future<void> _showNotificationRangePicker() async {
+    DateTime selectedStartTime = _startTime;
+    DateTime selectedEndTime = _endTime;
+
+    final selectedRange = await showCupertinoModalPopup<List<DateTime>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (popupContext) => StatefulBuilder(
+        builder: (context, setPopupState) => Container(
+          height: 450,
+          child: Material(
+            borderRadius: BorderRadius.circular(50),
+            color: CupertinoColors.systemBackground.resolveFrom(context),
+            child: SafeArea(
+              top: false,
+              child: DefaultTabController(
+                length: 2,
+                child: Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text(
+                        '알림 조회 기간 설정',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const TabBar(
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.transparent,
+                      tabs: [
+                        Tab(text: '시작'),
+                        Tab(text: '종료'),
+                      ],
+                    ),
+                    Expanded(
+                      child: TabBarView(
+                        children: [
+                          CupertinoDatePicker(
+                            mode: CupertinoDatePickerMode.dateAndTime,
+                            initialDateTime: selectedStartTime,
+                            maximumDate: selectedEndTime,
+                            onDateTimeChanged: (newDateTime) {
+                              setPopupState(() {
+                                selectedStartTime = newDateTime;
+                              });
+                            },
+                          ),
+                          CupertinoDatePicker(
+                            mode: CupertinoDatePickerMode.dateAndTime,
+                            initialDateTime: selectedEndTime,
+                            minimumDate: selectedStartTime,
+                            onDateTimeChanged: (newDateTime) {
+                              setPopupState(() {
+                                selectedEndTime = newDateTime;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => Navigator.pop(popupContext),
+                              child: const Text('취소'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(popupContext, [
+                                selectedStartTime,
+                                selectedEndTime,
+                              ]),
+                              child: const Text('조회'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    if (selectedRange == null || !mounted) return;
+    setState(() {
+      _startTime = selectedRange[0];
+      _endTime = selectedRange[1];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,9 +140,33 @@ class NotificationHistoryScreen extends StatelessWidget {
           ),
         ),
         elevation: 0, // AppBar 경계선 제거로 더 깔끔하게
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: _showNotificationRangePicker,
+              child: const Icon(Icons.calendar_month),
+            ),
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(24),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              '${DateFormat('MM/dd HH:mm').format(_startTime)} ~ ${DateFormat('MM/dd HH:mm').format(_endTime)}',
+              style: const TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
       ),
       body: FutureBuilder<List<NotificationModel>>(
-        future: NotificationApi().getNotifications(companyId),
+        future: NotificationApi().getNotifications(
+          companyId: widget.companyId,
+          startTime: _startTime,
+          endTime: _endTime,
+        ),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
@@ -32,14 +176,14 @@ class NotificationHistoryScreen extends StatelessWidget {
             );
           }
           if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '알림을 가져오는 중 오류 발생: ${snapshot.error}}',
-              ),
-            );
+            return Center(child: Text('알림을 가져오는 중 오류 발생: ${snapshot.error}}'));
           }
 
-          final notifications = snapshot.data ?? [];
+          final notifications = (snapshot.data ?? []).where((notification) {
+            final createdAt = notification.createdAt;
+            return !createdAt.isBefore(_startTime) &&
+                !createdAt.isAfter(_endTime);
+          }).toList();
 
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -76,7 +220,7 @@ class NotificationHistoryScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(bottom: 12), // 배너 사이 간격
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withAlpha(100),
+                  color: Colors.grey.withAlpha(30),
                   borderRadius: BorderRadius.circular(18), // 🌟 아이폰 특유의 깊은 곡률
                   boxShadow: [
                     BoxShadow(
@@ -124,8 +268,9 @@ class NotificationHistoryScreen extends StatelessWidget {
                           dateTimeString,
                           style: TextStyle(
                             fontSize: 12,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],

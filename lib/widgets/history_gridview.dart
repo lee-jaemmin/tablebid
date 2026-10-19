@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/table_history_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -9,8 +10,16 @@ import 'package:tablebid/services/table_history_purchase_api.dart';
 class HistoryGridView extends StatelessWidget {
   final List<TableModel> tables;
   final String companyId;
+  final DateTime startTime;
+  final DateTime endTime;
 
-  HistoryGridView({super.key, required this.tables, required this.companyId});
+  HistoryGridView({
+    super.key,
+    required this.tables,
+    required this.companyId,
+    required this.startTime,
+    required this.endTime,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +83,19 @@ class HistoryGridView extends StatelessWidget {
               '${table.tablename} 히스토리',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 8),
+            Text(
+              '${DateFormat('MM/dd HH:mm').format(startTime.toLocal())} ~ ${DateFormat('MM/dd HH:mm').format(endTime.toLocal())}',
+              style: const TextStyle(fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold),
+            ),
             SizedBox(height:12),
             Expanded(
               child: FutureBuilder<List<TableHistoryModel>>(
-                future: HistoryApi().getHistoriesByTable(tableId),
+                future: HistoryApi().getHistoriesByTable(
+                  tableId: tableId,
+                  startTime: startTime,
+                  endTime: endTime,
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Scaffold(

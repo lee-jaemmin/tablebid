@@ -33,7 +33,7 @@ class _MixerSelectionBottomSheetState extends State<MixerSelectionBottomSheet> {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                   ),
                 ),
-                const Divider(height: 1),
+                
                 Expanded(
                   child: widget.mixers.isEmpty
                       ? const Center(child: Text('선택 가능한 무료 믹서가 없습니다.'))
@@ -65,8 +65,7 @@ class _MixerSelectionBottomSheetState extends State<MixerSelectionBottomSheet> {
                     Expanded(
                       child: FilledButton(
                         style: FilledButton.styleFrom(
-                          side: const BorderSide(color: Colors.black),
-                          foregroundColor: Colors.black,
+                          foregroundColor: Colors.white,
                           backgroundColor: Colors.red,
                           minimumSize: const Size(double.infinity, 52),
                           shape: RoundedRectangleBorder(

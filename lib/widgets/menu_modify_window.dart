@@ -136,23 +136,18 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(context),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () async {
                     showDialog(
                       context: context,
@@ -184,7 +179,7 @@ class _ReservationAlertState extends State<MenuModifyWindow> {
                   },
                   child: const Text(
                     '수정',
-                    style: TextStyle(color: Colors.black),
+                    
                   ),
                 ),
               ),

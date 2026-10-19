@@ -98,7 +98,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   Future<void> _showCupertinoTimerPicker(BuildContext context) async {
-    final threshold = DateTime.now().add(const Duration(minutes: 1));
+    final now = DateTime.now();
+    final threshold = now.add(const Duration(minutes: 1));
     final minimumDateTime =
         DateTime(
           threshold.year,
@@ -113,7 +114,22 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ? const Duration(minutes: 1)
               : Duration.zero,
         );
-    DateTime selectedDateTime = minimumDateTime;
+    final initialThreshold = now.add(const Duration(hours: 1));
+    final initialDateTime =
+        DateTime(
+          initialThreshold.year,
+          initialThreshold.month,
+          initialThreshold.day,
+          initialThreshold.hour,
+          initialThreshold.minute,
+        ).add(
+          initialThreshold.second > 0 ||
+                  initialThreshold.millisecond > 0 ||
+                  initialThreshold.microsecond > 0
+              ? const Duration(minutes: 1)
+              : Duration.zero,
+        );
+    DateTime selectedDateTime = initialDateTime;
     final confirmedDateTime = await showCupertinoModalPopup<DateTime>(
       context: context,
       barrierDismissible: false,
@@ -139,8 +155,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   ),
                   Expanded(
                     child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.time, // mm:ss
-                      initialDateTime: minimumDateTime,
+                      mode: CupertinoDatePickerMode.dateAndTime,
+                      initialDateTime: initialDateTime,
                       minimumDate: minimumDateTime,
                       onDateTimeChanged: (DateTime newDateTime) {
                         selectedDateTime = newDateTime;
@@ -178,9 +194,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
     if (confirmedDateTime != null) {
       selectedDateTime = confirmedDateTime;
-      if (selectedDateTime.isBefore(DateTime.now())) {
-        selectedDateTime = selectedDateTime.add(Duration(days: 1));
-      } // 지금보다 늦은 오전 선택 시
       showDialog(
         context: context,
         barrierDismissible: false,
