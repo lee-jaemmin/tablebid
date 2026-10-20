@@ -4,6 +4,7 @@ import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
 import 'package:tablebid/models/set_menu_model.dart';
+import 'package:tablebid/services/category_api.dart';
 import 'package:tablebid/services/item_api.dart';
 import 'package:tablebid/services/set_menu_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -54,9 +55,7 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
           sortOrder: 0,
           isActive: true,
         ),
-        ...(menuCache.categories
-            .where((category) => category.isActive == true)
-            .toList()
+        ...(menuCache.categories.toList()
           ..sort((a, b) => a.categoryName.compareTo(b.categoryName))),
       ];
       final items =
@@ -134,6 +133,65 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
     }
   }
 
+  Future<void> _activateCategory(CategoryModel category) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('카테고리 활성화'),
+        content: Text('${category.categoryName} 카테고리를 활성화 시키겠습니까?'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('아니오'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('예'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
+    );
+    try {
+      await CategoryApi().updateCategory(
+        categoryId: category.id,
+        isActive: true,
+      );
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('카테고리 활성화: ${category.categoryName}'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await _loadData(forceRefresh: true);
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('카테고리 활성화 중 오류가 발생했습니다.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedItems = _items
@@ -168,6 +226,15 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
                               selected: isSelected,
                               selectedTileColor: Theme.of(context).primaryColor,
                               title: Text(category.categoryName),
+                              trailing: category.id != -1 && !category.isActive
+                                  ? IconButton(
+                                      onPressed: () =>
+                                          _activateCategory(category),
+                                      icon: const Icon(
+                                        Icons.visibility_outlined,
+                                      ),
+                                    )
+                                  : null,
                               onTap: () {
                                 setState(() {
                                   _selectedCategoryId = category.id;

@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'
+    show FaIcon, FontAwesomeIcons;
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
 import 'package:tablebid/models/set_menu_model.dart';
 import 'package:tablebid/screens/inactive_menu_screen.dart';
+import 'package:tablebid/services/category_api.dart';
 import 'package:tablebid/services/item_api.dart';
 import 'package:tablebid/services/set_menu_api.dart';
 import 'package:tablebid/widgets/menu_modify_window.dart';
@@ -145,6 +148,133 @@ class _MenuScreenState extends State<MenuScreen> {
     }
   }
 
+  Future<void> _deactivateCategory(CategoryModel category) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('카테고리 비활성화'),
+        content: Text('${category.categoryName} 카테고리를 비활성화 시키겠습니까?'),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('아니오'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('예'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
+    );
+    try {
+      await CategoryApi().updateCategory(
+        categoryId: category.id,
+        isActive: false,
+      );
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('카테고리 비활성화: ${category.categoryName}'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await _loadData(forceRefresh: true);
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('카테고리 비활성화 중 오류가 발생했습니다.')),
+      );
+    }
+  }
+
+  Future<void> _createCategory() async {
+    String categoryName = '';
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('카테고리 추가'),
+        content: TextField(
+          autofocus: true,
+          onChanged: (value) => categoryName = value,
+          decoration: const InputDecoration(hintText: '카테고리 이름', hintStyle: TextStyle(color: Colors.grey)),
+        ),
+        actions: [
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('취소'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () =>
+                      Navigator.pop(dialogContext, categoryName.trim()),
+                  child: const Text('추가'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+    if (name == null || !mounted) return;
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('카테고리 이름을 입력해주세요.')));
+      return;
+    }
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CupertinoActivityIndicator()),
+    );
+    try {
+      await CategoryApi().createCategory(categoryName: name);
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('카테고리 추가: $name'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await _loadData(forceRefresh: true);
+    } catch (e) {
+      if (!mounted) return;
+      navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('카테고리 추가 중 오류가 발생했습니다.')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectedItems = _items
@@ -249,9 +379,28 @@ class _MenuScreenState extends State<MenuScreen> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * .5,
                         child: ListView.builder(
-                          itemCount: _categories.length,
+                          itemCount: _categories.length + 1,
                           itemBuilder: (context, index) {
-                            final category = _categories[index];
+                            if (index == 0) {
+                              return Center(
+                                child: IconButton(
+                                  iconSize: 18,
+                                  padding: EdgeInsets.all(4),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 24,
+                                    minHeight: 24,
+                                  ),
+                                  tooltip: '카테고리 추가',
+                                  style: IconButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: _createCategory,
+                                  icon: const Icon(Icons.add),
+                                ),
+                              );
+                            }
+                            final category = _categories[index - 1];
                             final isSelected =
                                 category.id == _selectedCategoryId;
                             return ListTile(
@@ -259,6 +408,17 @@ class _MenuScreenState extends State<MenuScreen> {
                               selected: isSelected,
                               selectedTileColor: Theme.of(context).primaryColor,
                               title: Text(category.categoryName),
+                              trailing: category.id == -1
+                                  ? null
+                                  : IconButton(
+                                      onPressed: () =>
+                                          _deactivateCategory(category),
+                                      icon: FaIcon(
+                                        FontAwesomeIcons.eyeSlash,
+                                        color: Colors.grey,
+                                        size: 16,
+                                      ),
+                                    ),
                               onTap: () {
                                 setState(() {
                                   _selectedCategoryId = category.id;
@@ -300,8 +460,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                           trailing: setMenu.isActive
                                               ? const Icon(
                                                   Icons.toggle_on,
-                                                  color:
-                                                      Colors.lightGreenAccent,
+                                                  color: Colors.green,
                                                 )
                                               : const Icon(
                                                   Icons.toggle_off,
@@ -346,9 +505,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                     title: Text(item.itemName),
                                     subtitle: Text(formatPrice(item.itemPrice)),
                                     trailing: item.isActive
-                                        ? const Icon(
+                                        ?  Icon(
                                             Icons.toggle_on,
-                                            color: Colors.green,
+                                            color: Theme.of(context).colorScheme.primary,
                                           )
                                         : const Icon(
                                             Icons.toggle_off,

@@ -22,20 +22,18 @@ class CategoryApi {
 
   Future<CategoryModel> createCategory({
     required String categoryName,
-    int? sortOrder,
-    bool? isActive,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/categories');
 
     final body = {
       'category_name': categoryName,
-      'sort_order': sortOrder,
-      'is_active': isActive,
+      'sort_order': 0,
+      'is_active': true,
     };
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 

@@ -77,7 +77,7 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
         setPrice: int.parse(_priceController.text.replaceAll(',', '')),
         isActive: true,
         hasMixer: _hasMixer,
-        components: _selectedComponents
+        components: _selectedComponents,
       );
       if (!mounted) return;
       Navigator.pop(context);
@@ -153,34 +153,48 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                       InputDecorator(
                         decoration: InputDecoration(labelText: '구성품'),
                         child: Text(
-                          (_selectedComponents == null || _selectedComponents!.isEmpty)
-                          ? _components
-                          : _selectedComponents!.map((component)=>'${component.itemName} ${component.quantity}'
-                          ).join(', ')
-                          ),
+                          (_selectedComponents == null ||
+                                  _selectedComponents!.isEmpty)
+                              ? _components
+                              : _selectedComponents!
+                                    .map(
+                                      (component) =>
+                                          '${component.itemName} ${component.quantity}',
+                                    )
+                                    .join(', '),
+                        ),
                       ),
                       SizedBox(height: 10),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF904E55),
-                    side: BorderSide(
-                      color: Color.fromARGB(255, 112, 10, 10),
-                    ),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(12),
+                          ),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          side: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                         onPressed: () async {
-                          final newComponents = await Navigator.push<List<SelectedComponents>>(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => SetMenuCreateScreens(
-                              companyId: widget.companyId,
-                            ),
-                          ),
-                        );
-                        if(!mounted && newComponents == null || newComponents!.isEmpty) return;
-                        setState(() {
-                          _selectedComponents = newComponents;
-                          loadData();
-                        });
+                          final newComponents =
+                              await Navigator.push<List<SelectedComponents>>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SetMenuCreateScreens(
+                                    companyId: widget.companyId,
+                                  ),
+                                ),
+                              );
+                          if (!mounted && newComponents == null ||
+                              newComponents!.isEmpty)
+                            return;
+                          setState(() {
+                            _selectedComponents = newComponents;
+                            loadData();
+                          });
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -200,23 +214,13 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          side: BorderSide(color: Colors.white),
-                        ),
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          '취소',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: const Text('취소'),
                       ),
                     ),
                     SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
+                      child: OutlinedButton(
                         onPressed: () async {
                           showDialog(
                             context: context,
@@ -246,10 +250,7 @@ class _SetMenuModifyWindowState extends State<SetMenuModifyWindow> {
                           }
                           Navigator.pop(context);
                         },
-                        child: const Text(
-                          '수정',
-                          style: TextStyle(color: Colors.black),
-                        ),
+                        child: const Text('수정'),
                       ),
                     ),
                   ],
