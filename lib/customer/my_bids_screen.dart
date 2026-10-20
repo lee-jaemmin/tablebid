@@ -2,25 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/route/route_names.dart';
-import 'package:tablebid/models/company_model.dart';
-import 'package:tablebid/models/reservation_model.dart';
-import 'package:tablebid/models/table_model.dart';
-import 'package:tablebid/services/company_api.dart';
-import 'package:tablebid/services/reservation_api.dart';
-import 'package:tablebid/services/table_api.dart';
+import 'package:tablebid/models/my_bid_model.dart';
+import 'package:tablebid/services/my_bid_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
-
-class _MyBidItem {
-  final ReservationModel reservation;
-  final TableModel table;
-  final CompanyModel company;
-
-  const _MyBidItem({
-    required this.reservation,
-    required this.table,
-    required this.company,
-  });
-}
 
 class MyBidsScreen extends StatefulWidget {
   const MyBidsScreen({super.key});
@@ -30,7 +14,7 @@ class MyBidsScreen extends StatefulWidget {
 }
 
 class _MyBidsScreenState extends State<MyBidsScreen> {
-  List<_MyBidItem> _bids = [];
+  List<MyBidModel> _bids = [];
   bool _isLoading = true;
   bool _hasError = false;
 
@@ -49,18 +33,7 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
     }
 
     try {
-      final reservations = await ReservationApi().getReservationsByUser();
-      final bids = await Future.wait(
-        reservations.map((reservation) async {
-          final table = await TableApi().getTable(reservation.tableId);
-          final company = await CompanyApi().getCompany(table.companyId);
-          return _MyBidItem(
-            reservation: reservation,
-            table: table,
-            company: company,
-          );
-        }),
-      );
+      final bids = await MyBidApi().getMyBids();
       if (!mounted) return;
       setState(() {
         _bids = bids;
@@ -135,17 +108,17 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
               separatorBuilder: (_, __) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
                 final bid = _bids[index];
-                final price = bid.reservation.bidPrice == null
+                final price = bid.bidPrice == null
                     ? '-'
-                    : formatPrice(bid.reservation.bidPrice!);
+                    : formatPrice(bid.bidPrice!);
                 return Card(
                   child: ListTile(
                     onTap: () => context.pushNamed(
                       customerBidListRouteName,
                       pathParameters: {
-                        'companyId': bid.company.id,
-                        'tableId': bid.table.id,
-                      }
+                        'companyId': bid.companyId,
+                        'tableId': bid.tableId,
+                      },
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -155,8 +128,40 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                       horizontal: 12,
                       vertical: 8,
                     ),
-                    title: Text(bid.company.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                    subtitle: Text('${bid.table.tablename}\n$price'),
+                    title: Text(
+                      bid.companyName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text('${bid.tableName}\n$price'),
+                    trailing: bid.isFixed
+                        ? ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                minimumSize: const Size(60, 32),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    8,
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                '확정된 예약',
+                                style: TextStyle(fontSize: 12, color: Colors.white),
+                              ),
+                            )
+                        : Padding(
+                          padding: const EdgeInsets.only(right: 12),
+                          child: Text('내 순위: ${bid.rank.toString()}', style: TextStyle(fontSize: 14),),
+                        ),
                   ),
                 );
               },
@@ -164,4 +169,3 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
     );
   }
 }
-
