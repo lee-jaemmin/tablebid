@@ -155,7 +155,7 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                       horizontal: 12,
                       vertical: 8,
                     ),
-                    title: Text(bid.company.name),
+                    title: Text(bid.company.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                     subtitle: Text('${bid.table.tablename}\n$price'),
                   ),
                 );
