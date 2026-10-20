@@ -3,10 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
-import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/company_api.dart';
+import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/reservation_gridview.dart';
@@ -95,6 +95,30 @@ class _ReservationScreenState extends State<ReservationScreen> {
       },
     );
     service.connect(widget.companyId);
+  }
+
+  Future<void> allowAllBids() async {
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    showDialog<void>(
+      context: context,
+      builder: (_) => const Center(child: CupertinoActivityIndicator()),
+      barrierDismissible: false,
+    );
+
+    try {
+      await ReservationApi().allowAllBids(widget.companyId);
+      if (!mounted) return;
+      navigator.pop();
+    } catch (e) {
+      if (!mounted) return;
+      print('>>>>>>>>>>>>>> 전체 수락 실패: $e');
+      navigator.pop();
+      messenger.showSnackBar(
+        SnackBar(content: Text('전체 수락 실패: $e')),
+      );
+    }
   }
 
   Future<void> _showCupertinoTimerPicker(BuildContext context) async {
@@ -276,6 +300,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ? const Text('경매(예약) 관리')
               : const Text('경매 설정 변경'),
           actions: [
+            if (!_isEditingMode)
+              IconButton(
+                onPressed: () => allowAllBids(),
+                icon: const Icon(Icons.check),
+              ),
             _isEditingMode
                 ? Padding(
                     padding: EdgeInsets.symmetric(horizontal: 2.0),

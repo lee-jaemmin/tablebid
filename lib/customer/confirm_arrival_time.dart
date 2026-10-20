@@ -127,8 +127,8 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
                     ),
                     onPressed: _confirmArrivalTime,
                     child: _isSubmitting

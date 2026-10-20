@@ -206,4 +206,16 @@ class ReservationApi {
       'Failed to check reservation under: ${response.statusCode} ${response.body}',
     );
   }
+
+  Future<void> allowAllBids(String companyId) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/allow-all-bids/$companyId');
+    final response = await http.patch(url, headers: await firebaseAuthHeaders());
+
+    if (response.statusCode == 200) {
+      return;
+    }
+    throw Exception(
+      'Failed to allow all bids: ${response.statusCode} ${response.body}',
+    );
+  }
 }

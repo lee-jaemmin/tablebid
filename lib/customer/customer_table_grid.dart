@@ -30,28 +30,25 @@ class CustomerTableGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final table = tables[index];
         final isInUse = table.status == 'inuse';
-        final isBidClosed =
-            table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
+        // 경매 마감 여부에 따른 카드 표시와 터치 차단은 보류한다.
+        // final isBidClosed =
+        //     table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
         final statusText = !table.bidAvailable
             ? '경매 불가'
             : isInUse
             ? '사용 중\n${table.registeredAt == null ? '--:--' : DateFormat('HH:mm').format(table.registeredAt!.toLocal())} 입장'
             : table.isReserved
             ? '예약 확정'
-            : isBidClosed
-            ? '경매 마감'
             : table.hasReservations
             ? '입찰 중'
             : '입찰 가능';
         final showBidEndAt =
-            table.bidAvailable && !isInUse && !table.isReserved && !isBidClosed;
+            table.bidAvailable && !isInUse && !table.isReserved;
         final color = !table.bidAvailable
             ? Colors.grey[400]
             : isInUse
             ? Colors.grey[400]
             : table.isReserved
-            ? Colors.grey[400]
-            : isBidClosed
             ? Colors.grey[400]
             : table.hasReservations
             ? const Color.fromARGB(229, 255, 153, 0)
@@ -61,8 +58,6 @@ class CustomerTableGrid extends StatelessWidget {
             : isInUse
             ? Colors.grey[400]
             : table.isReserved
-            ? Colors.grey[400]
-            : isBidClosed
             ? Colors.grey[400]
             : table.hasReservations
             ? const Color.fromARGB(229, 255, 153, 0)
@@ -75,10 +70,11 @@ class CustomerTableGrid extends StatelessWidget {
           ),
           color: color,
           child: InkWell(
-            onTap: table.bidAvailable &&
-                    !(isBidClosed && !isInUse && !table.isReserved)
-                ? () => onTableTap(table)
-                : null,
+            // onTap: table.bidAvailable &&
+            //         !(isBidClosed && !isInUse && !table.isReserved)
+            //     ? () => onTableTap(table)
+            //     : null,
+            onTap: table.bidAvailable ? () => onTableTap(table) : null,
             child: Padding(
               padding: const EdgeInsets.all(8),
               child: Column(

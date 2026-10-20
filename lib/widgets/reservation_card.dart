@@ -27,10 +27,10 @@ class ReservationCard extends StatelessWidget {
     bool hasReservation = table.hasReservations == true;
     bool bidAvailable = table.bidAvailable == true;
     bool isReserved = table.isReserved == true;
-    bool isBidClosed =
-        table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
-    bool showBidEndAt =
-        !isEditingMode && bidAvailable && !isReserved && !isBidClosed;
+    // 경매 마감 여부에 따른 카드 표시와 터치 차단은 보류한다.
+    // bool isBidClosed =
+    //     table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
+    bool showBidEndAt = !isEditingMode && bidAvailable && !isReserved;
 
     return Card(
       margin: EdgeInsets.zero,
@@ -39,15 +39,14 @@ class ReservationCard extends StatelessWidget {
       color: bidAvailable
           ? isReserved
                 ? Colors.green.shade200
-                : isBidClosed
-                ? Colors.grey[400]
                 : hasReservation
                 ? Color.fromARGB(229, 255, 153, 0)
                 : Colors.grey.shade200
           : Colors.grey[400],
       elevation: hasReservation ? 4 : 1,
       child: InkWell(
-        onTap: isBidClosed && !isReserved ? null : () {
+        // onTap: isBidClosed && !isReserved ? null : () {
+        onTap: () {
           if (isEditingMode) {
             showDialog(
               context: context,
@@ -114,11 +113,6 @@ class ReservationCard extends StatelessWidget {
                               fontSize: 14,
                             ),
                           )
-                        : isBidClosed
-                        ? const Text(
-                            '경매 마감',
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          )
                         : hasReservation ?
                         const Text(
                             '입찰 중',
@@ -126,7 +120,7 @@ class ReservationCard extends StatelessWidget {
                           ) 
                           :
                         const Text(
-                            '예약 없음',
+                            '입찰 가능',
                             style: TextStyle(fontSize: 12, color: Colors.black),
                           )
                   : Text(

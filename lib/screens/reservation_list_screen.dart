@@ -73,10 +73,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   }
 
   Future<void> loadData({bool showLoading = true}) async {
-    if(showLoading) {
+    if (showLoading) {
       setState(() {
-      _isLoading = true;
-    });
+        _isLoading = true;
+      });
     }
     final reservations = await ReservationApi().getReservationsByTable(
       widget.table.id,
@@ -259,12 +259,12 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       await ReservationApi().updateReservation(
         reservationId: reservation.id,
         isFixed: true,
-        fixedAt: DateTime.now()
+        fixedAt: DateTime.now(),
       );
       if (!mounted) return;
       Navigator.pop(context);
     } catch (e) {
-      if(!mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       print('❌ 예약 확정 실패: $e');
       ScaffoldMessenger.of(
@@ -345,28 +345,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Colors.white),
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        '아니오',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('아니오'),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text(
-                        '예',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      child: const Text('예'),
                     ),
                   ),
                 ],
@@ -433,28 +420,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Colors.white),
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        '아니오',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('아니오'),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text(
-                        '입장',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      child: const Text('입장'),
                     ),
                   ),
                 ],
@@ -594,28 +568,19 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Colors.white),
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        '아니오',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('아니오'),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        side: BorderSide(color: Colors.red),
                       ),
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text(
-                        '예',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      child: const Text('예'),
                     ),
                   ),
                 ],
@@ -716,7 +681,10 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                             onPressed: () {},
                             child: Text(
                               '경매 마감',
-                              style: TextStyle(fontSize: 12),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.grey,
@@ -733,7 +701,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                           )
                         : ElevatedButton(
                             onPressed: () {},
-                            child: Text('입찰 중', style: TextStyle(fontSize: 12, color: Colors.black)),
+                            child: Text(
+                              '입찰 중',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(
                                 229,
