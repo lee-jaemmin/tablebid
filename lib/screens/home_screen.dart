@@ -327,7 +327,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> sendInstaUrl(String instaUrl) async {
-
     try {
       final updatedCompany = await CompanyApi().uploadInsta(
         _company!.id,
@@ -370,8 +369,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
               ),
             ),
-            SizedBox(height: 12,),
-            Text('매장 인스타 > 상단 점 세개 > 프로필 URL 복사')
+            SizedBox(height: 12),
+            Text('매장 인스타 > 상단 점 세개 > 프로필 URL 복사'),
           ],
         ),
         actions: [
@@ -379,18 +378,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text(
-                    '취소',
-             
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton(
-                  
                   onPressed: () =>
                       Navigator.pop(dialogContext, editedUrl.trim()),
                   child: const Text('저장'),
@@ -452,7 +446,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       child: Scaffold(
         key: _scaffoldKey,
         endDrawer: Drawer(
-          backgroundColor:Colors.grey.shade200,
+          backgroundColor: Colors.grey.shade200,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 100.0),
             child: SingleChildScrollView(
@@ -526,25 +520,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         },
                       ),
                       Gaps.v4(context),
-                      if (currentRole == 'owner') ...[
-                        SidebarMenu(
-                          icon: Icons.person_3,
-                          name: '직원 관리',
-                          onTapFunc: () async {
-                            Navigator.pop(context);
-                            await Navigator.push<void>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => StaffmanagementScreen(
-                                  companyId: company.id,
-                                ),
-                              ),
-                            );
-                            await _refreshHomeData();
-                          },
-                        ),
-                        Gaps.v4(context),
-                      ],
                       if (currentRole == "owner" || currentRole == "admin") ...[
                         SidebarMenu(
                           icon: Icons.table_bar,
@@ -565,7 +540,27 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             await _refreshHomeData();
                           },
                         ),
+
                         Gaps.v4(context),
+                        if (currentRole == 'owner') ...[
+                          SidebarMenu(
+                            icon: Icons.person_3,
+                            name: '직원 관리',
+                            onTapFunc: () async {
+                              Navigator.pop(context);
+                              await Navigator.push<void>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => StaffmanagementScreen(
+                                    companyId: company.id,
+                                  ),
+                                ),
+                              );
+                              await _refreshHomeData();
+                            },
+                          ),
+                          Gaps.v4(context),
+                        ],
                         SidebarMenu(
                           icon: Icons.restaurant_menu,
                           name: '메뉴 관리',

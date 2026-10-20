@@ -1,35 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'api_client.dart';
 
 class CategoryApi {
-  Future<List<CategoryModel>> getCategories() async {
-    final url = Uri.parse('${ApiClient.baseUrl}/categories');
+   Future<List<CategoryModel>> getCategoriesByCompany() async {
+    final url = Uri.parse('${ApiClient.baseUrl}/categories-by-company/');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => CategoryModel.fromJson(json)).toList();
+      return data.map((json)=>CategoryModel.fromJson(json)).toList();
     }
     throw Exception(
-      'Failed to get Categories: ${response.statusCode} ${response.body}',
-    );
-  }
-
-  Future<CategoryModel> getCategory(int categoryId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/categories/$categoryId');
-
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return CategoryModel.fromJson(data);
-    }
-    throw Exception(
-      'Failed to get Category: ${response.statusCode} ${response.body}',
+      'Failed to get Category by company: ${response.statusCode} ${response.body}',
     );
   }
 
@@ -67,7 +54,7 @@ class CategoryApi {
     int? sortOrder,
     bool? isActive,
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/categories');
+    final url = Uri.parse('${ApiClient.baseUrl}/categories/$categoryId');
 
     final body = {
       if (categoryName != null) 'category_name': categoryName,
@@ -77,7 +64,7 @@ class CategoryApi {
 
     final response = await http.patch(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
