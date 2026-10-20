@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/customer/phone_verification_dialog.dart';
 import 'package:tablebid/models/user_model.dart';
-import 'package:tablebid/screens/login_screen.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 
@@ -51,10 +52,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       await WebsocketService.instance.disconnect();
       await FirebaseAuth.instance.signOut();
       if (!context.mounted) return;
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
+      context.goNamed(rootRouteName);
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(
@@ -88,11 +86,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('회원 탈퇴가 완료되었습니다.')));
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
+      context.goNamed(rootRouteName);
     } on FirebaseAuthException catch (e) {
       if (!context.mounted) return;
       Navigator.pop(context);
@@ -104,11 +98,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
         );
         await FirebaseAuth.instance.signOut();
         if (!context.mounted) return;
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (route) => false,
-        );
+        context.goNamed(rootRouteName);
       } else {
         ScaffoldMessenger.of(
           context,
@@ -238,6 +228,13 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
                   leading: const Icon(Icons.person, size: 18),
                   title: const Text('이름'),
                   trailing: Text(_user?.userName ?? ''),
+                ),
+                Divider(height: 1, color: Colors.grey.shade100),
+                ListTile(
+                  leading: const Icon(Icons.gavel, size: 18),
+                  title: const Text('내 입찰 보기'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.pushNamed(customerMyBidsRouteName),
                 ),
                 Divider(height: 1, color: Colors.grey.shade100),
                 ListTile(

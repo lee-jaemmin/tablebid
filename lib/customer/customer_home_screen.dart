@@ -5,9 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:tablebid/customer/confirm_arrival_time.dart';
-import 'package:tablebid/customer/customer_company_screen.dart';
-import 'package:tablebid/customer/customer_setting_screen.dart';
+import 'package:go_router/go_router.dart';
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/customer/region_chip.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/company_api.dart';
@@ -71,14 +70,12 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
       final companies = await CompanyApi().getCompanies();
       final fixedReservation = await ReservationApi().reservationUnder();
       if (fixedReservation != null) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                ConfirmArrivalTime(reservationId: fixedReservation.id),
-          ),
-          (route) => false,
+        if (!mounted) return;
+        context.goNamed(
+          customerArrivalRouteName,
+          pathParameters: {'reservationId': fixedReservation.id.toString()},
         );
+        return;
       }
       if (!mounted) return;
       setState(() {
@@ -153,13 +150,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
           IconButton(
             tooltip: '설정',
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CustomerSettingScreen(onUserChanged: null),
-              ),
-            ),
+            onPressed: () => context.pushNamed(customerSettingsRouteName),
           ),
         ],
       ),
@@ -275,14 +266,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
                                 ),
                               ],
                             ),
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CustomerCompanyScreen(
-                                  company: company,
-                                  userId: user.uid,
-                                ),
-                              ),
+                            onTap: () => context.pushNamed(
+                              customerCompanyRouteName,
+                              pathParameters: {'companyId': company.id},
                             ),
                           ),
                         );

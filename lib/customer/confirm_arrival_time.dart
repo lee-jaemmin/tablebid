@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tablebid/customer/customer_home_screen.dart';
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -94,11 +95,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
         arrivalAt: _reservation!.reservationTime,
       );
       if (!mounted) return;
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => CustomerHomeScreen()),
-        (route) => false,
-      );
+      context.goNamed(customerHomeRouteName);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);

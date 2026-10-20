@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tablebid/customer/confirm_arrival_time.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
-import 'package:tablebid/customer/customer_bid_list_screen.dart';
-import 'package:tablebid/customer/customer_setting_screen.dart';
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
@@ -71,12 +70,9 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       final result = await ReservationApi().reservationUnder();
       if (!mounted) return;
       if (result != null) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ConfirmArrivalTime(reservationId: result.id),
-          ),
-          (route) => false,
+        context.goNamed(
+          customerArrivalRouteName,
+          pathParameters: {'reservationId': result.id.toString()},
         );
       }
     } catch (e) {
@@ -162,15 +158,12 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
     }
     if (!table.bidAvailable) return;
     if (table.hasReservations) {
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CustomerBidListScreen(
-            companyId: widget.company.id,
-            table: table,
-            userId: widget.userId,
-          ),
-        ),
+      await context.pushNamed(
+        customerBidListRouteName,
+        pathParameters: {
+          'companyId': widget.company.id,
+          'tableId': table.id,
+        },
       );
     } else {
       await showDialog<bool>(
@@ -233,18 +226,11 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
             IconButton(
               tooltip: '설정',
               icon: const Icon(Icons.settings),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CustomerSettingScreen(
-                    onUserChanged: (updatedUser) {
-                      setState(() {
-                        _user = updatedUser;
-                      });
-                    },
-                  ),
-                ),
-              ),
+              onPressed: () async {
+                await context.pushNamed(customerSettingsRouteName);
+                if (!mounted) return;
+                await _loadUser();
+              },
             ),
           ],
           bottom: PreferredSize(

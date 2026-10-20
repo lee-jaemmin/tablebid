@@ -8,8 +8,8 @@ import 'package:tablebid/constants/sizes.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:tablebid/customer/route/routes.dart';
 import 'package:tablebid/firebase_options.dart';
-import 'package:tablebid/screens/splash_screen.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -137,7 +137,8 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: appRouter,
       title: 'TABLEBID',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ko', 'KR'),
@@ -149,7 +150,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
       ],
       theme: ThemeData(
         fontFamily: 'NotoSansKR',
-        scaffoldBackgroundColor: Color(0xfff5f5f5),
+        scaffoldBackgroundColor: Color.fromARGB(255, 247, 247, 247),
         colorScheme: const ColorScheme.light(
           primary: Color.fromARGB(255, 89, 121, 218), // cursor color
           surface: Color.fromARGB(
@@ -220,7 +221,6 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           ), // 취소
         ),
       ),
-      home: SplashScreen(),
     );
   }
 }

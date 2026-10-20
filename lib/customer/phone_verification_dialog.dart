@@ -227,6 +227,7 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
               helperText: _codeSent
                   ? '6자리 인증번호 입력'
                   : '전화 번호 입력 후 전송하기를 눌러주세요.',
+            helperStyle: TextStyle(color: Colors.black),
               errorText: _errorText,
             ),
           ),
@@ -237,18 +238,14 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
           children: [
             Expanded(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  side: const BorderSide(color: Colors.white),
-                ),
+                
                 onPressed: _isProcessing ? null : () => Navigator.pop(context),
-                child: const Text('취소', style: TextStyle(color: Colors.white)),
+                child: const Text('취소'),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              child: OutlinedButton(
                 onPressed: _isProcessing
                     ? null
                     : _codeSent
@@ -261,8 +258,8 @@ class _PhoneVerificationDialogState extends State<PhoneVerificationDialog> {
                         child: CupertinoActivityIndicator(color: Colors.black),
                       )
                     : _codeSent
-                    ? const Text('인증하기', style: TextStyle(color: Colors.black))
-                    : const Text('전송하기', style: TextStyle(color: Colors.black)),
+                    ? const Text('인증하기', style: TextStyle(color: Colors.white))
+                    : const Text('전송하기', style: TextStyle(color: Colors.white)),
               ),
             ),
           ],
