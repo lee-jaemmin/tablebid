@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/item_model.dart';
 import 'api_client.dart';
 
@@ -38,7 +39,7 @@ class ItemApi {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
