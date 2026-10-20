@@ -339,6 +339,10 @@ class _MenuScreenState extends State<MenuScreen> {
                 },
               ),
               PopupMenuItem(
+                onTap: _createCategory,
+                child: Text('카테고리 추가'),
+              ),
+              PopupMenuItem(
                 child: Text('비활성화 메뉴 보기'),
                 onTap: () async {
                   final result = await showDialog<InactiveMenuResult>(
@@ -379,28 +383,9 @@ class _MenuScreenState extends State<MenuScreen> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * .5,
                         child: ListView.builder(
-                          itemCount: _categories.length + 1,
+                          itemCount: _categories.length,
                           itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Center(
-                                child: IconButton(
-                                  iconSize: 18,
-                                  padding: EdgeInsets.all(4),
-                                  constraints: const BoxConstraints(
-                                    minWidth: 24,
-                                    minHeight: 24,
-                                  ),
-                                  tooltip: '카테고리 추가',
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: Theme.of(context).colorScheme.primary,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  onPressed: _createCategory,
-                                  icon: const Icon(Icons.add),
-                                ),
-                              );
-                            }
-                            final category = _categories[index - 1];
+                            final category = _categories[index];
                             final isSelected =
                                 category.id == _selectedCategoryId;
                             return ListTile(

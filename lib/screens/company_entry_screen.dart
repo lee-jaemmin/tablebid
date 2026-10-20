@@ -118,7 +118,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
 
                   child: const Text(
                     "입장하기",
-                    style: TextStyle(color: Colors.black),
+                    
                   ),
                 ),
               ),
@@ -334,6 +334,7 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        side: BorderSide(color: Colors.red)
                       ),
                       onPressed: () => Navigator.pop(context, true),
                       child: const Text(
