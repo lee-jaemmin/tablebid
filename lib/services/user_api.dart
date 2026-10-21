@@ -127,7 +127,7 @@ class UserApi {
     );
   }
 
-  Future<UserModel> changeOwner({required String targetUserId}) async {
+  Future<void> changeOwner({required String targetUserId}) async {
     final url = Uri.parse('${ApiClient.baseUrl}/change-owner/$targetUserId');
 
     final response = await http.post(url, headers: await firebaseAuthHeaders());
@@ -135,7 +135,6 @@ class UserApi {
     if (response.statusCode != 200) {
       throw Exception('Failed to change owner: ${response.body}');
     }
-    return UserModel.fromJson(jsonDecode(response.body));
   }
 
   Future<UserModel> setUserAsCustomer() async {

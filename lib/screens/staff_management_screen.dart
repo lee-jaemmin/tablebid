@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/user_api.dart';
@@ -94,9 +93,6 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
         false;
 
     if (!confirm) return;
-
-    final myUid = auth.FirebaseAuth.instance.currentUser?.uid;
-    if (myUid == null) return;
 
     showDialog(
       context: context,

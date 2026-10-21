@@ -344,23 +344,15 @@ class _SettingScreenState extends State<SettingScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          side: const BorderSide(color: Colors.white),
-                          backgroundColor: Colors.transparent,
-                        ),
                         onPressed: () => Navigator.pop(dialogContext),
                         child: const Text(
                           '취소',
-                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                        ),
+                      child: OutlinedButton(
                         onPressed: () {
                           Navigator.pop(dialogContext);
                           Navigator.push(
@@ -374,7 +366,6 @@ class _SettingScreenState extends State<SettingScreen> {
                         },
                         child: const Text(
                           '확인',
-                          style: TextStyle(color: Colors.black),
                         ),
                       ),
                     ),
@@ -411,28 +402,24 @@ class _SettingScreenState extends State<SettingScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () {
                     Navigator.pop(dialogContext);
                     _withdrawMembership(context);
                   },
                   child: const Text(
                     '탈퇴하기',
-                    style: TextStyle(color: Colors.white),
+              
                   ),
                 ),
               ),
