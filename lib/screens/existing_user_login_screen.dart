@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tablebid/constants/gaps.dart';
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/screens/password_reset_screen.dart';
@@ -86,18 +88,10 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
           await FirebaseFirestore.instance
               .collection('users')
               .doc(user.uid)
-              .set(
-                {
-                  'fcmtoken': fcmtoken,
-                },
-                SetOptions(merge: true),
-              );
+              .set({'fcmtoken': fcmtoken}, SetOptions(merge: true));
 
           //DB에도 저장
-          await UserApi().updateUser(
-            userId: user.uid,
-            fcmToken: fcmtoken,
-          );
+          await UserApi().updateUser(userId: user.uid, fcmToken: fcmtoken);
         } catch (e) {
           print("FCM 토큰 업데이트 실패: $e");
         }
@@ -107,20 +101,32 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
 
       if (!mounted) return;
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => apiUser.role == null
-              ? UserTypeSelectionScreen(userId: apiUser.id)
-              : apiUser.role == 'customer'
-              ? const CustomerHomeScreen()
-              : hasCompany
-              ? HomeScreen()
-              : CompanyEntryScreen(
-                  userId: user.uid,
-                ),
-        ),
-        (context) => false,
-      );
+      if (apiUser.role == null) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => UserTypeSelectionScreen(userId: apiUser.id),
+          ),
+          (context) => false,
+        );
+      } else if (apiUser.role == 'customer') {
+        context.goNamed(customerHomeRouteName);
+      } else {
+        if (hasCompany) {
+          Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+          (context) => false,
+        );
+        } else {
+          Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => CompanyEntryScreen(userId: user.uid),
+          ),
+          (context) => false,
+        );
+        }
+      }
     } catch (e) {
       if (!mounted) return;
 
@@ -145,10 +151,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
 
     try {
       final userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
-            email: userEmail,
-            password: password,
-          );
+          .signInWithEmailAndPassword(email: userEmail, password: password);
 
       if (mounted) {
         await _routeUserByCompanyStatus(userCredential.user!);
@@ -160,9 +163,9 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
       } else if (e.code == 'user-disabled') {
         message = "정지된 계정입니다.";
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     } finally {
       if (mounted) setState(() => isLoading = false);
     }
@@ -188,18 +191,12 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                 children: [
                   Text(
                     "기존 계정 로그인",
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      
-                    ),
+                    style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     "이전에 가입하신 이메일로 로그인해주세요.",
-                    style: TextStyle(
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(fontSize: 14),
                   ),
                   const SizedBox(height: 50),
 
@@ -210,7 +207,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                     icon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  
+
                   if (!_isEmailValid && _emailController.text.isNotEmpty)
                     const Padding(
                       padding: EdgeInsets.only(left: 15),
@@ -247,23 +244,24 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
                         elevation: 0,
                       ),
                       child: isLoading
-                          ? const CupertinoActivityIndicator(color: Colors.black,)
-                          : _isFormValid() ? 
-                          const Text(
-                              "로그인",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ) : 
-                            const Text(
+                          ? const CupertinoActivityIndicator(
+                              color: Colors.black,
+                            )
+                          : _isFormValid()
+                          ? const Text(
                               "로그인",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
                               ),
                             )
-                            ,
+                          : const Text(
+                              "로그인",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 30),

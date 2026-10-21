@@ -5,3 +5,4 @@ const customerMyBidsRouteName = 'customerMyBids';
 const customerCompanyRouteName = 'customerCompany';
 const customerBidListRouteName = 'customerBidList';
 const customerArrivalRouteName = 'customerArrival';
+const customerSignUpRouteName = 'customerSignUp';

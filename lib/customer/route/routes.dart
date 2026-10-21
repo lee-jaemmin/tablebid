@@ -7,7 +7,13 @@ import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/customer/customer_setting_screen.dart';
 import 'package:tablebid/customer/my_bids_screen.dart';
 import 'package:tablebid/customer/route/route_error_screen.dart';
+import 'package:tablebid/screens/login_screen.dart';
 import 'package:tablebid/screens/splash_screen.dart';
+
+/*
+'/'가 있으면 최상위 루트 
+없으면 그의 자식루트
+*/
 
 final GoRouter appRouter = GoRouter(
   routes: [
@@ -15,6 +21,11 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       name: rootRouteName,
       builder: (context, state) => SplashScreen(),
+    ),
+    GoRoute(
+      path: '/signup',
+      name: customerSignUpRouteName,
+      builder: (context, state) => LoginScreen(),
     ),
     GoRoute(
       path: '/customer',

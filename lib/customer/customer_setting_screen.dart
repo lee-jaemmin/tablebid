@@ -52,7 +52,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
       await WebsocketService.instance.disconnect();
       await FirebaseAuth.instance.signOut();
       if (!context.mounted) return;
-      context.goNamed(rootRouteName);
+      context.goNamed(customerSignUpRouteName);
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(

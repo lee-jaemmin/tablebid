@@ -4,8 +4,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:tablebid/customer/customer_home_screen.dart';
+import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/screens/existing_user_login_screen.dart';
@@ -246,9 +248,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } else if (user.role == 'customer') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
+        context.goNamed(
+          customerHomeRouteName,
         );
       } else if (user.companyId != null && user.companyId != 'null') {
         Navigator.pushReplacement(
@@ -389,10 +390,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
         } else if (user.role == 'customer') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const CustomerHomeScreen()),
-          );
+          context.goNamed(customerHomeRouteName);
         } else if (companyId != null && companyId != 'null' && companyId != '') {
           Navigator.pushReplacement(
             context,
@@ -425,110 +423,113 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "TABLE BID",
-                style: TextStyle(
-                  fontSize: 48,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "TABLE BID",
+                  style: TextStyle(
+                    fontSize: 48,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-              ),
-              
-              const SizedBox(height: 80),
-
-              if (_isLoginLoading)
-                const CircularProgressIndicator()
-              else ...[
-                // 1. 카카오 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFEE500), // 카카오 노란색
-                      foregroundColor: Colors.black87,
-                      elevation: 0,
-                    ),
-                    onPressed: () => signInWithKakao(context),
-                    child: const Text(
-                      "카카오로 시작하기",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                
+                const SizedBox(height: 80),
+      
+                if (_isLoginLoading)
+                  const CircularProgressIndicator()
+                else ...[
+                  // 1. 카카오 로그인 버튼
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFFEE500), // 카카오 노란색
+                        foregroundColor: Colors.black87,
+                        elevation: 0,
+                      ),
+                      onPressed: () => signInWithKakao(context),
+                      child: const Text(
+                        "카카오로 시작하기",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-
-                if (!kIsWeb) ...[
-                // 2. 애플 로그인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      side: BorderSide(color: Colors.white),
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                    ),
-                    onPressed: () => signInWithApple(context),
-                    child: const Text(
-                      "Apple로 시작하기",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(height: 16),
+      
+                  if (!kIsWeb) ...[
+                  // 2. 애플 로그인 버튼
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        side: BorderSide(color: Colors.white),
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                      ),
+                      onPressed: () => signInWithApple(context),
+                      child: const Text(
+                        "Apple로 시작하기",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                  ],
+      
+                  // 일반 가입
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade300,
+                        foregroundColor: Colors.black,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignupScreen()),
+                        );
+                      },
+                      child: const Text(
+                        "일반 회원가입",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+      
+                  // 3. 기존 유저 로그인 (레거시)
+                  GestureDetector(
+                    onTap: _showLegacyEmailLogin,
+                    child: const Text(
+                      "기존 이메일로 로그인하기",
+                      style: TextStyle(color: Colors.black, fontSize: 16),
+                    ),
+                  ),
                 ],
-
-                // 일반 가입
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey.shade300,
-                      foregroundColor: Colors.black,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignupScreen()),
-                      );
-                    },
-                    child: const Text(
-                      "일반 회원가입",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
-
-                // 3. 기존 유저 로그인 (레거시)
-                GestureDetector(
-                  onTap: _showLegacyEmailLogin,
-                  child: const Text(
-                    "기존 이메일로 로그인하기",
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  ),
-                ),
               ],
-            ],
+            ),
           ),
         ),
       ),
