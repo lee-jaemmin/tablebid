@@ -106,25 +106,25 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     BuildContext context,
     TableModel table,
   ) async {
-    final bidEndAt = table.bidEndAt;
-    if (bidEndAt != null && !bidEndAt.isAfter(DateTime.now())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('경매가 마감되어 예약할 수 없습니다.'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
-    if (_tableReserved == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('예약이 확정된 테이블은 경매에 참여할 수 없습니다.'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
+    // final bidEndAt = table.bidEndAt;
+    // if (bidEndAt != null && !bidEndAt.isAfter(DateTime.now())) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(
+    //       content: Text('경매가 마감되어 예약할 수 없습니다.'),
+    //       behavior: SnackBarBehavior.floating,
+    //     ),
+    //   );
+    //   return;
+    // }
+    // if (_tableReserved == true) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(
+    //       content: Text('예약이 확정된 테이블은 경매에 참여할 수 없습니다.'),
+    //       behavior: SnackBarBehavior.floating,
+    //     ),
+    //   );
+    //   return;
+    // }
     bool? confirm = await showDialog<bool>(
       context: context,
       builder: (context) => ReservationAlert(
