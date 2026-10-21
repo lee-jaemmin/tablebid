@@ -6,10 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_modify_alert.dart';
+import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 
@@ -33,6 +36,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   List<ReservationModel> _reservations = [];
   bool _isLoading = true;
   bool _hasError = false;
+  UserModel? _user;
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 
   Future<void> _loadReservations() async {
     try {
+      final user = await UserApi().getUser(widget.userId);
       final reservations = await ReservationApi().getReservationsByTable(
         widget.table.id,
       );
@@ -50,6 +55,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
       if (!mounted) return;
       setState(() {
         _reservations = reservations;
+        _user = user;
         _isLoading = false;
         _hasError = false;
       });
@@ -250,14 +256,20 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                               ),
                               child: const Text(
                                 '확정된 예약',
-                                style: TextStyle(fontSize: 12, color: Colors.white),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                             _CustomerBidTile(
                               reservation: fixedReservation,
-                              userId: widget.userId,
+                              user: _user!,
                               onTap:
-                                  fixedReservation.createdById == widget.userId
+                                  fixedReservation.customerPhone ==
+                                      toReservationDisplayPhone(
+                                        _user!.phonenumber!,
+                                      )
                                   ? () => _modifyBid(fixedReservation)
                                   : null,
                             ),
@@ -284,7 +296,10 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         ),
                         child: Text(
                           fixedReservation == null ? '입찰 중' : '경매 마감',
-                          style: const TextStyle(fontSize: 12, color: Colors.black),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ),
@@ -298,8 +313,10 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         final reservation = leftBidList[index];
                         return _CustomerBidTile(
                           reservation: reservation,
-                          userId: widget.userId,
-                          onTap: reservation.createdById == widget.userId
+                          user: _user!,
+                          onTap:
+                              reservation.customerPhone ==
+                                  toReservationDisplayPhone(_user!.phonenumber!)
                               ? () => _modifyBid(reservation)
                               : null,
                           onDelete: reservation.createdById == widget.userId
@@ -318,20 +335,22 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 
 class _CustomerBidTile extends StatelessWidget {
   final ReservationModel reservation;
-  final String userId;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
+  final UserModel user;
 
   const _CustomerBidTile({
     required this.reservation,
-    required this.userId,
+    required this.user,
     this.onTap,
     this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isMine = reservation.createdById == userId;
+    final isMine =
+        reservation.customerPhone ==
+        toReservationDisplayPhone(user.phonenumber!);
     final reservationTime = reservation.reservationTime == null
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
