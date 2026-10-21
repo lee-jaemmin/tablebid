@@ -101,15 +101,27 @@ class _ReservationScreenState extends State<ReservationScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        content: const Text('모든 테이블의 최상위 입찰을 수락하시겠습니까?'),
+        content: const Text(
+          '모든 테이블의 최상위 입찰을 수락하시겠습니까?',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('아니오'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('예'),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('아니오'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('예'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
