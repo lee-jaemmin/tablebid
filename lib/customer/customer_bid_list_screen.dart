@@ -117,14 +117,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: const BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(dialogContext, false),
                   child: const Text(
                     '아니요',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
