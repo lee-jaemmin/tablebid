@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -66,7 +67,7 @@ class ReservationApi {
       if (tableId != null) 'table_id': tableId,
       if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       if (customerName != null) 'customer_name': customerName,
-      if (customerPhone != null) 'customer_phone': customerPhone,
+      if (customerPhone != null) 'customer_phone': toReservationServerPhone(customerPhone),
       if (bidPrice != null) 'bid_price': bidPrice,
       if (isFixed != null) 'is_fixed': isFixed,
       if (fixedAt != null) 'fixed_at': fixedAt.toUtc().toIso8601String(),
@@ -122,7 +123,7 @@ class ReservationApi {
     final body = {
       if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
-      'customer_phone': customerPhone,
+      'customer_phone': toReservationServerPhone(customerPhone),
       // if (items != null)
       //   'purchases': items
       //       .map(
@@ -164,7 +165,7 @@ class ReservationApi {
     final body = {
       if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
-      'customer_phone': customerPhone,
+      'customer_phone': toReservationServerPhone(customerPhone),
       if (bidPrice != null) 'bid_price': bidPrice,
     };
 

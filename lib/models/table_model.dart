@@ -1,3 +1,5 @@
+import 'package:tablebid/methods/reservation_phone_number.dart';
+
 class TableModel {
   final String id;
   final String tablename;
@@ -77,7 +79,7 @@ class TableModel {
       section: json['section'],
       status: json['status'],
       customer: json['customer'] ?? '',
-      phonenumber: json['phonenumber'] ?? '',
+      phonenumber: toReservationDisplayPhone(json['phonenumber'] ?? ''),
       persons: json['persons'] ?? 0,
       remark: json['remark'] ?? '',
       totalPrice: json['total_price'] ?? 0,

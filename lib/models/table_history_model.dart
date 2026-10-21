@@ -1,3 +1,5 @@
+import 'package:tablebid/methods/reservation_phone_number.dart';
+
 class TableHistoryModel {
   final int id;
   final String tableId;
@@ -39,7 +41,7 @@ class TableHistoryModel {
       tableName: json['tablename'],
       section: json['section'],
       customerName: json['customer_name'] ?? '',
-      customerPhone: json['customer_phone'] ?? '',
+      customerPhone: toReservationDisplayPhone(json['customer_phone'] ?? ''),
       persons: json['persons'] ?? 0,
       remark: json['remark'] ?? '',
       userId: json['user_id'],

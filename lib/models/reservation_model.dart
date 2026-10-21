@@ -1,3 +1,5 @@
+import 'package:tablebid/methods/reservation_phone_number.dart';
+
 class ReservationModel {
   final int id;
   final String tableId;
@@ -32,7 +34,7 @@ class ReservationModel {
       id: json['id'],
       tableId: json['table_id'],
       customerName: json['customer_name'],
-      customerPhone: json['customer_phone'],
+      customerPhone: toReservationDisplayPhone(json['customer_phone']),
       reservationTime: json['reservation_time'] == null ? null : DateTime.parse(json['reservation_time']).toLocal(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: json['updated_at'] == null
