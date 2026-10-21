@@ -74,7 +74,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
               ),
               Text(
                 formatPrice(_reservation!.bidPrice!),
-                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
               ),
             ],
           ),

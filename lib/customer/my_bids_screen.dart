@@ -62,29 +62,28 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
           children: [
             Row(
               children: [
-                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(255, 240, 198, 71)),
-                SizedBox(width: 8,),
-                Text('현재 1등')
+                FaIcon(
+                  FontAwesomeIcons.medal,
+                  color: const Color.fromARGB(255, 240, 198, 71),
+                ),
+                SizedBox(width: 8),
+                Text('현재 1등'),
               ],
             ),
-            SizedBox(height:12),
+            SizedBox(height: 12),
             Row(
               children: [
-                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(255, 205, 205, 205)),
-                SizedBox(width: 8,),
-                Text('현재 2등')
+                FaIcon(
+                  FontAwesomeIcons.medal,
+                  color: const Color.fromARGB(255, 205, 205, 205),
+                ),
+                SizedBox(width: 8),
+                Text('현재 2등'),
               ],
             ),
-            SizedBox(height:12),
-            Row(
-              children: [
-                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(133, 147, 110, 0)),
-                SizedBox(width: 8,),
-                Text('현재 3등')
-              ],
-            ),
-            SizedBox(height:12),
-            Text('매장 사정에 따라 예정된 시간과 달리 입찰이 마감될 수 있습니다.')
+
+            SizedBox(height: 12),
+            Text('VIP와 테이블 경쟁을 하게 되는 경우,\n매장 판단에 따라 부득이하게 테이블이 변경될 가능성이 있습니다.'),
           ],
         ),
 
@@ -205,12 +204,7 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                                 : bid.rank == 2
                                 ? FaIcon(
                                     FontAwesomeIcons.medal,
-                                    color: Color.fromARGB(255, 205, 205, 205)
-                                  )
-                                : bid.rank == 3
-                                ? FaIcon(
-                                    FontAwesomeIcons.medal,
-                                    color: Color.fromARGB(133, 147, 110, 0),
+                                    color: Color.fromARGB(255, 205, 205, 205),
                                   )
                                 : Text(
                                     '내 순위: ${bid.rank.toString()}',
