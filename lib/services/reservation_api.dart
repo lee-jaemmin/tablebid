@@ -51,6 +51,7 @@ class ReservationApi {
 
   Future<ReservationModel> updateReservation({
     required int reservationId,
+    String? tableId,
     DateTime? reservationTime,
     String? customerName,
     String? customerPhone,
@@ -62,6 +63,7 @@ class ReservationApi {
     final url = Uri.parse('${ApiClient.baseUrl}/reservations/$reservationId');
 
     final body = {
+      if (tableId != null) 'table_id': tableId,
       if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
       if (customerName != null) 'customer_name': customerName,
       if (customerPhone != null) 'customer_phone': customerPhone,

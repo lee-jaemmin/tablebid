@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tablebid/customer/customer_bid_table_change_screen.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/user_api.dart';
@@ -199,6 +200,20 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
     }
   }
 
+  Future<void> _changeTable() async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => CustomerBidTableChangeScreen(
+          companyId: widget.companyId,
+          currentTableId: widget.table.id,
+          reservationId: widget.reservationId,
+          userId: widget.userId,
+        ),
+      ),
+    );
+    if (changed == true && mounted) Navigator.pop(context, true);
+  }
+
   Future<void> _deleteReservation() async {
     final reservationTime = widget.reservationTime;
     if (reservationTime == null) {
@@ -221,7 +236,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
       return;
     }
 
-    final deleteDeadline = reservationTime.subtract(const Duration(hours: 2));
+    /*final deleteDeadline = reservationTime.subtract(const Duration(hours: 2));
     if (!DateTime.now().isBefore(deleteDeadline)) {
       await showDialog<void>(
         context: context,
@@ -240,7 +255,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
         ),
       );
       return;
-    }
+    }*/
 
     final confirmed = await showDialog<bool>(
       context: context,
@@ -314,7 +329,25 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
     return _isLoading
         ? const CupertinoActivityIndicator()
         : AlertDialog(
-            title: Text('${widget.table.tablename} 경매 수정'),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+              children: [
+                Expanded(child: Text('${widget.table.tablename} 경매 수정')),
+                TextButton(
+                  
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 2, horizontal: 12),
+                    backgroundColor: const Color.fromARGB(255, 202, 221, 236),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(12),
+                    ),
+                  ),
+                  onPressed: _isSubmitting || _isFixed ? null : _changeTable,
+                  child: const Text('테이블 이동', style: TextStyle(color: Colors.black)),
+                ),
+              ],
+            ),
             content: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

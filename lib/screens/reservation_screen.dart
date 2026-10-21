@@ -98,6 +98,24 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   Future<void> allowAllBids() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        content: const Text('모든 테이블의 최상위 입찰을 수락하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('아니오'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('예'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 

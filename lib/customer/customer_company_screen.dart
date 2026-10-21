@@ -20,8 +20,9 @@ import 'package:tablebid/widgets/company_floor_image.dart';
 class CustomerCompanyScreen extends StatefulWidget {
   final CompanyModel company;
   final String userId;
+  final Future<void> Function(TableModel)? onTableSelected;
 
-  const CustomerCompanyScreen({required this.company, required this.userId});
+  const CustomerCompanyScreen({required this.company, required this.userId, this.onTableSelected});
 
   @override
   State<CustomerCompanyScreen> createState() => _CustomerCompanyScreenState();
@@ -157,6 +158,12 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       return;
     }
     if (!table.bidAvailable) return;
+    if (widget.onTableSelected != null) {
+      await widget.onTableSelected!(table);
+      if (!mounted) return;
+      await _loadTables(showError: false);
+      return;
+    }
     if (table.hasReservations) {
       await context.pushNamed(
         customerBidListRouteName,
