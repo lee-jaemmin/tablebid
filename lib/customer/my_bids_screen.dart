@@ -57,7 +57,37 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('도움말'),
-        content: const Text('내가 입찰한 회사, 테이블과 입찰 가격을 확인할 수 있습니다.'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(255, 240, 198, 71)),
+                SizedBox(width: 8,),
+                Text('현재 1등')
+              ],
+            ),
+            SizedBox(height:12),
+            Row(
+              children: [
+                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(255, 205, 205, 205)),
+                SizedBox(width: 8,),
+                Text('현재 2등')
+              ],
+            ),
+            SizedBox(height:12),
+            Row(
+              children: [
+                FaIcon(FontAwesomeIcons.medal, color: const Color.fromARGB(133, 147, 110, 0)),
+                SizedBox(width: 8,),
+                Text('현재 3등')
+              ],
+            ),
+            SizedBox(height:12),
+            Text('매장 사정에 따라 예정된 시간과 달리 입찰이 마감될 수 있습니다.')
+          ],
+        ),
+
         actions: [
           Row(
             children: [
@@ -175,17 +205,12 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                                 : bid.rank == 2
                                 ? FaIcon(
                                     FontAwesomeIcons.medal,
-                                    color: const Color.fromARGB(
-                                      251,
-                                      163,
-                                      161,
-                                      161,
-                                    ),
+                                    color: Color.fromARGB(255, 205, 205, 205)
                                   )
                                 : bid.rank == 3
                                 ? FaIcon(
                                     FontAwesomeIcons.medal,
-                                    color: Colors.brown,
+                                    color: Color.fromARGB(133, 147, 110, 0),
                                   )
                                 : Text(
                                     '내 순위: ${bid.rank.toString()}',
