@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/models/my_bid_model.dart';
@@ -138,30 +139,59 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
                     subtitle: Text('${bid.tableName}\n$price'),
                     trailing: bid.isFixed
                         ? ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                minimumSize: const Size(60, 32),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadiusGeometry.circular(
-                                    8,
-                                  ),
-                                ),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              minimumSize: const Size(60, 32),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
                               ),
-                              child: const Text(
-                                '확정된 예약',
-                                style: TextStyle(fontSize: 12, color: Colors.white),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadiusGeometry.circular(8),
                               ),
-                            )
+                            ),
+                            child: const Text(
+                              '확정된 예약',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
                         : Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: Text('내 순위: ${bid.rank.toString()}', style: TextStyle(fontSize: 14),),
-                        ),
+                            padding: const EdgeInsets.only(right: 12),
+                            child: bid.rank == 1
+                                ? FaIcon(
+                                    FontAwesomeIcons.medal,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      240,
+                                      198,
+                                      71,
+                                    ),
+                                  )
+                                : bid.rank == 2
+                                ? FaIcon(
+                                    FontAwesomeIcons.medal,
+                                    color: const Color.fromARGB(
+                                      251,
+                                      163,
+                                      161,
+                                      161,
+                                    ),
+                                  )
+                                : bid.rank == 3
+                                ? FaIcon(
+                                    FontAwesomeIcons.medal,
+                                    color: Colors.brown,
+                                  )
+                                : Text(
+                                    '내 순위: ${bid.rank.toString()}',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                          ),
                   ),
                 );
               },
