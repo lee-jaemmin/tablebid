@@ -22,7 +22,11 @@ class CustomerCompanyScreen extends StatefulWidget {
   final String userId;
   final Future<void> Function(TableModel)? onTableSelected;
 
-  const CustomerCompanyScreen({required this.company, required this.userId, this.onTableSelected});
+  const CustomerCompanyScreen({
+    required this.company,
+    required this.userId,
+    this.onTableSelected,
+  });
 
   @override
   State<CustomerCompanyScreen> createState() => _CustomerCompanyScreenState();
@@ -142,12 +146,9 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                    ),
+                  child: OutlinedButton(
                     onPressed: () => Navigator.pop(dialogContext, true),
-                    child: Text('확인', style: TextStyle(color: Colors.black)),
+                    child: Text('확인'),
                   ),
                 ),
               ],
@@ -167,10 +168,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
     if (table.hasReservations) {
       await context.pushNamed(
         customerBidListRouteName,
-        pathParameters: {
-          'companyId': widget.company.id,
-          'tableId': table.id,
-        },
+        pathParameters: {'companyId': widget.company.id, 'tableId': table.id},
       );
     } else {
       await showDialog<bool>(
