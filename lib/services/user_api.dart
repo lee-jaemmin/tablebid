@@ -101,11 +101,11 @@ class UserApi {
       'Failed to ensure User: ${response.statusCode} ${response.body}',
     );
   }
-
+  
   Future<UserModel> changeRole({
-    required String userId,
+    required String targetStaffId
   }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/change-role/$userId');
+    final url = Uri.parse('${ApiClient.baseUrl}/change-role/$targetStaffId');
     final response = await http.patch(
       url,
       headers: await firebaseAuthHeaders(forceRefresh: true),

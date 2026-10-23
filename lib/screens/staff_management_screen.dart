@@ -22,7 +22,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
   }
 
   Future<void> loadData({bool showLoading = false}) async {
-    if(showLoading) {
+    if (showLoading) {
       setState(() {
         isLoading = true;
       });
@@ -35,7 +35,6 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
         users.sort((a, b) => a.userName.compareTo(b.userName));
         isLoading = false;
       });
-       
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -45,7 +44,6 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text('직원 목록 로딩 실패: $e')));
     }
-   
   }
 
   /// [Func] 사장 권한 넘기기
@@ -67,22 +65,16 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        side: const BorderSide(color: Colors.white),
-                        backgroundColor: Colors.transparent,
-                      ),
                       onPressed: () => Navigator.pop(dialogContext, false),
-                      child: const Text(
-                        "취소",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text("취소"),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
                         backgroundColor: Colors.red,
+                        side: BorderSide(color: Colors.red),
                       ),
                       onPressed: () => Navigator.pop(dialogContext, true),
                       child: const Text(
@@ -132,12 +124,12 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     );
 
     try {
-      await UserApi().updateUser(userId: uid, role: newRole);
+      await UserApi().changeRole(targetStaffId: uid);
       if (!mounted) return;
     } catch (e) {
       if (!mounted) return;
-      print('롤 업데이트 중 오류: $e');
-    }  
+      print('역할 변경 중 오류: $e');
+    }
     Navigator.pop(context);
     await loadData(showLoading: true);
   }
@@ -167,12 +159,21 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
         false;
 
     if (confirm) {
+      showDialog(
+        context: context,
+        builder: (context) => CupertinoActivityIndicator(),
+        barrierDismissible: false,
+      );
       try {
         final user = await UserApi().getUser(uid);
         await UserApi().removeUserFromCompany(targetUserId: user.id);
         await loadData();
+        if(!mounted) return;
+        Navigator.pop(context);
       } catch (e) {
         print(e);
+        if(!mounted) return;
+        Navigator.pop(context);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('내보내기 실패')));
@@ -207,7 +208,7 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
                     ),
                   ),
                   title: Text("${user.userName} ${isMe ? '(나)' : ''}"),
-                  subtitle: Text("권한: $role"),
+                  subtitle: role == 'admin' ? Text("권한: 관리자") : Text("권한: 직원"),
                   trailing: isMe
                       ? null
                       : PopupMenuButton<String>(
