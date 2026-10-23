@@ -107,10 +107,15 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
+    return PopScope(
+      canPop: false,
+      child: _isLoading
         ? Scaffold(body: Center(child: CupertinoActivityIndicator()))
         : Scaffold(
-            appBar: AppBar(title: const Text('도착 확정 안내')),
+            appBar: AppBar(
+              title: const Text('도착 확정 안내'),
+              automaticallyImplyLeading: false,
+            ),
             body: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -135,6 +140,7 @@ class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
                 ],
               ),
             ),
-          );
+          ),
+    );
   }
 }
