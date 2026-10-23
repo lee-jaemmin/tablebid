@@ -146,6 +146,9 @@ class _ReservationAlertState extends State<ReservationAlert> {
       messenger.showSnackBar(
         SnackBar(content: Text('예약 등록 성공: ${widget.table.tablename}')),
       );
+    } on FormatException catch (e) {
+      if (!mounted) return;
+      setState(() => _errorText = e.message);
     } catch (e) {
       print('❌ 예약 등록 중 오류 발생');
       if (!mounted) return;

@@ -4,7 +4,7 @@ String toReservationServerPhone(String value) {
   if (RegExp(r'^010\d{8}$').hasMatch(digits)) {
     return '+82${digits.substring(1)}';
   }
-  throw const FormatException('휴대폰 번호는 010으로 시작하는 11자리여야 합니다.');
+  throw const FormatException('010-xxxx-xxxx 형식으로 번호를 입력해주세요');
 }
 
 String toReservationDisplayPhone(String value) {

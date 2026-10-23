@@ -45,7 +45,7 @@ class UserApi {
     String? phonenumber,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/users/$userId');
-
+    print('>>>>> fucking role: $role');
     final body = {
       if (userName != null) 'username': userName,
       if (email != null) 'email': email,
@@ -65,6 +65,7 @@ class UserApi {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
+      print(data);
       return UserModel.fromJson(data);
     }
     throw Exception(
@@ -98,6 +99,24 @@ class UserApi {
     }
     throw Exception(
       'Failed to ensure User: ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<UserModel> changeRole({
+    required String userId,
+  }) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/change-role/$userId');
+    final response = await http.patch(
+      url,
+      headers: await firebaseAuthHeaders(forceRefresh: true),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return UserModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to change role: ${response.statusCode} ${response.body}',
     );
   }
 

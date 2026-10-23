@@ -117,12 +117,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  
                   onPressed: () => Navigator.pop(dialogContext, false),
-                  child: const Text(
-                    '아니요',
-                    
-                  ),
+                  child: const Text('아니요'),
                 ),
               ),
               const SizedBox(width: 12),
@@ -186,12 +182,17 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     final fixedReservation = fixedReservationIndex == -1
         ? null
         : _reservations[fixedReservationIndex];
+    final isFixedMine =
+        fixedReservation != null &&
+        _user?.phonenumber != null &&
+        fixedReservation.customerPhone ==
+            toReservationDisplayPhone(_user!.phonenumber!);
     final List<ReservationModel> leftBidList = fixedReservationIndex == -1
         ? _reservations
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.table.tablename} 경매'),
+        title: Text('TABLEBID'),
         actions: [
           IconButton(
             onPressed: _addBid,
@@ -231,11 +232,12 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                   children: [
                     if (fixedReservation != null)
                       Container(
+                        color: Colors.blue.withValues(alpha: 0.32),
                         padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ElevatedButton(
+                            FilledButton(
                               onPressed: () {},
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
@@ -252,27 +254,39 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                                 ),
                               ),
                               child: const Text(
-                                '확정된 예약',
+                                '확정',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 14,
                                   color: Colors.white,
                                 ),
                               ),
                             ),
-                            _CustomerBidTile(
-                              reservation: fixedReservation,
-                              user: _user!,
-                              onTap:
-                                  fixedReservation.customerPhone ==
-                                      toReservationDisplayPhone(
-                                        _user!.phonenumber!,
-                                      )
+
+                            ListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 8,
+                              ),
+                              onTap: isFixedMine
                                   ? () => _modifyBid(fixedReservation)
                                   : null,
+                              title: Text(
+                                isFixedMine
+                                    ? '${fixedReservation.customerName}'
+                                    : '다른 참여자',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                '${isFixedMine ? '${fixedReservation.customerPhone}\n' : ''}${formatPrice(fixedReservation.bidPrice ?? 0)}',
+                              ),
+                              isThreeLine: isFixedMine,
                             ),
                           ],
                         ),
                       ),
+
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
                       child: ElevatedButton(
@@ -280,7 +294,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: fixedReservation == null
                               ? const Color.fromARGB(229, 255, 153, 0)
-                              : Colors.grey,
+                              : Colors.black,
                           minimumSize: const Size(60, 32),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,
@@ -293,9 +307,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         ),
                         child: Text(
                           fixedReservation == null ? '입찰 중' : '경매 마감',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.black,
+                            color: fixedReservation == null
+                                ? Colors.black
+                                : Colors.white,
                           ),
                         ),
                       ),
@@ -305,7 +321,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(12),
                       itemCount: leftBidList.length,
-                      separatorBuilder: (_, __) => const Divider(height: 12),
+                      separatorBuilder: (_, __) => SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final reservation = leftBidList[index];
                         return _CustomerBidTile(
@@ -353,23 +369,30 @@ class _CustomerBidTile extends StatelessWidget {
         : DateFormat('HH:mm').format(reservation.reservationTime!);
     return ListTile(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.circular(12),
+        borderRadius: BorderRadiusGeometry.circular(16),
       ),
       onTap: onTap,
-      tileColor: isMine ? Colors.blue.withValues(alpha: 0.24) : null,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      tileColor: isMine
+          ? Colors.blue.withValues(alpha: 0.24)
+          : Colors.grey.shade400,
+      contentPadding: const EdgeInsets.only(
+        left: 12,
+        right: 12,
+        bottom: 12,
+        top: 6,
+      ),
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (isMine)
             Padding(
-              padding: const EdgeInsets.only(bottom: 4),
+              padding: const EdgeInsets.only(bottom: 8),
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,
-                  minimumSize: const Size(60, 32),
+                  minimumSize: const Size(48, 32),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
@@ -390,16 +413,9 @@ class _CustomerBidTile extends StatelessWidget {
         ],
       ),
       subtitle: Text(
-        '${isMine ? '${reservation.customerPhone}\n' : ''}${formatPrice(reservation.bidPrice ?? 0)}',
+        '${isMine ? '${reservation.customerPhone}\n' : '\n'}${formatPrice(reservation.bidPrice ?? 0)}',
       ),
       isThreeLine: true,
-      trailing: onDelete == null
-          ? null
-          : IconButton(
-              tooltip: '내 입찰 삭제',
-              onPressed: onDelete,
-              icon: const Icon(Icons.delete, color: Colors.red),
-            ),
     );
   }
 }

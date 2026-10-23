@@ -218,28 +218,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Colors.white),
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        '아니오',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('아니오'),
                     ),
                   ),
                   SizedBox(width: 12),
                   Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                      ),
+                    child: OutlinedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text(
-                        '예',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      child: const Text('예'),
                     ),
                   ),
                 ],
@@ -269,11 +256,13 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       print('❌ 예약 확정 실패: $e');
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('예약 확정 중 오류 발생')));
+      ).showSnackBar(SnackBar(content: Text('예약 확정 중 오류 발생: $e')));
+      return;
     }
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
+      barrierColor: Theme.of(context).colorScheme.surface,
       builder: (lottieContext) {
         return Center(
           child: Lottie.asset(

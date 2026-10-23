@@ -268,24 +268,17 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
+                  
                   onPressed: () => Navigator.pop(context, false),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-
+                child: OutlinedButton(
                   onPressed: () async {
                     if (_nameController.text.isEmpty ||
                         _phoneController.text.isEmpty ||

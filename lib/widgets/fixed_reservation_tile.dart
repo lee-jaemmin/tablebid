@@ -27,7 +27,7 @@ class FixedReservationTile extends StatelessWidget {
         children: [
           FilledButton(
             onPressed: () {},
-            child: Text('확정된 예약', style: TextStyle(fontSize: 12, color: Colors.black)),
+            child: Text('확정', style: TextStyle(fontSize: 14, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               minimumSize: const Size(60, 32),

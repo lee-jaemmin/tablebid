@@ -128,14 +128,10 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(color: Colors.white),
-                    backgroundColor: Colors.transparent,
-                  ),
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                  
                   ),
                 ),
               ),

@@ -405,7 +405,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    
                   ),
                 ),
               ),
@@ -419,7 +418,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   },
                   child: const Text(
                     '탈퇴하기',
-              
                   ),
                 ),
               ),

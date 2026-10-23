@@ -96,9 +96,21 @@ class CustomerTableGrid extends StatelessWidget {
                   ),
                   if (showBidEndAt) ...[
                     const SizedBox(height: 4),
-                    Text(
-                      '경매 마감 ${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
-                      style: const TextStyle(fontSize: 12, color: Colors.black),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          maxLines: 1,
+                          '경매 마감',
+                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                        ),
+                        SizedBox(width: MediaQuery.sizeOf(context).width*.02),
+                        Text(
+                          maxLines: 1,
+                          '${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
+                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                        ),
+                      ],
                     ),
                   ],
                 ],

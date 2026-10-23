@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/user_api.dart';
@@ -20,7 +21,12 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
     loadData();
   }
 
-  Future<void> loadData() async {
+  Future<void> loadData({bool showLoading = false}) async {
+    if(showLoading) {
+      setState(() {
+        isLoading = true;
+      });
+    }
     try {
       final fectchedUsers = await UserApi().getUsersByCompnay(widget.companyId);
       if (!mounted) return;
@@ -29,17 +35,17 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
         users.sort((a, b) => a.userName.compareTo(b.userName));
         isLoading = false;
       });
+       
     } catch (e) {
       if (!mounted) return;
-
       setState(() {
         isLoading = false;
       });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('직원 목록 로딩 실패: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('직원 목록 로딩 실패: $e')));
     }
+   
   }
 
   /// [Func] 사장 권한 넘기기
@@ -102,25 +108,38 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
 
     try {
       await UserApi().changeOwner(targetUserId: newOwnerUid);
-      if(!mounted) return;
+      if (!mounted) return;
       Navigator.pop(context);
       Navigator.pop(context);
     } catch (e) {
       if (context.mounted) {
-        if(!mounted) return;
+        if (!mounted) return;
         Navigator.pop(context); // 로딩창 끄기
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("위임 실패: $e")));
       }
     }
-    await loadData();
+    await loadData(showLoading: true);
   }
 
   /// [Func] 권한 변경
   Future<void> _updateRole(String uid, String newRole) async {
-    await UserApi().updateUser(userId: uid, role: newRole);
-    await loadData();
+    showDialog(
+      context: context,
+      builder: (context) => CupertinoActivityIndicator(),
+      barrierDismissible: false,
+    );
+
+    try {
+      await UserApi().updateUser(userId: uid, role: newRole);
+      if (!mounted) return;
+    } catch (e) {
+      if (!mounted) return;
+      print('롤 업데이트 중 오류: $e');
+    }  
+    Navigator.pop(context);
+    await loadData(showLoading: true);
   }
 
   /// [Func] 직원 내보내기
@@ -164,16 +183,15 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("직원 관리"),
-        elevation: 0.5,
-      ),
-      body: isLoading ? const Center(child: const CircularProgressIndicator())
-      : users.isEmpty
+      appBar: AppBar(title: const Text("직원 관리"), elevation: 0.5),
+      body: isLoading
+          ? const Center(child: const CircularProgressIndicator())
+          : users.isEmpty
           ? const Center(child: Text("소속된 직원이 없습니다."))
           : ListView.separated(
               itemCount: users.length,
-              separatorBuilder: (context, index) =>  Divider(height: 1, color: Colors.grey.shade100,),
+              separatorBuilder: (context, index) =>
+                  Divider(height: 1, color: Colors.grey.shade100),
               itemBuilder: (context, index) {
                 final user = users[index];
                 final String uid = user.id;
@@ -212,12 +230,15 @@ class _StaffmanagementScreenState extends State<StaffmanagementScreen> {
                             ),
                             PopupMenuItem(
                               value: 'kick',
-                              child: Text('내보내기', style: TextStyle(color: Colors.black),),
+                              child: Text(
+                                '내보내기',
+                                style: TextStyle(color: Colors.black),
+                              ),
                             ),
                             const PopupMenuItem(
                               value: 'transfer',
                               child: Text(
-                                "사장 권한 위임",
+                                "사장(Owner) 권한 위임",
                                 style: TextStyle(color: Colors.red),
                               ),
                             ),
