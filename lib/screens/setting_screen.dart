@@ -411,7 +411,7 @@ class _SettingScreenState extends State<SettingScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(backgroundColor: Colors.red),
+                  style: OutlinedButton.styleFrom(backgroundColor: Colors.red, side: BorderSide(color: Colors.red)),
                   onPressed: () {
                     Navigator.pop(dialogContext);
                     _withdrawMembership(context);

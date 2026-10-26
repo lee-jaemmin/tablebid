@@ -133,24 +133,18 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                    
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.black,
-                  ),
+                child: OutlinedButton(
+                  
                   onPressed: () async {
                     final newSection = controller.text.trim();
 
@@ -209,21 +203,18 @@ class _TableManagementScreenState extends State<TableManagementScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
+                  
                   onPressed: () => Navigator.pop(dialogContext),
                   child: const Text(
                     '취소',
-                    style: TextStyle(color: Colors.white),
+                  
                   ),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(backgroundColor: Colors.red, side: BorderSide(color: Colors.red)),
                   onPressed: () async {
                     final navigator = Navigator.of(dialogContext);
                     final messenger = ScaffoldMessenger.of(context);

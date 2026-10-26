@@ -138,7 +138,7 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, side: BorderSide(color: Colors.red)),
                   onPressed: () {
                     Navigator.pop(dialogContext);
                     _withdrawMembership(context);
