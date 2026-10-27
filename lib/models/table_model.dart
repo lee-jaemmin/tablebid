@@ -30,6 +30,7 @@ class TableModel {
   int? leastBidPrice;
   bool hasReservations;
   String? offerProducts;
+  bool fromBid;
 
   TableModel({
     required this.id,
@@ -60,7 +61,8 @@ class TableModel {
     required this.bidAvailable,
     this.leastBidPrice,
     required this.hasReservations,
-    this.offerProducts
+    this.offerProducts,
+    required this.fromBid
   });
 
   static DateTime? _parseUtcDateTime(dynamic value) {
@@ -102,7 +104,8 @@ class TableModel {
       bidEndAt: json['bid_end_at'] == null ? null : _parseUtcDateTime(json['bid_end_at']),
       leastBidPrice: json['least_bid_price'],
       hasReservations: json['has_reservations'],
-      offerProducts: json['offer_products'] ?? ""
+      offerProducts: json['offer_products'] ?? "",
+      fromBid: json['from_bid']
     );
   }
 }
