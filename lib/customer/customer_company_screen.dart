@@ -67,7 +67,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
   }
 
   Future<void> _refresh() async {
-    await Future.wait([_checkUnder(), _loadTables()]);
+    await Future.wait([_checkUnder(), _loadTables(), _loadUser()]);
   }
 
   Future<void> _checkUnder() async {
