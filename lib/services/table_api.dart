@@ -59,6 +59,8 @@ class TableApi {
     bool? bidAvailable,
     int? leastBidPrice,
     String? offerProducts,
+    bool? fromBid,
+    
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId');
     final currentTable = await getTable(tableId);
@@ -85,7 +87,7 @@ class TableApi {
       if (remark != null) 'remark': remark,
       if (isReserved != null) 'is_reserved': isReserved,
       if (userId != null) 'user_id': userId,
-      'user_name': newName,
+      if (fromBid == null || userName != null) 'user_name': newName,
       if (registeredAt != null)
         'registered_at': registeredAt.toUtc().toIso8601String(),
       if (reservedAt != null)
@@ -107,6 +109,7 @@ class TableApi {
       if (bidAvailable != null) 'bid_available': bidAvailable,
       if (leastBidPrice != null) 'least_bid_price': leastBidPrice,
       if (offerProducts != null) 'offer_products': offerProducts,
+      if (fromBid != null) 'from_bid': fromBid,
     }; 
     final response = await http.patch(
       url,
