@@ -193,6 +193,56 @@ class _InformationWindowState extends State<InformationWindow> {
   }
 
   Future<void> _openPurchaseScreen() async {
+    if (widget.table.fromBid) {
+      final release = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          content: const Text('해당 테이블은 경매를 통해 입장한 테이블로 가격이 고정되어있습니다. 가격 유지를 해제하시겠습니까?'),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    onPressed: () => Navigator.pop(dialogContext, true),
+                    child: const Text('해제하기', style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(dialogContext, false),
+                    child: const Text('유지하기'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+      if (!mounted || release == null) return;
+      if (release) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => const Center(child: CupertinoActivityIndicator()),
+        );
+        try {
+          await TableApi().updateTable(tableId: widget.table.id, fromBid: false);
+          widget.table.fromBid = false;
+        } catch (e) {
+          if (!mounted) return;
+          Navigator.of(context, rootNavigator: true).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('가격 유지 해제에 실패했습니다.')),
+          );
+          return;
+        }
+        if (!mounted) return;
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    }
     final selectedItems = await Navigator.push<List<SelectedItem>>(
       context,
       MaterialPageRoute(
