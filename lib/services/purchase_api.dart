@@ -19,34 +19,34 @@ class PurchaseApi {
       'Failed to get Purchases: ${response.statusCode} ${response.body}',
     );
   }
+  // log_api의 CreateLogAndPurchase로 가시오.
+  // Future<TablePurchasesModel> createPurchase({
+  //   required String tableId,
+  //   required int itemId,
+  //   required int quantity,
+  // }) async {
+  //   final url = Uri.parse('${ApiClient.baseUrl}/purchases');
 
-  Future<TablePurchasesModel> createPurchase({
-    required String tableId,
-    required int itemId,
-    required int quantity,
-  }) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/purchases');
+  //   final body = {
+  //     'table_id': tableId,
+  //     'item_id': itemId,
+  //     'quantity': quantity,
+  //   };
 
-    final body = {
-      'table_id': tableId,
-      'item_id': itemId,
-      'quantity': quantity,
-    };
+  //   final response = await http.post(
+  //     url,
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode(body),
+  //   );
 
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(body),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      return TablePurchasesModel.fromJson(data);
-    }
-    throw Exception(
-      'Failed to create purchase: ${response.statusCode} ${response.body}',
-    );
-  }
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
+  //     final Map<String, dynamic> data = jsonDecode(response.body);
+  //     return TablePurchasesModel.fromJson(data);
+  //   }
+  //   throw Exception(
+  //     'Failed to create purchase: ${response.statusCode} ${response.body}',
+  //   );
+  // }
 
   Future<TableHistoryModel> tableOut({
     required String tableId,
