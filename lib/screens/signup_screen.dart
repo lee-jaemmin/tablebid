@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';
+import 'package:tablebid/services/signup_ref_store.dart';
 import 'package:tablebid/widgets/agree_checkbox.dart';
 import 'package:tablebid/widgets/auth_textfield.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -112,12 +113,15 @@ class _SignupScreenState extends State<SignupScreen> {
         print('Firebase 사용자 이름 저장 실패, 가입은 계속 진행: $e');
       }
 
+      final signupRef = await SignupRefStore.read();
       await UserApi().ensureUser(
         email: inputEmail,
         fcmtoken: fcmtoken,
         userName: userName,
         cardFields: ['purchases', 'persons'],
+        signupRef: signupRef,
       );
+      if (signupRef != null) await SignupRefStore.clear();
 
       try {
         await FirebaseFirestore.instance

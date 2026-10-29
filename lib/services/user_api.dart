@@ -78,6 +78,7 @@ class UserApi {
     required String email,
     required String? fcmtoken,
     required List<String> cardFields,
+    String? signupRef,
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/users/me');
     final body = {
@@ -86,6 +87,7 @@ class UserApi {
       if (fcmtoken != null) 'fcmtoken': fcmtoken,
       'tablecardfields': cardFields,
       'is_push_on': true,
+      if (signupRef != null) 'signup_ref': signupRef,
     };
     final response = await http.put(
       url,

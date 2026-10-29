@@ -10,6 +10,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tablebid/customer/route/routes.dart';
 import 'package:tablebid/firebase_options.dart';
+import 'package:tablebid/services/signup_ref_store.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -29,6 +30,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) await SignupRefStore.capture(Uri.base);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (!kIsWeb) FlutterAppBadger.removeBadge();
 

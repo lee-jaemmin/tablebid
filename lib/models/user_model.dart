@@ -1,3 +1,4 @@
+
 class UserModel {
   final String id;
   final String userName;
@@ -11,6 +12,7 @@ class UserModel {
   final String? phonenumber;
   final bool phoneVerified;
   final int noShowCount;
+  String? signUpFrom;
 
   UserModel({
     required this.id,
@@ -24,7 +26,8 @@ class UserModel {
     required this.isPushOn,
     this.phonenumber,
     required this.phoneVerified,
-    required this.noShowCount
+    required this.noShowCount,
+    this.signUpFrom,
   });
 
   UserModel copyWith({
@@ -40,6 +43,7 @@ class UserModel {
     String? phonenumber,
     bool? phoneVerified,
     int? noShowCount,
+    String? signUpFrom,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -53,7 +57,8 @@ class UserModel {
       isPushOn: isPushOn ?? this.isPushOn,
       phonenumber: phonenumber ?? this.phonenumber,
       phoneVerified: phoneVerified ?? this.phoneVerified,
-      noShowCount: noShowCount ?? this.noShowCount
+      noShowCount: noShowCount ?? this.noShowCount,
+      signUpFrom: signUpFrom ?? this.signUpFrom,
     );
   }
 
@@ -72,7 +77,8 @@ class UserModel {
       isPushOn: json['is_push_on'],
       phonenumber: json['phonenumber'],
       phoneVerified: json['phone_verified'] ??  false,
-      noShowCount: json['no_show']
+      noShowCount: json['no_show'],
+      signUpFrom: json['signup_from'] ?? ""
     );
   }
 }

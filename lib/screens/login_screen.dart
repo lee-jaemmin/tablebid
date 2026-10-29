@@ -13,6 +13,7 @@ import 'package:tablebid/screens/existing_user_login_screen.dart';
 import 'package:tablebid/screens/signup_screen.dart';
 import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';
+import 'package:tablebid/services/signup_ref_store.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:tablebid/screens/home_screen.dart';
 
@@ -205,12 +206,15 @@ class _LoginScreenState extends State<LoginScreen> {
       final isInDb = await getFastApiUser(firebaseUser.uid);
       if (isNewUser) {
         // 3-3이면
+        final signupRef = await SignupRefStore.read();
         user = await UserApi().ensureUser(
           userName: nickname,
           email: realEmail!,
           fcmtoken: fcmtoken,
           cardFields: ['purchases', 'persons'],
+          signupRef: signupRef,
         );
+        if (signupRef != null) await SignupRefStore.clear();
       } else {
         // 기존 유저고 db에 있으면
         // 토큰 업데이트
@@ -228,12 +232,15 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         } else {
           // db에 없으면
+          final signupRef = await SignupRefStore.read();
           user = await UserApi().ensureUser(
             userName: nickname,
             email: email,
             fcmtoken: fcmtoken,
             cardFields: ['purchases', 'persons'],
+            signupRef: signupRef,
           );
+          if (signupRef != null) await SignupRefStore.clear();
         }
       }
 
@@ -363,12 +370,15 @@ class _LoginScreenState extends State<LoginScreen> {
           } catch (e) {
             print('Firestore 사용자 정보 저장 실패, 로그인은 계속 진행: $e');
           }
+          final signupRef = await SignupRefStore.read();
           await UserApi().ensureUser(
             userName: nickname,
             email: email ?? '',
             fcmtoken: fcmtoken,
             cardFields: ['purchases', 'persons'],
+            signupRef: signupRef,
           );
+          if (signupRef != null) await SignupRefStore.clear();
         }
 
         // 4. 로그인 완료 후 라우팅 분기 처리
