@@ -4,7 +4,6 @@ import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
 import 'package:tablebid/models/item_model.dart';
 import 'package:tablebid/models/log_model.dart';
-import 'package:tablebid/models/set_menu_items_model.dart';
 import 'package:tablebid/models/set_menu_model.dart';
 import 'package:tablebid/models/table_purchases_model.dart';
 import 'package:tablebid/screens/edit_purchase_screen.dart';
@@ -56,7 +55,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   List<LogModel> _logs = []; // 기존 구매 중 가장 최신
   List<TablePurchasesModel> _existedPurchase = []; // 누적
   List<SetMenuModel> _setMenus = [];
-  List<SetMenuItemsModel> _setMenuItems = [];
   int? _selectedCategoryId;
   bool _isLoading = true;
   String? _errorMessage;
@@ -105,12 +103,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
       final setMenus = menuCache.setMenus
           .where((setMenu) => setMenu.isActive == true)
           .toList();
-      final setMenusItems = menuCache.setMenuItems.toList();
       setState(() {
         _categories = categories;
         _items = items;
         _setMenus = setMenus;
-        _setMenuItems = setMenusItems;
         _isLoading = false;
       });
     } catch (e) {

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';

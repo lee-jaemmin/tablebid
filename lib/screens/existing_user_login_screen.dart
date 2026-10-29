@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:tablebid/constants/gaps.dart';
 import 'package:tablebid/customer/route/route_names.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
-import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/screens/password_reset_screen.dart';
 import 'package:tablebid/screens/user_type_selection_screen.dart';
 import 'package:tablebid/services/user_api.dart';

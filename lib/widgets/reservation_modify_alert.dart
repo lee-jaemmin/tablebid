@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tablebid/models/table_model.dart';
-import 'package:tablebid/screens/reservation_purchase_screen.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -42,7 +41,6 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
   // 예약 시간용 컨트롤러 및 변수 추가
   late TextEditingController _timeController;
   late DateTime _selectedDateTime;
-  List<SelectedItem>? _selectedItems;
   String? _errorText;
   bool _isSubmitting = false;
 

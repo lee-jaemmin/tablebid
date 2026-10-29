@@ -18,7 +18,6 @@ class ConfirmArrivalTime extends StatefulWidget {
 }
 
 class _ConfirmArrivalTimeState extends State<ConfirmArrivalTime> {
-  int? _selectedMinutes;
   bool _isSubmitting = false;
   ReservationModel? _reservation;
   bool _isLoading = true;

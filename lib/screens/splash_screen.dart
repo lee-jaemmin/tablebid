@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:tablebid/screens/home_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
-import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/customer/customer_home_screen.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/user_type_selection_screen.dart';
