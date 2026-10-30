@@ -462,15 +462,8 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        side: BorderSide(color: Colors.white),
-                      ),
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text(
-                        '아니오',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: const Text('아니오'),
                     ),
                   ),
                   SizedBox(width: 12),
