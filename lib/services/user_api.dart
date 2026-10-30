@@ -87,7 +87,7 @@ class UserApi {
       if (fcmtoken != null) 'fcmtoken': fcmtoken,
       'tablecardfields': cardFields,
       'is_push_on': true,
-      if (signupRef != null) 'signup_ref': signupRef,
+      if (signupRef != null) 'signup_from': signupRef,
     };
     final response = await http.put(
       url,
