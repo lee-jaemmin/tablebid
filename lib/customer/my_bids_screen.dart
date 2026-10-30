@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,13 +43,16 @@ class _MyBidsScreenState extends State<MyBidsScreen> {
       });
     } catch (e) {
       if (!mounted) return;
+      final message = FirebaseAuth.instance.currentUser == null
+          ? '로그인이 필요합니다'
+          : '입찰 내역을 불러오지 못했습니다.';
       setState(() {
         _isLoading = false;
         _hasError = true;
       });
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('입찰 내역을 불러오지 못했습니다.')));
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
