@@ -318,7 +318,7 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
                             color: Colors.black,
                           ),
                         )
-                      : const Text('수정', style: TextStyle(color: Colors.black)),
+                      : const Text('수정'),
                 ),
               ),
             ],

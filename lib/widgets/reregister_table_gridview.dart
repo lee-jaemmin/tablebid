@@ -67,20 +67,13 @@ class ReregisterTableGridView extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: Colors.white),
-                  ),
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('취소', style: TextStyle(color: Colors.white)),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
+                child: OutlinedButton(
                   onPressed: () async {
                     showDialog(
                       context: context,
@@ -116,10 +109,7 @@ class ReregisterTableGridView extends StatelessWidget {
                   },
                   child: const Text(
                     '재등록',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    
                   ),
                 ),
               ),
