@@ -189,14 +189,26 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
   }
 
   Future<void> _showMixerSelectionBottomSheet() async {
+    final mixerCategoryIds = _categories
+        .where((category) => category.isMixer)
+        .map((category) => category.id)
+        .toSet();
     final selectedMixers = await showModalBottomSheet<List<ItemModel>>(
       context: context,
       isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
       backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
-      builder: (context) => MixerSelectionBottomSheet(
-        mixers: _items
-            .where((item) => item.isActive && item.itemPrice == 0)
-            .toList(),
+      builder: (context) => PopScope(
+        canPop: false,
+        child: MixerSelectionBottomSheet(
+          mixers: _items
+              .where((item) =>
+                  item.isActive &&
+                  item.itemPrice == 0 &&
+                  mixerCategoryIds.contains(item.categoryId))
+              .toList(),
+        ),
       ),
     );
     if (!mounted || selectedMixers == null) return;
@@ -308,7 +320,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * .35,
+                            width: MediaQuery.of(context).size.width * .30,
                             child: ListView.builder(
                               itemCount: _categories.length,
                               itemBuilder: (context, index) {
