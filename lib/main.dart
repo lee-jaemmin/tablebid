@@ -9,7 +9,6 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tablebid/customer/route/routes.dart';
-import 'package:tablebid/firebase_options.dart';
 import 'package:tablebid/services/signup_ref_store.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:tablebid/firebase_options_production.dart' as production;
@@ -35,11 +34,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) await SignupRefStore.capture(Uri.base);
 
-  if (appFlavor != 'production' && appFlavor != 'staging') {
-    throw StateError('알 수 없는 Flavor: $appFlavor');
+  final environment = kIsWeb ? const String.fromEnvironment('APP_ENV') : appFlavor;
+  if (environment != 'production' && environment != 'staging') {
+    throw StateError('알 수 없는 환경: $environment');
   }
   await Firebase.initializeApp(
-    options: appFlavor == 'staging'
+    options: environment == 'staging'
         ? staging.DefaultFirebaseOptions.currentPlatform
         : production.DefaultFirebaseOptions.currentPlatform,
   );
