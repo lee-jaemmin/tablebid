@@ -11,6 +11,9 @@ import 'package:flutter/foundation.dart';
 import 'package:tablebid/customer/route/routes.dart';
 import 'package:tablebid/firebase_options.dart';
 import 'package:tablebid/services/signup_ref_store.dart';
+import 'package:flutter/services.dart' show appFlavor;
+import 'package:tablebid/firebase_options_production.dart' as production;
+import 'package:tablebid/firebase_options_staging.dart' as staging;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -31,7 +34,16 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) await SignupRefStore.capture(Uri.base);
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  if (appFlavor != 'production' && appFlavor != 'staging') {
+    throw StateError('알 수 없는 Flavor: $appFlavor');
+  }
+  await Firebase.initializeApp(
+    options: appFlavor == 'staging'
+        ? staging.DefaultFirebaseOptions.currentPlatform
+        : production.DefaultFirebaseOptions.currentPlatform,
+  );
+  
   if (!kIsWeb) FlutterAppBadger.removeBadge();
 
   if (kIsWeb) {
@@ -210,7 +222,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             elevation: 0,
-            side: BorderSide(color: Color.fromARGB(255, 234, 239, 253),),
+            side: BorderSide(color: Color.fromARGB(255, 234, 239, 253)),
             backgroundColor: Colors.grey.shade200,
             foregroundColor: Color.fromARGB(255, 89, 121, 218),
           ), // 취소
@@ -219,7 +231,7 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
           style: OutlinedButton.styleFrom(
             backgroundColor: Color.fromARGB(255, 89, 121, 218),
             side: BorderSide(color: Color.fromARGB(255, 89, 121, 218)),
-            foregroundColor: Colors.white
+            foregroundColor: Colors.white,
           ), // 취소
         ),
       ),

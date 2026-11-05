@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "670792864283",
+    "project_id": "tablebid-4e1f4",
+    "storage_bucket": "tablebid-4e1f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670792864283:android:1fcd4ca854e16b6b671ebe",
+        "android_client_info": {
+          "package_name": "com.lee.tablebid"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAACMXC5z8e1rDYrWlAfnGt-CWoDsZEH_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

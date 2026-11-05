@@ -60,6 +60,21 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
+    flavorDimensions += "environment"
+
+    productFlavors {
+        create("production") {
+            dimension = "environment"
+            // 기존 applicationId 그대로 사용
+            resValue("string", "app_name", "TABLEBID")
+        }
+
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            resValue("string", "app_name", "TABLEBID DEV")
+        }
+    }
 }
 
 flutter {
