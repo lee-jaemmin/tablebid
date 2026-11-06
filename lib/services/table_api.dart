@@ -5,10 +5,11 @@ import '../models/table_model.dart';
 import 'api_client.dart';
 
 class TableApi {
+  // 직원용
   Future<List<TableModel>> getTables(String companyId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/companies/${companyId}/tables');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
@@ -31,6 +32,21 @@ class TableApi {
     }
     throw Exception(
       'Failed to get a table: ${response.statusCode} ${response.body}',
+    );
+  }
+
+  Future<List<TableModel>> getPublicTables(String companyId) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/public/companies/${companyId}/tables');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => TableModel.fromJson(json)).toList();
+    }
+    throw Exception(
+      'Failed to get tables: ${response.statusCode} ${response.body}',
+      // 404, '{"detail": "Table not found"}' (String임)
     );
   }
 
