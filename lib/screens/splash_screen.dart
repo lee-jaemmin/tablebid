@@ -176,7 +176,9 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
       if ((_user!.companyId ?? '').trim().isNotEmpty) return HomeScreen();
       return UserTypeSelectionScreen(userId: _user!.id);
     } else {
-      return LoginScreen();
+      return FirebaseAuth.instance.currentUser == null
+          ? const CustomerHomeScreen()
+          : LoginScreen();
     }
   }
 }

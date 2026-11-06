@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/open/public_company_screen.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
 import 'package:tablebid/customer/route/route_error_screen.dart';
 import 'package:tablebid/models/company_model.dart';
@@ -34,9 +35,6 @@ class _CustomerCompanyRoutePageState extends State<CustomerCompanyRoutePage> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      return const RouteErrorScreen(message: '로그인이 필요합니다.');
-    }
     return FutureBuilder<CompanyModel>(
       future: _companyFuture,
       builder: (context, snapshot) {
@@ -51,7 +49,9 @@ class _CustomerCompanyRoutePageState extends State<CustomerCompanyRoutePage> {
             onRetry: _retry,
           );
         }
-        return CustomerCompanyScreen(company: snapshot.data!, userId: user.uid);
+        return user == null
+            ? PublicCompanyScreen(company: snapshot.data!)
+            : CustomerCompanyScreen(company: snapshot.data!, userId: user.uid);
       },
     );
   }
