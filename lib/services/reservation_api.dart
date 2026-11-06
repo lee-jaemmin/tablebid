@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/methods/firebase_auth.dart';
+import 'package:tablebid/models/public_reservation_model.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_purchase_screen.dart';
@@ -22,6 +23,7 @@ class ReservationApi {
     );
   }
 
+  // 직원용
   Future<List<ReservationModel>> getReservationsByTable(String tableId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId/reservations');
 
@@ -30,6 +32,21 @@ class ReservationApi {
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((elem) => ReservationModel.fromJson(elem)).toList();
+    }
+    throw Exception(
+      "Failed to get Reservations: ${response.statusCode} ${response.body}",
+    );
+  }
+
+  // 손님용
+  Future<List<PublicReservationModel>> getReservationsByTablePublic(String tableId) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/public/tables/$tableId/reservations');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((elem) => PublicReservationModel.fromJson(elem)).toList();
     }
     throw Exception(
       "Failed to get Reservations: ${response.statusCode} ${response.body}",
