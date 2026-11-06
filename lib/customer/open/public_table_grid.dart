@@ -1,0 +1,125 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tablebid/models/public_table_model.dart';
+
+class PublicTableGrid extends StatelessWidget {
+  final List<PublicTableModel> tables;
+  final VoidCallback onTableTap;
+  // 로그인 스크린 보내는 함수
+
+  const PublicTableGrid({required this.tables, required this.onTableTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    final isTablet = size.shortestSide > 600;
+    final crossAxisCount = isTablet
+        ? (isLandscape ? 6 : 4)
+        : (isLandscape ? 4 : 3);
+    return GridView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(10),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: isLandscape ? 1.2 : 1,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+      itemCount: tables.length,
+      itemBuilder: (context, index) {
+        final table = tables[index];
+        final isInUse = table.status == 'inuse';
+        // 경매 마감 여부에 따른 카드 표시와 터치 차단은 보류한다.
+        // final isBidClosed =
+        //     table.bidEndAt != null && !table.bidEndAt!.isAfter(DateTime.now());
+        final statusText = !table.bidAvailable
+            ? '경매 불가'
+            : isInUse
+            ? '사용 중\n${table.registeredAt == null ? '--:--' : DateFormat('HH:mm').format(table.registeredAt!.toLocal())} 입장'
+            : table.isReserved
+            ? '예약 확정'
+            : table.hasReservations
+            ? '입찰 중'
+            : '입찰 가능';
+        final showBidEndAt =
+            table.bidAvailable && !isInUse && !table.isReserved;
+        final color = !table.bidAvailable
+            ? Colors.grey[400]
+            : isInUse
+            ? Colors.grey[400]
+            : table.isReserved
+            ? Colors.grey[400]
+            : table.hasReservations
+            ? const Color.fromARGB(229, 255, 153, 0)
+            : Colors.grey.shade200;
+        final border = !table.bidAvailable
+            ? Colors.grey[400]
+            : isInUse
+            ? Colors.grey[400]
+            : table.isReserved
+            ? Colors.grey[400]
+            : table.hasReservations
+            ? const Color.fromARGB(229, 255, 153, 0)
+            : Colors.grey.shade300;
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(12),
+            side: BorderSide(color: border!)
+          ),
+          color: color,
+          child: InkWell(
+            // onTap: table.bidAvailable &&
+            //         !(isBidClosed && !isInUse && !table.isReserved)
+            //     ? () => onTableTap(table)
+            //     : null,
+            onTap: onTableTap,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    table.tablename,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    statusText,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 12, color: Colors.black),
+                  ),
+                  if (showBidEndAt) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          maxLines: 1,
+                          '경매 마감',
+                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                        ),
+                        SizedBox(width: MediaQuery.sizeOf(context).width*.02),
+                        Text(
+                          maxLines: 1,
+                          '${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
+                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

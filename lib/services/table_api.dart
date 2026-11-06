@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/firebase_auth.dart';
+import 'package:tablebid/models/public_table_model.dart';
 import '../models/table_model.dart';
 import 'api_client.dart';
 
@@ -24,7 +25,7 @@ class TableApi {
   Future<TableModel> getTable(String tableId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}');
 
-    final response = await http.get(url);
+    final response = await http.get(url, headers: await firebaseAuthHeaders());
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -35,14 +36,14 @@ class TableApi {
     );
   }
 
-  Future<List<TableModel>> getPublicTables(String companyId) async {
+  Future<List<PublicTableModel>> getPublicTables(String companyId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/public/companies/${companyId}/tables');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => TableModel.fromJson(json)).toList();
+      return data.map((json) => PublicTableModel.fromJson(json)).toList();
     }
     throw Exception(
       'Failed to get tables: ${response.statusCode} ${response.body}',
