@@ -22,6 +22,8 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -30,6 +32,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>app-1-670792864283-ios-b92033c34767d9c0671ebe</string>
+				<string>app-1-565159572662-ios-e15a4b487435b31e972217</string>
 			</array>
 		</dict>
 	</array>
