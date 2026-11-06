@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_modify_alert.dart';
 import 'package:tablebid/methods/reservation_phone_number.dart';
+import 'package:tablebid/models/public_table_model.dart';
 import 'package:tablebid/models/reservation_model.dart';
-import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
@@ -18,7 +18,7 @@ import 'package:tablebid/widgets/price_formatter.dart';
 
 class CustomerBidListScreen extends StatefulWidget {
   final String companyId;
-  final TableModel table;
+  final PublicTableModel table;
   final String userId;
 
   const CustomerBidListScreen({

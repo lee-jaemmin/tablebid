@@ -8,7 +8,7 @@ import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
-import 'package:tablebid/models/table_model.dart';
+import 'package:tablebid/models/public_table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
@@ -20,7 +20,7 @@ import 'package:tablebid/widgets/company_floor_image.dart';
 class CustomerCompanyScreen extends StatefulWidget {
   final CompanyModel company;
   final String userId;
-  final Future<void> Function(TableModel)? onTableSelected;
+  final Future<void> Function(PublicTableModel)? onTableSelected;
 
   const CustomerCompanyScreen({
     required this.company,
@@ -33,7 +33,7 @@ class CustomerCompanyScreen extends StatefulWidget {
 }
 
 class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
-  List<TableModel> _tables = [];
+  List<PublicTableModel> _tables = [];
   StreamSubscription<WebSocketEvent>? _webSocketSubscription;
   UserModel? _user;
   bool _isTableLoading = true;
@@ -50,7 +50,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
 
   Future<void> _loadTables({bool showError = true}) async {
     try {
-      final tables = await TableApi().getTables(widget.company.id);
+      final tables = await TableApi().getPublicTables(widget.company.id);
       if (!mounted) return;
       setState(() {
         _tables = tables;
@@ -109,7 +109,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       if (!mounted) return;
       try {
         if (event.type == 'table_updated') {
-          final updatedTable = TableModel.fromJson(event.payload);
+          final updatedTable = PublicTableModel.fromJson(event.payload);
           final index = _tables.indexWhere(
             (table) => table.id == updatedTable.id,
           );
@@ -131,7 +131,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
     super.dispose();
   }
 
-  Future<void> _openTable(TableModel table) async {
+  Future<void> _openTable(PublicTableModel table) async {
     final user = _user;
     if (user == null) {
       return;

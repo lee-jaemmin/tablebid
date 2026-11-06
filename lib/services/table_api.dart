@@ -51,6 +51,20 @@ class TableApi {
     );
   }
 
+   Future<PublicTableModel> getPublicTable(String tableId) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return PublicTableModel.fromJson(data);
+    }
+    throw Exception(
+      'Failed to get a table: ${response.statusCode} ${response.body}',
+    );
+  }
+
   Future<TableModel> updateTable({
     required String tableId,
     String? tableName,
