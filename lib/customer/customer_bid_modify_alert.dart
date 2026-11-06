@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:tablebid/customer/customer_bid_table_change_screen.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/widgets/phonenumber_formatter.dart';
@@ -11,7 +11,7 @@ import 'package:tablebid/widgets/price_formatter.dart';
 
 class CustomerBidModifyAlert extends StatefulWidget {
   final String companyId;
-  final PublicTableModel table;
+  final TableModel table;
   final String userId;
   final int reservationId;
   final DateTime? reservationTime;

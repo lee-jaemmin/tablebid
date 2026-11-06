@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_modify_alert.dart';
 import 'package:tablebid/methods/reservation_phone_number.dart';
-import 'package:tablebid/models/public_table_model.dart';
 import 'package:tablebid/models/reservation_model.dart';
+import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
@@ -18,7 +18,7 @@ import 'package:tablebid/widgets/price_formatter.dart';
 
 class CustomerBidListScreen extends StatefulWidget {
   final String companyId;
-  final PublicTableModel table;
+  final TableModel table;
   final String userId;
 
   const CustomerBidListScreen({
@@ -106,7 +106,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   }
 
   Future<void> _deleteBid(ReservationModel reservation) async {
-    if (reservation.createdById != widget.userId) return;
+    final phoneNumber = _user?.phonenumber;
+    if (phoneNumber == null || phoneNumber.trim().isEmpty ||
+        reservation.customerPhone != toReservationDisplayPhone(phoneNumber)) {
+      return;
+    }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -332,7 +336,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                                   toReservationDisplayPhone(_user!.phonenumber!)
                               ? () => _modifyBid(reservation)
                               : null,
-                          onDelete: reservation.createdById == widget.userId
+                          onDelete: _user?.phonenumber?.trim().isNotEmpty == true &&
+                                  reservation.customerPhone ==
+                                      toReservationDisplayPhone(_user!.phonenumber!)
                               ? () => _deleteBid(reservation)
                               : null,
                         );

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/table_model.dart';
+
 class CustomerTableGrid extends StatelessWidget {
-  final List<PublicTableModel> tables;
-  final ValueChanged<PublicTableModel> onTableTap;
+  final List<TableModel> tables;
+  final ValueChanged<TableModel> onTableTap;
 
   const CustomerTableGrid({required this.tables, required this.onTableTap});
 
