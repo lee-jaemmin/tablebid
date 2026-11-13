@@ -261,7 +261,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
         );
         if (!mounted) return;
         Navigator.pop(context);
-        Navigator.pop(context); // 꼼수. 실시간 로딩하기 싫어서 일부러 홈으로 보냄.
+        await _loadTables(widget.companyId, showErrorState: false);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("경매 마감 시간 일괄 설정 완료"),
@@ -325,15 +326,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
       length: sections.length,
       child: Scaffold(
         appBar: AppBar(
-          centerTitle: !_isEditingMode,
+          centerTitle: true,
           title: !_isEditingMode
               ? const Text('경매(예약) 관리')
               : const Text('경매 설정 변경'),
           actions: [
             if (!_isEditingMode)
-              IconButton(
-                onPressed: () => allowAllBids(),
-                icon: const Icon(Icons.check),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: IconButton(
+                  onPressed: () => allowAllBids(),
+                  icon: const Icon(Icons.check),
+                ),
               ),
             _isEditingMode
                 ? Padding(
@@ -359,8 +363,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       }),
                       child: Padding(
                         padding: const EdgeInsets.only(
-                          right: 12.0,
-                          left: 8.0,
+                          right: 8.0,
+                          left: 4.0,
                           top: 8.0,
                           bottom: 8.0,
                         ),
