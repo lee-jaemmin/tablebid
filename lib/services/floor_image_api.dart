@@ -37,7 +37,7 @@ class FloorImageApi {
     );
     return http.get(
       url,
-      headers: await firebaseAuthHeaders(forceRefresh: forceRefresh),
+
     );
   }
 
