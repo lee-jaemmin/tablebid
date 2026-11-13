@@ -49,15 +49,9 @@ class _TableGridViewState extends State<TableGridView> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final orientation = MediaQuery.of(context).orientation;
 
-    final isTablet = size.shortestSide > 600;
     final isLandScape = orientation == Orientation.landscape;
-
-    int crossAxisCount = isTablet
-        ? (isLandScape ? 6 : 4)
-        : (isLandScape ? 4 : 3);
 
     return _isLoading
         ? const Center(
@@ -67,7 +61,7 @@ class _TableGridViewState extends State<TableGridView> {
             physics: widget.physics,
             padding: EdgeInsets.all(10),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
+              crossAxisCount: 3,
               childAspectRatio: isLandScape ? 1.2 : 1.0,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
