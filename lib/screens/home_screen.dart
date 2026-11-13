@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   UserModel? _currentUser;
   CompanyModel? _company;
   bool _isLoading = true;
+  int _selectedBottomIndex = 0;
   int _refreshCount = 0;
   TextEditingController _instaUrlCtrl = TextEditingController();
 
@@ -445,6 +446,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       length: sections.length + 1,
       child: Scaffold(
         key: _scaffoldKey,
+        endDrawerEnableOpenDragGesture: _selectedBottomIndex == 0,
         endDrawer: Drawer(
           backgroundColor: Colors.grey.shade200,
           child: Padding(
@@ -500,26 +502,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         ],
                       ],
 
-                      SidebarMenu(
-                        icon: Icons.gavel,
-                        name: '경매(예약) 관리',
-                        onTapFunc: () async {
-                          Navigator.pop(context);
-                          if (!context.mounted) return;
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ReservationScreen(
-                                companyId: company.id,
-                                userId: currentUser.id,
-                              ),
-                            ),
-                          );
-                          if (!mounted) return;
-                          await _syncTablesOnResume();
-                        },
-                      ),
-                      Gaps.v4(context),
                       if (currentRole == "owner" || currentRole == "admin") ...[
                         SidebarMenu(
                           icon: Icons.table_bar,
@@ -616,82 +598,103 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ),
         ),
-        appBar: AppBar(
-          title: Text(company.name),
-          actions: [
-            NotificationBell(user: currentUser, companyId: company.id),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: GestureDetector(
-                onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
-                child: const Icon(Icons.menu),
-              ),
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(64),
-            child: Builder(
-              builder: (tabContext) {
-                final ctrl = DefaultTabController.of(tabContext);
-                final labels = ['전체', ...sections];
-                return AnimatedBuilder(
-                  animation: ctrl,
-                  builder: (context, child) {
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      child: Row(
-                        children: List.generate(labels.length, (index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(minWidth: 56),
-                              child: SectionChip(
-                                region: labels[index],
-                                isSelected: ctrl.index == index,
-                                onTap: () => ctrl.animateTo(index),
-                              ),
+        appBar: _selectedBottomIndex == 0
+            ? AppBar(
+                title: Text(company.name),
+                actions: [
+                  NotificationBell(user: currentUser, companyId: company.id),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: GestureDetector(
+                      onTap: () => _scaffoldKey.currentState?.openEndDrawer(),
+                      child: const Icon(Icons.menu),
+                    ),
+                  ),
+                ],
+                bottom: PreferredSize(
+                  preferredSize: Size.fromHeight(64),
+                  child: Builder(
+                    builder: (tabContext) {
+                      final ctrl = DefaultTabController.of(tabContext);
+                      final labels = ['전체', ...sections];
+                      return AnimatedBuilder(
+                        animation: ctrl,
+                        builder: (context, child) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: List.generate(labels.length, (index) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(minWidth: 56),
+                                    child: SectionChip(
+                                      region: labels[index],
+                                      isSelected: ctrl.index == index,
+                                      onTap: () => ctrl.animateTo(index),
+                                    ),
+                                  ),
+                                );
+                              }),
                             ),
                           );
-                        }),
+                        },
+                      );
+                    },
+                  ),
+                ),
+              )
+            : null,
+        body: _selectedBottomIndex == 0
+            ? TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  CompanyFloorImage(
+                    company: company,
+                    canAdd: canManageFloorImage,
+                    canReplace: false,
+                    onCompanyUpdated: (updatedCompany) {
+                      setState(() {
+                        _company = updatedCompany;
+                      });
+                    },
+                  ),
+                  ...sections.map((section) {
+                    return RefreshIndicator(
+                      onRefresh: _refreshHomeData,
+                      child: TableGridView(
+                        key: ValueKey('$section-$_refreshCount'),
+                        companyId: company.id,
+                        tableNotifiers:
+                            _tableNotifierBySection[section] ?? const [],
+                        visibleFields: currentUser.cardfields,
+                        userId: currentUser.id,
+                        userName: currentUser.userName,
+                        physics: const AlwaysScrollableScrollPhysics(),
                       ),
                     );
-                  },
-                );
-              },
-            ),
-          ),
-        ),
-        body: TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          children: [
-            CompanyFloorImage(
-              company: company,
-              canAdd: canManageFloorImage,
-              canReplace: false,
-              onCompanyUpdated: (updatedCompany) {
-                setState(() {
-                  _company = updatedCompany;
-                });
-              },
-            ),
-            ...sections.map((section) {
-              return RefreshIndicator(
-                onRefresh: _refreshHomeData,
-                child: TableGridView(
-                  key: ValueKey('$section-$_refreshCount'),
-                  companyId: company.id,
-                  tableNotifiers: _tableNotifierBySection[section] ?? const [],
-                  visibleFields: currentUser.cardfields,
-                  userId: currentUser.id,
-                  userName: currentUser.userName,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                ),
-              );
-            }),
+                  }),
+                ],
+              )
+            : ReservationScreen(companyId: company.id, userId: currentUser.id),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          key: ValueKey(_selectedBottomIndex),
+          currentIndex: _selectedBottomIndex,
+          onTap: (index) {
+            if (_selectedBottomIndex == index) return;
+            setState(() => _selectedBottomIndex = index);
+            if (index == 0) _syncTablesOnResume();
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+            BottomNavigationBarItem(icon: Icon(Icons.gavel), label: '경매'),
           ],
         ),
       ),
