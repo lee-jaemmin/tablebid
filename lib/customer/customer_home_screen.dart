@@ -68,7 +68,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
   Future<void> _loadInitialData() async {
     try {
       final companies = await CompanyApi().getCompanies();
-      final fixedReservation = await ReservationApi().reservationUnder();
+      final fixedReservation = FirebaseAuth.instance.currentUser == null
+          ? null
+          : await ReservationApi().reservationUnder();
       if (fixedReservation != null) {
         if (!mounted) return;
         context.goNamed(
@@ -208,9 +210,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
             ),
           ),
           Expanded(
-            child: user == null
-                ? const Center(child: Text('로그인이 필요합니다.'))
-                : _isLoading
+            child: _isLoading
                 ? const Center(child: CupertinoActivityIndicator())
                 : _hasError
                 ? Center(

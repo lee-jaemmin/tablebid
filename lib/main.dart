@@ -153,6 +153,18 @@ class _tablebidState extends State<tablebid> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: appRouter,
+      builder: (context, child) {
+        if (!kIsWeb) return child!;
+        return ColoredBox(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: child!,
+            ),
+          ),
+        );
+      },
       title: 'TABLEBID',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ko', 'KR'),

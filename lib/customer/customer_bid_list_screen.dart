@@ -106,7 +106,11 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   }
 
   Future<void> _deleteBid(ReservationModel reservation) async {
-    if (reservation.createdById != widget.userId) return;
+    final phoneNumber = _user?.phonenumber;
+    if (phoneNumber == null || phoneNumber.trim().isEmpty ||
+        reservation.customerPhone != toReservationDisplayPhone(phoneNumber)) {
+      return;
+    }
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -192,13 +196,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
-        title: Text('TABLEBID'),
+        title: Text('${widget.table.tablename}번 경매'),
         actions: [
-          IconButton(
-            onPressed: _addBid,
-            tooltip: '입찰 추가',
-            icon: const Icon(Icons.add),
-          ),
           IconButton(
             onPressed: _loadReservations,
             tooltip: '새로 고침',
@@ -206,6 +205,14 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        onPressed: _addBid,
+        tooltip: '입찰 추가',
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: _isLoading
           ? const Center(child: CupertinoActivityIndicator())
           : _hasError
@@ -226,6 +233,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
           : RefreshIndicator(
               onRefresh: _loadReservations,
               child: SingleChildScrollView(
+                padding: const EdgeInsets.only(bottom: 88),
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +340,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                                   toReservationDisplayPhone(_user!.phonenumber!)
                               ? () => _modifyBid(reservation)
                               : null,
-                          onDelete: reservation.createdById == widget.userId
+                          onDelete: _user?.phonenumber?.trim().isNotEmpty == true &&
+                                  reservation.customerPhone ==
+                                      toReservationDisplayPhone(_user!.phonenumber!)
                               ? () => _deleteBid(reservation)
                               : null,
                         );

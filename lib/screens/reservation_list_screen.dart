@@ -606,18 +606,6 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         title: Text('${widget.table.tablename} 예약'),
         actions: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 4, 12),
-            child: Tooltip(
-              message: "예약 추가",
-              child: IconButton(
-                onPressed: () {
-                  _showReservationAlert(context, widget.table);
-                },
-                icon: Icon(Icons.add),
-              ),
-            ),
-          ),
-          Padding(
             padding: const EdgeInsets.fromLTRB(4, 12, 12, 12),
             child: Tooltip(
               message: "새로 고침",
@@ -631,11 +619,20 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Colors.white,
+        onPressed: () => _showReservationAlert(context, widget.table),
+        tooltip: '예약 추가',
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: _isLoading
           ? const Center(child: CupertinoActivityIndicator())
           : _reservations.isEmpty
           ? const Center(child: Text('예약 없음'))
           : SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 88),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -712,6 +709,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                   ListView.separated(
                     shrinkWrap:
                         true, // single~: 자식에게 무제한 높이 제공 -> Listview높이를 못 정해서 Render Error
+                    physics: const NeverScrollableScrollPhysics(),
                     padding: const EdgeInsets.all(12),
                     itemCount: leftBidList.length,
                     separatorBuilder: (_, __) => const Divider(height: 1),
@@ -729,18 +727,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                       //   (sum, item) => (sum += item.unitPrice * item.quantity),
                       // );
                       return GestureDetector(
-                        onTap: reservation.createdById == widget.userId
-                            ? () => _showReservationModifyAlert(
-                                context,
-                                widget.table,
-                                reservation.id,
-                                reservation.reservationTime,
-                                reservation.customerName,
-                                reservation.customerPhone,
-                                reservation.bidPrice,
-                                // 이미 채워져 있는 값 보내기
-                              )
-                            : null,
+                        // onTap: 소유자 확인 로직 교체 후 연결
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(
                             horizontal: 4,

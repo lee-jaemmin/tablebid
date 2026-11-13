@@ -21,20 +21,14 @@ class ReservationGridView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     tables.sort((a, b)=>naturalSortCompare(a.tablename, b.tablename));
-    final size = MediaQuery.of(context).size;
     final orientation = MediaQuery.of(context).orientation;
 
-    final isTablet = size.shortestSide > 600;
     final isLandScape = orientation == Orientation.landscape;
-
-    int crossAxisCount = isTablet
-        ? (isLandScape ? 6 : 4)
-        : (isLandScape ? 4 : 3);
 
     return GridView.builder(
       padding: const EdgeInsets.all(10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
+        crossAxisCount: 3,
         childAspectRatio: isLandScape ? 1.2 : 1.0,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,

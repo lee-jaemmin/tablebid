@@ -25,13 +25,13 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    if (FirebaseAuth.instance.currentUser != null) _loadUser();
   }
 
   Future<void> _loadUser() async {
     try {
       final firebaseUser = FirebaseAuth.instance.currentUser;
-      if (firebaseUser == null) throw Exception('로그인이 필요합니다.');
+      if (firebaseUser == null) return;
       final user = await UserApi().getUser(firebaseUser.uid);
       if (!mounted) return;
       setState(() {
@@ -214,9 +214,17 @@ class _CustomerSettingScreenState extends State<CustomerSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(title: const Text('설정'), elevation: 0.5),
-      body: _isLoading
+      body: firebaseUser == null
+          ? Center(
+              child: OutlinedButton(
+                onPressed: () => context.pushNamed(customerSignUpRouteName),
+                child: const Text('가입하기'),
+              ),
+            )
+          : _isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [

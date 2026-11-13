@@ -10,7 +10,6 @@ class ReservationModel {
   final DateTime? updatedAt;
   final int? bidPrice;
   final bool? isFixed;
-  final String? createdById;
   final DateTime? fixedAt;
   final DateTime? arrivalAt;
 
@@ -24,7 +23,6 @@ class ReservationModel {
     this.updatedAt,
     this.bidPrice,
     this.isFixed,
-    this.createdById,
     this.fixedAt,
     this.arrivalAt,
   });
@@ -42,7 +40,6 @@ class ReservationModel {
           : DateTime.parse(json['updated_at']),
       bidPrice: json['bid_price'],
       isFixed: json['is_fixed'],
-      createdById: json['created_by_id'],
       fixedAt: json['fixed_at'] == null ? null : DateTime.parse(json['fixed_at']).toLocal(),
       arrivalAt: json['arrival_at'] == null ? null : DateTime.parse(json['arrival_at']).toLocal(),
     );
