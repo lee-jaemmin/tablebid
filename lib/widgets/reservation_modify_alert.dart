@@ -194,7 +194,7 @@ class _ReservationAlertState extends State<ReservationModifyAlert> {
                   readOnly: true, // 키보드 안 올라오게 막기
                   onTap: () => _selectReservationTime(context),
                   decoration: const InputDecoration(
-                    labelText: '(필수) 예약 시간',
+                    labelText: '(필수) 도착 예정 시간',
                     suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
                   ),
                 ),

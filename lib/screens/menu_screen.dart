@@ -296,7 +296,7 @@ class _MenuScreenState extends State<MenuScreen> {
                       '<클릭>\n'
                       '메뉴/카테고리 비활성화\n\n'
                       '<길게 누르기>\n'
-                      '메뉴 속성ㄱ 수정',
+                      '메뉴 속성 수정',
                       style: TextStyle(fontSize: 16),
                     ),
                     actions: [

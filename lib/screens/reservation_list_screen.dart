@@ -211,7 +211,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           builder: (context) => AlertDialog(
             title: const Text('예약 확정'),
             content: Text(
-              '${table.tablename}번 테이블 예약을 이 예약으로 확정하시겠습니까?\n예약이 확정된 테이블은 더 이상 입찰을 받을 수 없습니다.',
+              '이 입찰을 ${table.tablename}번 예약으로\n확정하시겠습니까?',
             ),
             actions: [
               Row(
@@ -327,7 +327,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           builder: (context) => AlertDialog(
             title: const Text('예약 확정 취소'),
             content: Text(
-              '${table.tablename}번 테이블에 확정된 이 예약을 취소하시겠습니까?\n예약이 취소된 테이블은 이제 입찰을 받을 수 있습니다.',
+              '${table.tablename}번 테이블에 확정된 이 예약을 취소하시겠습니까?',
             ),
             actions: [
               Row(
@@ -603,7 +603,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.table.tablename} 예약'),
+        title: Text('${widget.table.tablename} 경매'),
         actions: [
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 12, 12, 12),
@@ -619,14 +619,17 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Colors.white,
-        onPressed: () => _showReservationAlert(context, widget.table),
-        tooltip: '예약 추가',
-        child: const Icon(Icons.add),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 20),
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Colors.white,
+          onPressed: () => _showReservationAlert(context, widget.table),
+          tooltip: '예약 추가',
+          child: const Icon(Icons.add),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: _isLoading
           ? const Center(child: CupertinoActivityIndicator())
           : _reservations.isEmpty

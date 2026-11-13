@@ -164,7 +164,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
       behavior: HitTestBehavior.opaque,
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: AlertDialog(
-        title: Text('${widget.table.tablename} 예약 등록'),
+        title: Text('${widget.table.tablename} 입찰 등록'),
         content: SizedBox(
           width: MediaQuery.of(context).size.width * 0.9,
           child: SingleChildScrollView(
@@ -204,7 +204,7 @@ class _ReservationAlertState extends State<ReservationAlert> {
                   readOnly: true, // 키보드 안 올라오게 막기
                   onTap: () => _selectReservationTime(context),
                   decoration: const InputDecoration(
-                    labelText: '(필수) 예약 시간',
+                    labelText: '(필수) 도착 예정 시간',
                     labelStyle: TextStyle(color: Colors.grey),
                     suffixIcon: Icon(Icons.access_time), // 시계 아이콘 추가
                   ),

@@ -267,9 +267,9 @@ class _CustomerBidAlertState extends State<CustomerBidAlert> {
                         readOnly: true,
                         onTap: _selectReservationTime,
                         decoration: InputDecoration(
-                          labelText: '(필수) 예약 시간',
+                          labelText: '(필수) 도착 예정 시간',
                           helperText:
-                              "도착 예정 시간 2시간 전부터는\n예약 수정/삭제가 불가하니 유의바랍니다.",
+                              "도착 예정 시간 1시간 전부터는\n예약 삭제가 불가하니 유의바랍니다.",
                           helperStyle: TextStyle(
                             color: Theme.of(context).colorScheme.primary,
                             fontSize: 14,

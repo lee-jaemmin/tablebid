@@ -395,7 +395,7 @@ class _CustomerBidModifyAlertState extends State<CustomerBidModifyAlert> {
                         readOnly: _isFixed,
                         onTap: _selectReservationTime,
                         decoration: const InputDecoration(
-                          labelText: '(필수) 예약 시간',
+                          labelText: '(필수) 도착 예정 시간',
                           suffixIcon: Icon(Icons.access_time),
                         ),
                       ),
