@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/table_history_model.dart';
 import 'package:tablebid/models/table_model.dart';
@@ -37,23 +38,49 @@ class ReregisterScreen extends StatelessWidget {
         sections.sort((a, b) => naturalSortCompare(a, b));
 
         return DefaultTabController(
+          key: ValueKey(sections.length),
           length: sections.length,
           child: Scaffold(
             appBar: AppBar(
               title: const Text('재등록 위치 선택'),
-              bottom: TabBar(
-                indicatorWeight: 4,
-                labelStyle: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(64),
+                child: Builder(
+                  builder: (tabContext) {
+                    final ctrl = DefaultTabController.of(tabContext);
+                    return AnimatedBuilder(
+                      animation: ctrl,
+                      builder: (context, child) {
+                        return SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          child: Row(
+                            children: List.generate(sections.length, (index) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minWidth: 56),
+                                  child: SectionChip(
+                                    region: sections[index],
+                                    isSelected: ctrl.index == index,
+                                    onTap: () => ctrl.animateTo(index),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
-                labelPadding: const EdgeInsets.symmetric(horizontal: 20.0),
-                tabAlignment: TabAlignment.start,
-                isScrollable: true,
-                tabs: sections.map((s) => Tab(text: s)).toList(),
               ),
             ),
             body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               children: sections.map((section) {
                 final sectionTables = tables
                     .where((table) => table.section == section)
