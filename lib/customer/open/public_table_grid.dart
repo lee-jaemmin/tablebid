@@ -11,18 +11,13 @@ class PublicTableGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final isTablet = size.shortestSide > 600;
-    final crossAxisCount = isTablet
-        ? (isLandscape ? 6 : 4)
-        : (isLandscape ? 4 : 3);
     return GridView.builder(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(10),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
+        crossAxisCount: 3,
         childAspectRatio: isLandscape ? 1.2 : 1,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
@@ -103,13 +98,13 @@ class PublicTableGrid extends StatelessWidget {
                         Text(
                           maxLines: 1,
                           '경매 마감',
-                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                          style: TextStyle(fontSize: 14, color: Colors.black),
                         ),
-                        SizedBox(width: MediaQuery.sizeOf(context).width*.02),
+                        const SizedBox(width: 4),
                         Text(
                           maxLines: 1,
                           '${table.bidEndAt == null ? '--:--' : DateFormat('HH:mm').format(table.bidEndAt!.toLocal())}',
-                          style: TextStyle(fontSize: MediaQuery.sizeOf(context).width*.03, color: Colors.black),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       ],
                     ),
