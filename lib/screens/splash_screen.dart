@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -95,6 +96,7 @@ class _SplashOrMainScreenState extends State<SplashScreen> {
   }
 
   Future<bool> _checkAppVersion() async {
+    if (kIsWeb) return true;
     try {
       // 내 폰에 깔린 앱 버전 가져오기 -> pubspec.yaml 읽음
       PackageInfo packageInfo = await PackageInfo.fromPlatform();

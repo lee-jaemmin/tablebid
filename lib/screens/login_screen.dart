@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/screens/existing_user_login_screen.dart';
@@ -257,11 +257,17 @@ class _LoginScreenState extends State<LoginScreen> {
         context.goNamed(
           customerHomeRouteName,
         );
-      } else if (user.companyId != null && user.companyId != 'null') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+      } else if (user.companyId != null &&
+          user.companyId != 'null' &&
+          user.companyId!.trim().isNotEmpty) {
+        if (kIsWeb) {
+          context.goNamed(rootRouteName);
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
       } else {
         Navigator.pushReplacement(
           context,
@@ -401,10 +407,14 @@ class _LoginScreenState extends State<LoginScreen> {
         } else if (user.role == 'customer') {
           context.goNamed(customerHomeRouteName);
         } else if (companyId != null && companyId != 'null' && companyId != '') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
+          if (kIsWeb) {
+            context.goNamed(rootRouteName);
+          } else {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
+          }
         } else {
           Navigator.pushReplacement(
             context,

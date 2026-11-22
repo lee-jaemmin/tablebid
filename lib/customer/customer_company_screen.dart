@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';

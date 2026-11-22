@@ -8,7 +8,7 @@ import 'package:tablebid/constants/sizes.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
-import 'package:tablebid/customer/route/routes.dart';
+import 'package:tablebid/route/routes.dart';
 import 'package:tablebid/services/signup_ref_store.dart';
 import 'package:flutter/services.dart' show appFlavor;
 import 'package:tablebid/firebase_options_production.dart' as production;

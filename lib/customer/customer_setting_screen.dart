@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/customer/phone_verification_dialog.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/services/user_api.dart';

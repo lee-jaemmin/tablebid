@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/services/reservation_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';

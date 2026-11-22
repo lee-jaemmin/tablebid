@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_bid_list_screen.dart';
-import 'package:tablebid/customer/route/route_error_screen.dart';
+import 'package:tablebid/route/route_error_screen.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/table_api.dart';
 

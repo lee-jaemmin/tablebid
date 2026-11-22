@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/open/public_company_screen.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
-import 'package:tablebid/customer/route/route_error_screen.dart';
+import 'package:tablebid/route/route_error_screen.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/services/company_api.dart';
 

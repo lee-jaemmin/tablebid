@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
@@ -320,7 +321,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           SizedBox(
-                            width: MediaQuery.of(context).size.width * .30,
+                            width: kIsWeb ? 480 * 0.3 : MediaQuery.of(context).size.width * .30,
                             child: ListView.builder(
                               itemCount: _categories.length,
                               itemBuilder: (context, index) {

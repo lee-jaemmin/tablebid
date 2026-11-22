@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/models/my_bid_model.dart';
 import 'package:tablebid/services/my_bid_api.dart';
 import 'package:tablebid/widgets/price_formatter.dart';

@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/constants/gaps.dart';
-import 'package:tablebid/customer/route/route_names.dart';
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
 import 'package:tablebid/screens/password_reset_screen.dart';
 import 'package:tablebid/screens/user_type_selection_screen.dart';
@@ -75,11 +76,13 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
         cardFields: ['purchases', 'persons'],
       );
       String? fcmtoken;
-      try {
-        await FirebaseMessaging.instance.requestPermission();
-        fcmtoken = await FirebaseMessaging.instance.getToken();
-      } catch (e) {
-        print("FCM 토큰 발급 실패: $e");
+      if (!kIsWeb) {
+        try {
+          await FirebaseMessaging.instance.requestPermission();
+          fcmtoken = await FirebaseMessaging.instance.getToken();
+        } catch (e) {
+          print("FCM 토큰 발급 실패: $e");
+        }
       }
 
       if (fcmtoken != null) {
@@ -111,12 +114,14 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
         context.goNamed(customerHomeRouteName);
       } else {
         if (hasCompany) {
-          Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          ),
-          (context) => false,
-        );
+          if (kIsWeb) {
+            context.goNamed(rootRouteName);
+          } else {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (context) => false,
+            );
+          }
         } else {
           Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(

@@ -222,7 +222,7 @@ class _CompanyFloorImageState extends State<CompanyFloorImage>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('매장 테이블 배치도가 없습니다.'),
+            const Text('손님들이 경매에 참고할 수 있도록\n\n매장 테이블 배치도를 추가하세요'),
             if (widget.canAdd) ...[
               SizedBox(height: 12),
               ElevatedButton(

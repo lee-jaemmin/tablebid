@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/screens/address_screen.dart';
 import 'package:tablebid/screens/home_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
@@ -52,10 +55,14 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
       if (!mounted) return;
       navigator.pop();
 
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-        (route) => false,
-      );
+      if (kIsWeb) {
+        context.goNamed(rootRouteName);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       print('>>>>매장 입장 중 오류 발생: $e');
       navigator.pop();
@@ -163,10 +170,14 @@ class _CompanyEntryScreenState extends State<CompanyEntryScreen> {
       navigator.pop(); // 로딩창 닫기
 
       // 홈 화면으로 이동
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-        (route) => false,
-      );
+      if (kIsWeb) {
+        context.goNamed(rootRouteName);
+      } else {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false,
+        );
+      }
     } catch (e) {
       navigator.pop();
       messenger.showSnackBar(SnackBar(content: Text('매장 생성 중 오류 발생.')));
