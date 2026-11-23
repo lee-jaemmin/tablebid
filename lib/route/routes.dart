@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/confirm_arrival_time.dart';
+import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/route/bid_list_route_page.dart';
 import 'package:tablebid/route/company_route_page.dart';
@@ -13,6 +14,8 @@ import 'package:tablebid/screens/history_screen.dart';
 import 'package:tablebid/screens/home_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
 import 'package:tablebid/screens/menu_screen.dart';
+import 'package:tablebid/screens/move_screen.dart';
+import 'package:tablebid/screens/notification_screen.dart';
 import 'package:tablebid/screens/reservation_list_screen.dart';
 import 'package:tablebid/screens/reservation_screen.dart';
 import 'package:tablebid/screens/setting_screen.dart';
@@ -31,7 +34,7 @@ UserModel? _workerUser;
 final GoRouter appRouter = GoRouter(
   redirect: (context, state) async {
     final path = state.uri.path;
-    if (path != 'worker' && !path.startsWith('/worker/')) {
+    if (path != '/worker' && !path.startsWith('/worker/')) {
       return null;
     } // 직원 화면 아니면 검사진행 x
 
@@ -50,6 +53,9 @@ final GoRouter appRouter = GoRouter(
           (user.companyId ?? '').trim().isEmpty) {
         _workerUser = null;
         return '/customer';
+      }
+      if (state.uri.path == '/worker/moveScreen' && state.extra is !TableModel) {
+        return '/worker';
       }
       _workerUser = user;
       return null;
@@ -178,6 +184,18 @@ final GoRouter appRouter = GoRouter(
           name: 'menuManagement',
           builder: (context, state) =>
               MenuScreen(companyId: _workerUser!.companyId!),
+        ),
+        GoRoute(
+          path: 'workerNotification',
+          name: 'workerNotification',
+          builder: (context, state) =>
+              NotificationHistoryScreen(companyId: _workerUser!.companyId!),
+        ),
+        GoRoute(
+          path: 'moveScreen',
+          name: 'moveScreen',
+          builder: (context, state) =>
+              MoveScreen(companyId: _workerUser!.companyId!, fromTable: state.extra as TableModel, userId: _workerUser!.id),
         ),
       ],
     ),
