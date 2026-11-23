@@ -223,11 +223,15 @@ class _CompanyFloorImageState extends State<CompanyFloorImage>
           mainAxisSize: MainAxisSize.min,
           children: [
             if (widget.canAdd) ...[
+              Text('배치도가 등록되어 있지 않습니다.'),
               SizedBox(height: 12),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).primaryColor,
+                  side: BorderSide(
+                    color: Theme.of(context).primaryColor,
+                  )
                 ),
                 onPressed: _pickAndUpload,
                 child: const Text('+ 이미지 추가하기'),
