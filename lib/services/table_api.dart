@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/public_table_model.dart';
@@ -37,7 +38,9 @@ class TableApi {
   }
 
   Future<List<PublicTableModel>> getPublicTables(String companyId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/public/companies/${companyId}/tables');
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/public/companies/${companyId}/tables',
+    );
 
     final response = await http.get(url);
 
@@ -51,7 +54,7 @@ class TableApi {
     );
   }
 
-   Future<PublicTableModel> getPublicTable(String tableId) async {
+  Future<PublicTableModel> getPublicTable(String tableId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}');
 
     final response = await http.get(url);
@@ -91,7 +94,6 @@ class TableApi {
     int? leastBidPrice,
     String? offerProducts,
     bool? fromBid,
-    
   }) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId');
     final currentTable = await getTable(tableId);
@@ -141,7 +143,7 @@ class TableApi {
       if (leastBidPrice != null) 'least_bid_price': leastBidPrice,
       if (offerProducts != null) 'offer_products': offerProducts,
       if (fromBid != null) 'from_bid': fromBid,
-    }; 
+    };
     final response = await http.patch(
       url,
       headers: await firebaseAuthHeaders(),
@@ -171,7 +173,7 @@ class TableApi {
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
     );
 
@@ -184,12 +186,13 @@ class TableApi {
     );
   }
 
-  Future<void> deleteTable({
-    required String tableId,
-  }) async {
+  Future<void> deleteTable({required String tableId}) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/$tableId');
 
-    final response = await http.delete(url);
+    final response = await http.delete(
+      url,
+      headers: await firebaseAuthHeaders(),
+    );
 
     if (response.statusCode == 200 || response.statusCode == 204) {
       return;
@@ -205,13 +208,10 @@ class TableApi {
     required String toTableId,
   }) async {
     final url = Uri.parse("${ApiClient.baseUrl}/table-move").replace(
-      queryParameters: {
-        'from_table_id': fromTableId,
-        'to_table_id': toTableId,
-      },
+      queryParameters: {'from_table_id': fromTableId, 'to_table_id': toTableId},
     );
 
-    final response = await http.post(url);
+    final response = await http.post(url, headers: await firebaseAuthHeaders());
 
     print("✅response body: ${response.body}");
     if (response.statusCode == 200) {
