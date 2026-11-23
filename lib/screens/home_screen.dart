@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tablebid/constants/gaps.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
@@ -11,12 +12,7 @@ import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/screens/company_entry_screen.dart';
-import 'package:tablebid/screens/history_screen.dart';
 import 'package:tablebid/screens/login_screen.dart';
-import 'package:tablebid/screens/menu_screen.dart';
-import 'package:tablebid/screens/setting_screen.dart';
-import 'package:tablebid/screens/staff_management_screen.dart';
-import 'package:tablebid/screens/table_management_screen.dart';
 import 'package:tablebid/screens/reservation_screen.dart';
 import 'package:tablebid/services/company_api.dart';
 import 'package:tablebid/services/table_api.dart';
@@ -509,20 +505,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           onTapFunc: () async {
                             Navigator.pop(context);
                             if (!context.mounted) return;
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TableManagementScreen(
-                                  companyId: company.id,
-                                  userId: currentUser.id,
-                                ),
-                              ),
-                            );
-                            if (!mounted) return;
+                            await context.pushNamed('workerTableSettings');
                             await _refreshHomeData();
                           },
                         ),
-
                         Gaps.v4(context),
                         if (currentRole == 'owner') ...[
                           SidebarMenu(
@@ -530,14 +516,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             name: '직원 관리',
                             onTapFunc: () async {
                               Navigator.pop(context);
-                              await Navigator.push<void>(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => StaffmanagementScreen(
-                                    companyId: company.id,
-                                  ),
-                                ),
-                              );
+                              await context.pushNamed('staffManagement');
                               await _refreshHomeData();
                             },
                           ),
@@ -548,13 +527,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           name: '메뉴 관리',
                           onTapFunc: () {
                             Navigator.pop(context);
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    MenuScreen(companyId: company.id),
-                              ),
-                            );
+                            context.pushNamed('menuManagement');
                           },
                         ),
                         Gaps.v4(context),
@@ -565,14 +538,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         name: '히스토리',
                         onTapFunc: () {
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HistoryScreen(
-                                companyId: currentUser.companyId!,
-                              ),
-                            ),
-                          );
+                          context.pushNamed('histories');
                         },
                       ),
                       Gaps.v4(context),
@@ -581,13 +547,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                         name: '설정',
                         onTapFunc: () async {
                           Navigator.pop(context);
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SettingScreen(initialUser: currentUser),
-                            ),
-                          );
+                          await context.pushNamed('workerSettings');
                           await _reloadCurrentUser();
                         },
                       ),
