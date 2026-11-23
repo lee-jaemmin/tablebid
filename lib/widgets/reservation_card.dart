@@ -70,7 +70,7 @@ class ReservationCard extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => ReservationListScreen(
                   companyId: companyId,
-                  table: table,
+                  tableId: table.id,
                   userId: userId,
                 ),
               ),
