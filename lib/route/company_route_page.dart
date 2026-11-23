@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tablebid/customer/publicmodel/public_company_screen.dart';
+import 'package:tablebid/customer/publicwidget/public_company_screen.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
 import 'package:tablebid/route/route_error_screen.dart';
 import 'package:tablebid/models/company_model.dart';
