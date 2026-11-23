@@ -70,7 +70,7 @@ class ReservationApi {
       'to_table_id': toTableId,
     };
 
-    final response = await http.post(
+    final response = await http.patch(
       url,
       headers: await firebaseAuthHeaders(),
       body: jsonEncode(body),
