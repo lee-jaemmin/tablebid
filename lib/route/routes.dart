@@ -176,7 +176,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: 'staffManagement',
-          name: 'staffMangement',
+          name: 'staffManagement',
           builder: (context, state) {
             return StaffmanagementScreen(companyId: _workerUser!.companyId!);
           },
