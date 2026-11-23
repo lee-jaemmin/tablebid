@@ -55,6 +55,7 @@ final GoRouter appRouter = GoRouter(
         _workerUser = null;
         return '/customer';
       }
+
       /// extra 핸들링
       // 이동 화면
       if (state.uri.path == '/worker/moveScreen' &&
@@ -62,9 +63,13 @@ final GoRouter appRouter = GoRouter(
         return '/worker';
       }
       // 구매 화면
-      if (state.uri.path == '/worker/purchaseScreen' &&
-          state.extra is! TableModel) {
-        return '/worker';
+      if (state.uri.path == '/worker/purchaseScreen') {
+        final extra = state.extra;
+        if (extra is! Map<String, dynamic> ||
+            extra['tableId'] is! String ||
+            extra['tableName'] is! String) {
+          return '/worker';
+        }
       }
       _workerUser = user;
       return null;
