@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_company_screen.dart';
 import 'package:tablebid/models/company_model.dart';
 import 'package:tablebid/models/public_table_model.dart';
-import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/services/company_api.dart';
 import 'package:tablebid/services/reservation_api.dart';
 

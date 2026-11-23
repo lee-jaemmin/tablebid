@@ -14,7 +14,6 @@ import 'package:tablebid/widgets/fixed_reservation_tile.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
 import 'package:tablebid/widgets/reservation_alert.dart';
 import 'package:intl/intl.dart';
-import 'package:tablebid/widgets/reservation_modify_alert.dart';
 // import 'package:tablebid/services/reservation_purchase_api.dart';
 // import 'package:tablebid/models/reservation_purchase_model.dart';
 
@@ -149,34 +148,34 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     });
   }
 
-  Future<void> _showReservationModifyAlert(
-    BuildContext context,
-    TableModel table,
-    int reservationId,
-    DateTime? reservationTime,
-    String? customerName,
-    String? phonenumber,
-    int? bidPrice,
-  ) async {
-    bool? confirm = await showDialog<bool>(
-      context: context,
-      builder: (context) => ReservationModifyAlert(
-        companyId: widget.companyId,
-        table: table,
-        reservationId: reservationId,
-        customerName: customerName,
-        userId: widget.userId,
-        reservationTime: reservationTime,
-        phonenumber: phonenumber,
-        bidPrice: bidPrice,
-      ),
-    );
-    if (confirm == false) return;
-    if (!mounted) return;
-    setState(() {
-      loadData();
-    });
-  }
+  // Future<void> _showReservationModifyAlert(
+  //   BuildContext context,
+  //   TableModel table,
+  //   int reservationId,
+  //   DateTime? reservationTime,
+  //   String? customerName,
+  //   String? phonenumber,
+  //   int? bidPrice,
+  // ) async {
+  //   bool? confirm = await showDialog<bool>(
+  //     context: context,
+  //     builder: (context) => ReservationModifyAlert(
+  //       companyId: widget.companyId,
+  //       table: table,
+  //       reservationId: reservationId,
+  //       customerName: customerName,
+  //       userId: widget.userId,
+  //       reservationTime: reservationTime,
+  //       phonenumber: phonenumber,
+  //       bidPrice: bidPrice,
+  //     ),
+  //   );
+  //   if (confirm == false) return;
+  //   if (!mounted) return;
+  //   setState(() {
+  //     loadData();
+  //   });
+  // }
 
   Future<void> _fixReservation(
     BuildContext context,

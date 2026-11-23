@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/firebase_auth.dart';
 import 'package:tablebid/models/public_table_model.dart';
