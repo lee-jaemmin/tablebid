@@ -135,7 +135,6 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
     final visibleCompanies = _companies
         .where((company) => company.region == _selectedRegion)
         .toList();
