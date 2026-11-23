@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/methods/cache_menu.dart';
 import 'package:tablebid/models/category_model.dart';
@@ -214,7 +215,7 @@ class _MenuScreenState extends State<InactiveMenuScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * .5,
+                        width: kIsWeb ? 480 * 0.5 : MediaQuery.of(context).size.width * .5,
                         child: ListView.builder(
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {

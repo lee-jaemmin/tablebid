@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart'
     show FaIcon, FontAwesomeIcons;
@@ -381,7 +382,8 @@ class _MenuScreenState extends State<MenuScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * .5,
+                        width: kIsWeb ? 480 * 0.5 :
+                        MediaQuery.of(context).size.width * .5,
                         child: ListView.builder(
                           itemCount: _categories.length,
                           itemBuilder: (context, index) {
