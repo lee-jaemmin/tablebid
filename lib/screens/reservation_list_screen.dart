@@ -601,10 +601,14 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) return Center(child: CupertinoActivityIndicator());
-
-    else if (_table == null) {
-      return Center(child: Text('예약 리스트를 불러오는데 실패했습니다. 다시 시도해주세요.'));
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CupertinoActivityIndicator()),
+      );
+    } else if (_table == null) {
+      return const Scaffold(
+        body: Center(child: Text('예약 리스트를 불러오는데 실패했습니다. 다시 시도해주세요.')),
+      );
     }
     
     final fixedReservationIndex = _reservations.indexWhere(
@@ -645,9 +649,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: _isLoading
-          ? const Center(child: CupertinoActivityIndicator())
-          : _reservations.isEmpty
+      body: _reservations.isEmpty
           ? const Center(child: Text('예약 없음'))
           : SingleChildScrollView(
               padding: const EdgeInsets.only(bottom: 88),
