@@ -261,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
           user.companyId != 'null' &&
           user.companyId!.trim().isNotEmpty) {
         if (kIsWeb) {
-          context.goNamed(rootRouteName);
+          context.goNamed('workerHome');
         } else {
           Navigator.pushReplacement(
             context,
