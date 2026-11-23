@@ -150,12 +150,8 @@ class _InformationWindowState extends State<InformationWindow> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  
                   onPressed: () => Navigator.pop(context, false),
-                  child: const Text(
-                    '취소',
-                    
-                  ),
+                  child: const Text('취소'),
                 ),
               ),
               SizedBox(width: 12),
@@ -198,15 +194,22 @@ class _InformationWindowState extends State<InformationWindow> {
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
-          content: const Text('해당 테이블은 경매를 통해 입장한 테이블로 가격이 고정되어있습니다. 가격 유지를 해제하시겠습니까?'),
+          content: const Text(
+            '해당 테이블은 경매를 통해 입장한 테이블로 가격이 고정되어있습니다. 가격 유지를 해제하시겠습니까?',
+          ),
           actions: [
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
                     onPressed: () => Navigator.pop(dialogContext, true),
-                    child: const Text('해제하기', style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      '해제하기',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -226,33 +229,30 @@ class _InformationWindowState extends State<InformationWindow> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => const Center(child: CupertinoActivityIndicator()),
+          builder: (context) =>
+              const Center(child: CupertinoActivityIndicator()),
         );
         try {
-          await TableApi().updateTable(tableId: widget.table.id, fromBid: false);
+          await TableApi().updateTable(
+            tableId: widget.table.id,
+            fromBid: false,
+          );
           widget.table.fromBid = false;
         } catch (e) {
           if (!mounted) return;
           Navigator.of(context, rootNavigator: true).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('가격 유지 해제에 실패했습니다.')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('가격 유지 해제에 실패했습니다.')));
           return;
         }
         if (!mounted) return;
         Navigator.of(context, rootNavigator: true).pop();
       }
     }
-    final selectedItems = await Navigator.push<List<SelectedItem>>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PurchaseScreen(
-          companyId: widget.companyId,
-          tableId: widget.table.id,
-          tableName: widget.table.tablename,
-          userId: widget.userId,
-        ),
-      ),
+    final selectedItems = await context.pushNamed<List<SelectedItem>>(
+      'purchaseScreen',
+      extra: widget.table.id,
     );
 
     if (selectedItems != null && selectedItems.isNotEmpty) {
@@ -493,7 +493,6 @@ class _InformationWindowState extends State<InformationWindow> {
                   decoration: InputDecoration(
                     labelText: '총 가격',
                     labelStyle: TextStyle(color: Colors.grey),
-                    
                   ),
 
                   readOnly: true,
@@ -538,7 +537,9 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: _openPurchaseScreen,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).primaryColor,
-                    side: BorderSide(color: Theme.of(context).colorScheme.primary),
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(12),
                     ),
@@ -554,10 +555,7 @@ class _InformationWindowState extends State<InformationWindow> {
               Expanded(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    '취소',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                  child: const Text('취소', style: TextStyle(color: Colors.grey)),
                 ),
               ),
               Expanded(
@@ -593,7 +591,9 @@ class _InformationWindowState extends State<InformationWindow> {
                   onPressed: _registerTable,
                   child: Text(
                     '등록',
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ),

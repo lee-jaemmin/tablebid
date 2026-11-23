@@ -16,6 +16,7 @@ import 'package:tablebid/screens/login_screen.dart';
 import 'package:tablebid/screens/menu_screen.dart';
 import 'package:tablebid/screens/move_screen.dart';
 import 'package:tablebid/screens/notification_screen.dart';
+import 'package:tablebid/screens/purchase_screen.dart';
 import 'package:tablebid/screens/reservation_list_screen.dart';
 import 'package:tablebid/screens/reservation_screen.dart';
 import 'package:tablebid/screens/setting_screen.dart';
@@ -54,7 +55,15 @@ final GoRouter appRouter = GoRouter(
         _workerUser = null;
         return '/customer';
       }
-      if (state.uri.path == '/worker/moveScreen' && state.extra is !TableModel) {
+      /// extra 핸들링
+      // 이동 화면
+      if (state.uri.path == '/worker/moveScreen' &&
+          state.extra is! TableModel) {
+        return '/worker';
+      }
+      // 구매 화면
+      if (state.uri.path == '/worker/purchaseScreen' &&
+          state.extra is! TableModel) {
         return '/worker';
       }
       _workerUser = user;
@@ -194,8 +203,24 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: 'moveScreen',
           name: 'moveScreen',
-          builder: (context, state) =>
-              MoveScreen(companyId: _workerUser!.companyId!, fromTable: state.extra as TableModel, userId: _workerUser!.id),
+          builder: (context, state) => MoveScreen(
+            companyId: _workerUser!.companyId!,
+            fromTable: state.extra as TableModel,
+            userId: _workerUser!.id,
+          ),
+        ),
+        GoRoute(
+          path: 'purchaseScreen',
+          name: 'purchaseScreen',
+          builder: (context, state) {
+            final data = state.extra as Map<String, dynamic>;
+            return PurchaseScreen(
+              companyId: _workerUser!.companyId!,
+              tableId: data['tableId'],
+              tableName: data['tableName'],
+              userId: _workerUser!.id,
+            );
+          },
         ),
       ],
     ),
