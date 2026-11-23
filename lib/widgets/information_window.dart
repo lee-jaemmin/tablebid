@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:tablebid/models/table_model.dart';
-import 'package:tablebid/screens/move_screen.dart';
 import 'package:tablebid/screens/purchase_screen.dart';
 import 'package:tablebid/services/history_api.dart';
 import 'package:tablebid/services/table_api.dart';
@@ -580,16 +580,7 @@ class _InformationWindowState extends State<InformationWindow> {
                       );
                       return;
                     }
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MoveScreen(
-                          companyId: widget.companyId,
-                          fromTable: widget.table,
-                          userId: widget.userId,
-                        ),
-                      ),
-                    );
+                    context.pushNamed('moveScreen', extra: widget.table);
                   },
                   child: const Text(
                     '이동',
