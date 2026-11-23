@@ -8,6 +8,7 @@ import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/no_show_api.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/fixed_reservation_tile.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -19,13 +20,13 @@ import 'package:tablebid/widgets/reservation_modify_alert.dart';
 
 class ReservationListScreen extends StatefulWidget {
   final String companyId;
-  final TableModel table;
+  final String tableId;
   final String userId;
 
   ReservationListScreen({
     super.key,
     required this.companyId,
-    required this.table,
+    required this.tableId,
     required this.userId,
   });
 
@@ -39,6 +40,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
   // Map<int, List<ReservationPurchaseModel>> _resPurchasesByReservation = {};
   bool _isLoading = false;
   bool _tableReserved = false;
+  TableModel? _table;
 
   @override
   void initState() {
@@ -53,7 +55,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
       if (!mounted) return;
       try {
         if (event.type == 'reservation_updated') {
-          if (widget.table.id != event.payload["table_id"]) {
+          if (_table != null && _table!.id != event.payload["table_id"]) {
             return;
           } else {
             loadData(showLoading: false);
@@ -78,8 +80,15 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         _isLoading = true;
       });
     }
+    try {
+      final table = await TableApi().getTable(widget.tableId);
+      _table = table;
+    } catch(e) {
+      print('예약 리스트 스크린 에러: $e');
+    }
+    if(_table == null) return;
     final reservations = await ReservationApi().getReservationsByTable(
-      widget.table.id,
+      _table!.id,
     );
     reservations.sort((a, b) => (b.bidPrice!).compareTo(a.bidPrice!));
 
@@ -592,6 +601,9 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_table == null) {
+      return Center(child: Text('예약 리스트를 불러오는데 실패했습니다. 다시 시도해주세요.'));
+    }
     final fixedReservationIndex = _reservations.indexWhere(
       (reservation) => reservation.isFixed == true,
     );
@@ -603,7 +615,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.table.tablename} 경매'),
+        title: Text('${_table!.tablename} 경매'),
         actions: [
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 12, 12, 12),
@@ -624,7 +636,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
-          onPressed: () => _showReservationAlert(context, widget.table),
+          onPressed: () => _showReservationAlert(context, _table!),
           tooltip: '예약 추가',
           child: const Icon(Icons.add),
         ),
@@ -645,16 +657,16 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                           reservation: fixedReservation,
                           onCheckIn: () => _admitReservation(
                             context,
-                            widget.table,
+                            _table!,
                             fixedReservation,
                           ),
                           onCancel: () => _unfixReservation(
                             context,
-                            widget.table,
+                            _table!,
                             fixedReservation,
                           ),
                           onNoshow: () =>
-                              _noShow(context, widget.table, fixedReservation),
+                              _noShow(context, _table!, fixedReservation),
                         ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
@@ -754,7 +766,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                                 tooltip: '입장',
                                 onPressed: () => _fixReservation(
                                   context,
-                                  widget.table,
+                                  _table!,
                                   reservation,
                                 ),
                                 icon: const Icon(
@@ -766,7 +778,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
                                 tooltip: '취소',
                                 onPressed: () => _removeReservation(
                                   context,
-                                  widget.table,
+                                  _table!,
                                   reservation,
                                 ),
                                 icon: const Icon(
