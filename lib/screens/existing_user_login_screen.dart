@@ -115,7 +115,7 @@ class _ExistingUserLoginState extends State<ExistingUserLogin> {
       } else {
         if (hasCompany) {
           if (kIsWeb) {
-            context.goNamed(rootRouteName);
+            context.goNamed('workerHome');
           } else {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => HomeScreen()),
