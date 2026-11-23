@@ -252,7 +252,10 @@ class _InformationWindowState extends State<InformationWindow> {
     }
     final selectedItems = await context.pushNamed<List<SelectedItem>>(
       'purchaseScreen',
-      extra: widget.table.id,
+      extra: {
+        'tableId': widget.table.id,
+        'tableName': widget.table.tablename
+      }
     );
 
     if (selectedItems != null && selectedItems.isNotEmpty) {
