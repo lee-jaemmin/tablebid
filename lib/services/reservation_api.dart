@@ -39,8 +39,12 @@ class ReservationApi {
   }
 
   // 손님용
-  Future<List<PublicReservationModel>> getReservationsByTablePublic(String tableId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/public/tables/$tableId/reservations');
+  Future<List<PublicReservationModel>> getReservationsByTablePublic(
+    String tableId,
+  ) async {
+    final url = Uri.parse(
+      '${ApiClient.baseUrl}/public/tables/$tableId/reservations',
+    );
 
     final response = await http.get(url);
 
@@ -50,6 +54,33 @@ class ReservationApi {
     }
     throw Exception(
       "Failed to get Reservations: ${response.statusCode} ${response.body}",
+    );
+  }
+
+  // 손님용
+  Future<void> customerReservationMove({
+    required int reservationId,
+    required String fromTableId,
+    required String toTableId,
+  }) async {
+    final url = Uri.parse('${ApiClient.baseUrl}/customer-reservation-move');
+    final body = {
+      'reservation_id': reservationId,
+      'from_table_id': fromTableId,
+      'to_table_id': toTableId,
+    };
+
+    final response = await http.post(
+      url,
+      headers: await firebaseAuthHeaders(),
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return;
+    }
+    throw Exception(
+      "Failed to change customer bid table: ${response.statusCode} ${response.body}",
     );
   }
 
@@ -82,9 +113,11 @@ class ReservationApi {
 
     final body = {
       if (tableId != null) 'table_id': tableId,
-      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
+      if (reservationTime != null)
+        'reservation_time': reservationTime.toUtc().toIso8601String(),
       if (customerName != null) 'customer_name': customerName,
-      if (customerPhone != null) 'customer_phone': toReservationServerPhone(customerPhone),
+      if (customerPhone != null)
+        'customer_phone': toReservationServerPhone(customerPhone),
       if (bidPrice != null) 'bid_price': bidPrice,
       if (isFixed != null) 'is_fixed': isFixed,
       if (fixedAt != null) 'fixed_at': fixedAt.toUtc().toIso8601String(),
@@ -138,7 +171,8 @@ class ReservationApi {
     );
 
     final body = {
-      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
+      if (reservationTime != null)
+        'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
       'customer_phone': toReservationServerPhone(customerPhone),
       // if (items != null)
@@ -175,12 +209,11 @@ class ReservationApi {
     required String customerPhone,
     int? bidPrice,
   }) async {
-    final url = Uri.parse(
-      '${ApiClient.baseUrl}/reservations',
-    );
+    final url = Uri.parse('${ApiClient.baseUrl}/reservations');
 
     final body = {
-      if (reservationTime != null) 'reservation_time': reservationTime.toUtc().toIso8601String(),
+      if (reservationTime != null)
+        'reservation_time': reservationTime.toUtc().toIso8601String(),
       'customer_name': customerName,
       'customer_phone': toReservationServerPhone(customerPhone),
       if (bidPrice != null) 'bid_price': bidPrice,
@@ -201,22 +234,17 @@ class ReservationApi {
     );
   }
 
-
-  Future<TableModel> reservationCheckIn({
-    required int reservationId,
-  }) async {
+  Future<TableModel> reservationCheckIn({required int reservationId}) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/reservations/${reservationId}/check-in',
     );
     print("ReservationId: $reservationId");
     print("URl: $url");
 
-    final response = await http.post(
-      url,
-    );
+    final response = await http.post(url);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-       print('check-in response body: ${response.body}');
+      print('check-in response body: ${response.body}');
       final Map<String, dynamic> data = jsonDecode(response.body);
       return TableModel.fromJson(data);
     }
@@ -243,7 +271,10 @@ class ReservationApi {
 
   Future<void> allowAllBids(String companyId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/allow-all-bids/$companyId');
-    final response = await http.patch(url, headers: await firebaseAuthHeaders());
+    final response = await http.patch(
+      url,
+      headers: await firebaseAuthHeaders(),
+    );
 
     if (response.statusCode == 200) {
       return;

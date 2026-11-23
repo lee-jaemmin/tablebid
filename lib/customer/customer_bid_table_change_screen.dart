@@ -37,34 +37,35 @@ class _CustomerBidTableChangeScreenState
     _companyFuture = CompanyApi().getCompany(widget.companyId);
   }
 
-  Future<void> _changeTable(TableModel table) async {
+  Future<void> _changeTable(TableModel toTable) async {
     if (_isSubmitting) return;
-    if (table.id == widget.currentTableId) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('현재 입찰 중인 테이블입니다.')),
-      );
+    if (toTable.id == widget.currentTableId) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('현재 입찰 중인 테이블입니다.')));
       return;
     }
     if (FirebaseAuth.instance.currentUser?.uid != widget.userId) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('로그인 정보를 확인해주세요.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그인 정보를 확인해주세요.')));
       return;
     }
     setState(() => _isSubmitting = true);
     try {
-      await ReservationApi().updateReservation(
+      await ReservationApi().customerReservationMove(
         reservationId: widget.reservationId,
-        tableId: table.id,
+        fromTableId: widget.currentTableId,
+        toTableId: toTable.id,
       );
       if (!mounted) return;
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
       setState(() => _isSubmitting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('테이블 변경 중 오류가 발생했습니다.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('테이블 변경 중 오류가 발생했습니다.')));
     }
   }
 
