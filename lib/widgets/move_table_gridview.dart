@@ -35,6 +35,10 @@ class MoveTableGridView extends StatelessWidget {
           onTap: isAvailable ? () => _confirmMove(context, targetTable) : null,
           child: Card(
             elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: Theme.of(context).primaryColor),
+            ),
               // 사용 중이면 회색, 이동 가능하면 파란색
             color: isAvailable ? Theme.of(context).primaryColor : Colors.grey[300],
             child: Center(
