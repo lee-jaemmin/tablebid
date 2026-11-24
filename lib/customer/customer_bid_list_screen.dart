@@ -84,7 +84,7 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
         print(e);
       }
     });
-    service.connect(widget.companyId);
+    service.connect(widget.companyId, role: WebSocketRole.customer);
   }
 
   @override
