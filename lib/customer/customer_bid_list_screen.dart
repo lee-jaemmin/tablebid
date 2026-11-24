@@ -8,10 +8,12 @@ import 'package:tablebid/customer/customer_bid_alert.dart';
 import 'package:tablebid/customer/customer_bid_modify_alert.dart';
 import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/models/customer_table_model.dart';
+import 'package:tablebid/models/customer_reservation_model.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
+import 'package:tablebid/services/my_bid_api.dart';
 import 'package:tablebid/services/user_api.dart';
 import 'package:tablebid/services/websocket_service.dart';
 import 'package:tablebid/widgets/price_formatter.dart';
@@ -33,7 +35,10 @@ class CustomerBidListScreen extends StatefulWidget {
 
 class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   StreamSubscription<WebSocketEvent>? _webSocketSubscription;
-  List<ReservationModel> _reservations = [];
+  List<CustomerReservationModel> _reservations = [];
+  final Map<int, ReservationModel> _reservationDetails = {};
+  Set<int> _myReservationIds = {};
+  Future<void> _reservationUpdates = Future<void>.value();
   bool _isLoading = true;
   bool _hasError = false;
   UserModel? _user;
@@ -45,16 +50,36 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     _subscribeToWebSocket();
   }
 
-  Future<void> _loadReservations() async {
+  Future<void> _loadReservations() {
+    _reservationUpdates = _reservationUpdates.then((_) => _fetchReservations());
+    return _reservationUpdates;
+  }
+
+  Future<void> _fetchReservations() async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
     try {
       final user = await UserApi().getUser(widget.userId);
       final reservations = await ReservationApi().getReservationsByTable(
         widget.table.id,
       );
+      final myBids = await MyBidApi().getMyBids();
       reservations.sort((a, b) => (b.bidPrice ?? 0).compareTo(a.bidPrice ?? 0));
       if (!mounted) return;
       setState(() {
-        _reservations = reservations;
+        _reservationDetails
+          ..clear()
+          ..addEntries(reservations.map((item) => MapEntry(item.id, item)));
+        _reservations = reservations.map((item) => CustomerReservationModel(
+          id: item.id,
+          tableId: item.tableId,
+          bidPrice: item.bidPrice,
+          isFixed: item.isFixed,
+          fixedAt: item.fixedAt,
+          reservationTime: item.reservationTime,
+          arrivalAt: item.arrivalAt,
+        )).toList();
+        _myReservationIds = myBids.map((item) => item.id).toSet();
         _user = user;
         _isLoading = false;
         _hasError = false;
@@ -71,21 +96,53 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   void _subscribeToWebSocket() {
     final service = WebsocketService.instance;
     _webSocketSubscription = service.events.listen((event) {
-      if (!mounted) return;
-      try {
-        if (event.type == 'reservation_updated') {
-          if (widget.table.id != event.payload["table_id"]) {
-            return;
-          } else {
-            _loadReservations();
-          }
-        }
-      } catch (e) {
-        print(e);
-      }
+      if (!mounted || event.payload['table_id'] != widget.table.id) return;
+      if (event.type != 'reservation_updated' &&
+          event.type != 'reservation_deleted') return;
+      _reservationUpdates = _reservationUpdates.then((_) => _applyReservationEvent(event));
     });
     service.connect(widget.companyId, role: WebSocketRole.customer);
   }
+
+  Future<void> _applyReservationEvent(WebSocketEvent event) async {
+    if (!mounted) return;
+    setState(() => _isLoading = true);
+    try {
+      final reservation = CustomerReservationModel.fromJson(event.payload);
+      final myBids = await MyBidApi().getMyBids();
+      if (!mounted) return;
+      setState(() {
+        if (event.type == 'reservation_deleted') {
+          _reservations.removeWhere((item) => item.id == reservation.id);
+          _reservationDetails.remove(reservation.id);
+        } else {
+          final index = _reservations.indexWhere((item) => item.id == reservation.id);
+          if (index == -1) {
+            _reservations.add(reservation);
+          } else {
+            _reservations[index] = reservation;
+          }
+          _reservations.sort((a, b) => (b.bidPrice ?? 0).compareTo(a.bidPrice ?? 0));
+        }
+        _myReservationIds = myBids.map((item) => item.id).toSet();
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('고객 예약 실시간 업데이트 처리 실패: $e');
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _hasError = true;
+      });
+    }
+  }
+
+  String _customerName(int id) =>
+      _reservationDetails[id]?.customerName ?? _user!.userName;
+
+  String _customerPhone(int id) =>
+      _reservationDetails[id]?.customerPhone ??
+      toReservationDisplayPhone(_user!.phonenumber ?? '');
 
   @override
   void dispose() {
@@ -105,12 +162,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     if (added == true) await _loadReservations();
   }
 
-  Future<void> _deleteBid(ReservationModel reservation) async {
-    final phoneNumber = _user?.phonenumber;
-    if (phoneNumber == null || phoneNumber.trim().isEmpty ||
-        reservation.customerPhone != toReservationDisplayPhone(phoneNumber)) {
-      return;
-    }
+  Future<void> _deleteBid(CustomerReservationModel reservation) async {
+    if (!_myReservationIds.contains(reservation.id)) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -159,7 +212,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     }
   }
 
-  Future<void> _modifyBid(ReservationModel reservation) async {
+  Future<void> _modifyBid(CustomerReservationModel reservation) async {
+    if (!_myReservationIds.contains(reservation.id)) return;
     await showDialog<bool>(
       context: context,
       builder: (context) => CustomerBidModifyAlert(
@@ -168,8 +222,8 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
         reservationId: reservation.id,
         userId: widget.userId,
         reservationTime: reservation.reservationTime,
-        customerName: reservation.customerName,
-        phonenumber: reservation.customerPhone,
+        customerName: _customerName(reservation.id),
+        phonenumber: _customerPhone(reservation.id),
         bidPrice: reservation.bidPrice,
         isFixed: reservation.isFixed,
       ),
@@ -186,12 +240,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     final fixedReservation = fixedReservationIndex == -1
         ? null
         : _reservations[fixedReservationIndex];
-    final isFixedMine =
-        fixedReservation != null &&
-        _user?.phonenumber != null &&
-        fixedReservation.customerPhone ==
-            toReservationDisplayPhone(_user!.phonenumber!);
-    final List<ReservationModel> leftBidList = fixedReservationIndex == -1
+    final isFixedMine = fixedReservation != null &&
+        _myReservationIds.contains(fixedReservation.id);
+    final List<CustomerReservationModel> leftBidList = fixedReservationIndex == -1
         ? _reservations
         : ([..._reservations]..removeAt(fixedReservationIndex));
     return Scaffold(
@@ -283,14 +334,14 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                                   : null,
                               title: Text(
                                 isFixedMine
-                                    ? '${fixedReservation.customerName}'
+                                    ? _customerName(fixedReservation.id)
                                     : '다른 참여자',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               subtitle: Text(
-                                '${isFixedMine ? '${fixedReservation.customerPhone}\n' : ''}${formatPrice(fixedReservation.bidPrice ?? 0)}',
+                                '${isFixedMine ? '${_customerPhone(fixedReservation.id)}\n' : ''}${formatPrice(fixedReservation.bidPrice ?? 0)}',
                               ),
                               isThreeLine: isFixedMine,
                             ),
@@ -337,17 +388,15 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
                         final reservation = leftBidList[index];
                         return _CustomerBidTile(
                           reservation: reservation,
-                          user: _user!,
-                          onTap:
-                              reservation.customerPhone ==
-                                  toReservationDisplayPhone(_user!.phonenumber!)
-                              ? () => _modifyBid(reservation)
-                              : null,
-                          onDelete: _user?.phonenumber?.trim().isNotEmpty == true &&
-                                  reservation.customerPhone ==
-                                      toReservationDisplayPhone(_user!.phonenumber!)
-                              ? () => _deleteBid(reservation)
-                              : null,
+                          isMine: _myReservationIds.contains(reservation.id),
+                          customerName: _myReservationIds.contains(reservation.id)
+                              ? _customerName(reservation.id) : '',
+                          customerPhone: _myReservationIds.contains(reservation.id)
+                              ? _customerPhone(reservation.id) : '',
+                          onTap: _myReservationIds.contains(reservation.id)
+                              ? () => _modifyBid(reservation) : null,
+                          onDelete: _myReservationIds.contains(reservation.id)
+                              ? () => _deleteBid(reservation) : null,
                         );
                       },
                     ),
@@ -360,23 +409,24 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
 }
 
 class _CustomerBidTile extends StatelessWidget {
-  final ReservationModel reservation;
+  final CustomerReservationModel reservation;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
-  final UserModel user;
+  final bool isMine;
+  final String customerName;
+  final String customerPhone;
 
   const _CustomerBidTile({
     required this.reservation,
-    required this.user,
+    required this.isMine,
+    required this.customerName,
+    required this.customerPhone,
     this.onTap,
     this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isMine =
-        reservation.customerPhone ==
-        toReservationDisplayPhone(user.phonenumber!);
     final reservationTime = reservation.reservationTime == null
         ? ''
         : DateFormat('HH:mm').format(reservation.reservationTime!);
@@ -420,13 +470,13 @@ class _CustomerBidTile extends StatelessWidget {
             ),
 
           Text(
-            '${isMine ? reservation.customerName : '다른 참여자'} $reservationTime',
+            '${isMine ? customerName : '다른 참여자'} $reservationTime',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
       ),
       subtitle: Text(
-        '${isMine ? '${reservation.customerPhone}\n' : '\n'}${formatPrice(reservation.bidPrice ?? 0)}',
+        '${isMine ? '${customerPhone}\n' : '\n'}${formatPrice(reservation.bidPrice ?? 0)}',
       ),
       isThreeLine: true,
     );

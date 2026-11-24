@@ -1,11 +1,11 @@
 class CustomerReservationModel {
   final int id;
   final String tableId;
-  final int bidPrice;
-  final bool isFixed;
-  final DateTime fixedAt;
-  final DateTime reservationTime;
-  final DateTime? arriavalAt;
+  final int? bidPrice;
+  final bool? isFixed;
+  final DateTime? fixedAt;
+  final DateTime? reservationTime;
+  final DateTime? arrivalAt;
 
   CustomerReservationModel({
     required this.id,
@@ -14,7 +14,7 @@ class CustomerReservationModel {
     required this.isFixed,
     required this.fixedAt,
     required this.reservationTime,
-    this.arriavalAt,
+    this.arrivalAt,
   });
 
   factory CustomerReservationModel.fromJson(Map<String, dynamic> json) {
@@ -23,9 +23,9 @@ class CustomerReservationModel {
       tableId: json['table_id'],
       bidPrice: json['bid_price'],
       isFixed: json['is_fixed'],
-      fixedAt: json['fixed_at'],
-      reservationTime: json['reservation_time'] == null ? null : json['reservation_time'],
-      arriavalAt: json['arriavalAt'] == null ? null : json['arriavalAt']
+      fixedAt: json['fixed_at'] == null ? null : DateTime.parse(json['fixed_at']).toLocal(),
+      reservationTime: json['reservation_time'] == null ? null : DateTime.parse(json['reservation_time']).toLocal(),
+      arrivalAt: json['arrival_at'] == null ? null : DateTime.parse(json['arrival_at']).toLocal()
     );
   }
 }

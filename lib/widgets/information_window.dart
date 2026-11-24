@@ -195,7 +195,7 @@ class _InformationWindowState extends State<InformationWindow> {
         barrierDismissible: false,
         builder: (dialogContext) => AlertDialog(
           content: const Text(
-            '해당 테이블은 경매를 통해 입장한 테이블로 가격이 고정되어있습니다. 가격 유지를 해제하시겠습니까?',
+            '해당 테이블은 경매를 통해 입장한 테이블로 가격이 고정되어있습니다. 가격 유지를 해제하고 추가 구매를 받으시겠습니까?',
           ),
           actions: [
             Row(
@@ -207,7 +207,7 @@ class _InformationWindowState extends State<InformationWindow> {
                     ),
                     onPressed: () => Navigator.pop(dialogContext, true),
                     child: const Text(
-                      '해제하기',
+                      '유지 해제',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
@@ -216,7 +216,7 @@ class _InformationWindowState extends State<InformationWindow> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => Navigator.pop(dialogContext, false),
-                    child: const Text('유지하기'),
+                    child: const Text('가격 유지'),
                   ),
                 ),
               ],

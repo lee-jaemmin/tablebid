@@ -53,13 +53,33 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
     _webSocketSubscription = service.events.listen((event) {
       if (!mounted) return;
       try {
-        if (event.type == 'reservation_updated') {
-          if (_table != null && _table!.id != event.payload["table_id"]) {
-            return;
-          } else {
-            loadData(showLoading: false);
-          }
+        if (event.type == 'table_updated') {
+          if (event.payload['id'] != widget.tableId) return;
+          final table = TableModel.fromJson(event.payload);
+          setState(() => _table = table);
+          return;
         }
+        if (event.type != 'reservation_updated' &&
+            event.type != 'reservation_deleted') return;
+        if (event.payload['table_id'] != widget.tableId) return;
+        if (event.type == 'reservation_deleted') {
+          setState(() {
+            _reservations.removeWhere((item) => item.id == event.payload['id']);
+            _tableReserved = _reservations.any((item) => item.isFixed == true);
+          });
+          return;
+        }
+        final reservation = ReservationModel.fromJson(event.payload);
+        setState(() {
+          final index = _reservations.indexWhere((item) => item.id == reservation.id);
+          if (index == -1) {
+            _reservations.add(reservation);
+          } else {
+            _reservations[index] = reservation;
+          }
+          _reservations.sort((a, b) => (b.bidPrice ?? 0).compareTo(a.bidPrice ?? 0));
+          _tableReserved = _reservations.any((item) => item.isFixed == true);
+        });
       } catch (e) {
         print(e);
       }
