@@ -54,7 +54,7 @@ class TableApi {
   }
 
   Future<CustomerTableModel> getPublicTable(String tableId) async {
-    final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}');
+    final url = Uri.parse('${ApiClient.baseUrl}/customer/tables/${tableId}');
 
     final response = await http.get(url);
 
