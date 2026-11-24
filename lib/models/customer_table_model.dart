@@ -1,4 +1,4 @@
-class PublicTableModel {
+class CustomerTableModel {
   final String id;
   final String tablename;
   final String section;
@@ -13,7 +13,7 @@ class PublicTableModel {
   int? leastBidPrice;
   String? offerProducts;
 
-  PublicTableModel({
+  CustomerTableModel({
     required this.id,
     required this.tablename,
     required this.section,
@@ -38,8 +38,8 @@ class PublicTableModel {
     return DateTime.parse(hasTimezone ? text : '${text}Z').toLocal();
   }
 
-  factory PublicTableModel.fromJson(Map<String, dynamic> json) {
-    return PublicTableModel(
+  factory CustomerTableModel.fromJson(Map<String, dynamic> json) {
+    return CustomerTableModel(
       id: json['id'],
       tablename: json['tablename'],
       section: json['section'],

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/firebase_auth.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/customer_table_model.dart';
 import '../models/table_model.dart';
 import 'api_client.dart';
 
@@ -36,7 +36,7 @@ class TableApi {
     );
   }
 
-  Future<List<PublicTableModel>> getPublicTables(String companyId) async {
+  Future<List<CustomerTableModel>> getPublicTables(String companyId) async {
     final url = Uri.parse(
       '${ApiClient.baseUrl}/public/companies/${companyId}/tables',
     );
@@ -45,7 +45,7 @@ class TableApi {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => PublicTableModel.fromJson(json)).toList();
+      return data.map((json) => CustomerTableModel.fromJson(json)).toList();
     }
     throw Exception(
       'Failed to get tables: ${response.statusCode} ${response.body}',
@@ -53,14 +53,14 @@ class TableApi {
     );
   }
 
-  Future<PublicTableModel> getPublicTable(String tableId) async {
+  Future<CustomerTableModel> getPublicTable(String tableId) async {
     final url = Uri.parse('${ApiClient.baseUrl}/tables/${tableId}');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return PublicTableModel.fromJson(data);
+      return CustomerTableModel.fromJson(data);
     }
     throw Exception(
       'Failed to get a table: ${response.statusCode} ${response.body}',

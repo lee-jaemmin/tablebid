@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/customer_table_model.dart';
 
 class PublicTableGrid extends StatelessWidget {
-  final List<PublicTableModel> tables;
+  final List<CustomerTableModel> tables;
   final VoidCallback onTableTap;
   // 로그인 스크린 보내는 함수
 

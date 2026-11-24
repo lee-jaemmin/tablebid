@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tablebid/customer/customer_bid_list_screen.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/customer_table_model.dart';
 import 'package:tablebid/route/route_error_screen.dart';
 import 'package:tablebid/services/table_api.dart';
 
@@ -21,7 +21,7 @@ class CustomerBidListRoutePage extends StatefulWidget {
 }
 
 class _CustomerBidListRoutePageState extends State<CustomerBidListRoutePage> {
-  late Future<PublicTableModel> _tableFuture;
+  late Future<CustomerTableModel> _tableFuture;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _CustomerBidListRoutePageState extends State<CustomerBidListRoutePage> {
     if (user == null) {
       return const RouteErrorScreen(message: '로그인이 필요합니다.');
     }
-    return FutureBuilder<PublicTableModel>(
+    return FutureBuilder<CustomerTableModel>(
       future: _tableFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {

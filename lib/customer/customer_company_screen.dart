@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:tablebid/customer/customer_bid_alert.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/customer_table_model.dart';
 import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/customer/customer_table_grid.dart';
 import 'package:tablebid/customer/section_chip.dart';
@@ -20,7 +20,7 @@ import 'package:tablebid/widgets/company_floor_image.dart';
 class CustomerCompanyScreen extends StatefulWidget {
   final CompanyModel company;
   final String userId;
-  final Future<void> Function(PublicTableModel)? onTableSelected;
+  final Future<void> Function(CustomerTableModel)? onTableSelected;
 
   const CustomerCompanyScreen({
     required this.company,
@@ -33,7 +33,7 @@ class CustomerCompanyScreen extends StatefulWidget {
 }
 
 class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
-  List<PublicTableModel> _tables = [];
+  List<CustomerTableModel> _tables = [];
   StreamSubscription<WebSocketEvent>? _webSocketSubscription;
   UserModel? _user;
   bool _isTableLoading = true;
@@ -109,7 +109,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
       if (!mounted) return;
       try {
         if (event.type == 'table_updated') {
-          final updatedTable = PublicTableModel.fromJson(event.payload);
+          final updatedTable = CustomerTableModel.fromJson(event.payload);
           final index = _tables.indexWhere(
             (table) => table.id == updatedTable.id,
           );
@@ -131,7 +131,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
     super.dispose();
   }
 
-  Future<void> _openTable(PublicTableModel table) async {
+  Future<void> _openTable(CustomerTableModel table) async {
     final user = _user;
     if (user == null) {
       return;

@@ -6,7 +6,7 @@ import 'package:tablebid/route/route_names.dart';
 import 'package:tablebid/customer/section_chip.dart';
 import 'package:tablebid/methods/natural_sort.dart';
 import 'package:tablebid/models/company_model.dart';
-import 'package:tablebid/models/public_table_model.dart';
+import 'package:tablebid/models/customer_table_model.dart';
 import 'package:tablebid/services/table_api.dart';
 import 'package:tablebid/widgets/company_floor_image.dart';
 
@@ -22,7 +22,7 @@ class PublicCompanyScreen extends StatefulWidget {
 }
 
 class _CustomerCompanyScreenState extends State<PublicCompanyScreen> {
-  List<PublicTableModel> _tables = [];
+  List<CustomerTableModel> _tables = [];
   bool _isTableLoading = true;
   bool _hasError = false;
 

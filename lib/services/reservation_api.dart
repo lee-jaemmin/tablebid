@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/methods/firebase_auth.dart';
-import 'package:tablebid/models/public_reservation_model.dart';
+import 'package:tablebid/models/customer_reservation_model.dart';
 import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/table_model.dart';
 import 'package:tablebid/screens/reservation_purchase_screen.dart';
@@ -39,7 +39,7 @@ class ReservationApi {
   }
 
   // 손님용
-  Future<List<PublicReservationModel>> getReservationsByTablePublic(
+  Future<List<CustomerReservationModel>> getReservationsByTablePublic(
     String tableId,
   ) async {
     final url = Uri.parse(
@@ -50,7 +50,7 @@ class ReservationApi {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-      return data.map((elem) => PublicReservationModel.fromJson(elem)).toList();
+      return data.map((elem) => CustomerReservationModel.fromJson(elem)).toList();
     }
     throw Exception(
       "Failed to get Reservations: ${response.statusCode} ${response.body}",
