@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/api_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+
+enum WebSocketRole { staff, customer }
 
 enum WebSocketConnectionState {
   disconnected,
@@ -28,43 +29,52 @@ class WebsocketService {
   int _connectionGeneration = 0; // 같은 회사에서 빠르게 재연결 시 구분자 역할.
   bool _manuallyDisconnected = false;
   WebSocketConnectionState _state = WebSocketConnectionState.disconnected;
-
+  WebSocketRole? _role;
   Stream<WebSocketEvent> get events => _eventController.stream;
   WebSocketConnectionState get state => _state;
 
-  Future<void> connect(String companyId) async {
+  Future<void> connect(String companyId, {required WebSocketRole role}) async {
     if (_companyId == companyId &&
+        _role == role &&
         (_state == WebSocketConnectionState.connected ||
             _state == WebSocketConnectionState.connecting ||
             _state == WebSocketConnectionState.reconnecting)) {
-              // 옮은 회사에 잘 연결되어있으면
+      // 옮은 회사에 잘 연결되어있고 역할이 일치하면
       return; // 함수 종료
     }
 
     await disconnect();
     _companyId = companyId;
+    _role = role;
     _manuallyDisconnected = false;
     final generation = _connectionGeneration;
-    await _openConnection(companyId, generation);
+    await _openConnection(companyId, role, generation);
   }
 
-  Future<void> _openConnection(String companyId, int generation) async {
+  Future<void> _openConnection(
+    String companyId,
+    WebSocketRole role,
+    int generation,
+  ) async {
     if (_manuallyDisconnected ||
         _companyId != companyId ||
+        _role != role ||
         generation != _connectionGeneration) {
       return;
     }
 
     _state = WebSocketConnectionState.connecting;
     try {
-      final channel = WebSocketChannel.connect(
-        Uri.parse(ApiClient.getWebSocketUrl(companyId)),
-      );
+      final url = role == WebSocketRole.staff
+          ? ApiClient.getWebSocketUrl(companyId)
+          : ApiClient.getCustomerWebSocketUrl(companyId);
+      final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
       await channel.ready;
 
       if (_manuallyDisconnected ||
           _companyId != companyId ||
+          _role != role ||
           generation != _connectionGeneration) {
         await channel.sink.close();
         return;
@@ -73,12 +83,12 @@ class WebsocketService {
       _state = WebSocketConnectionState.connected;
       _socketSubscription = channel.stream.listen(
         _handleMessage,
-        onError: (_) => _handleDisconnection(companyId, generation),
-        onDone: () => _handleDisconnection(companyId, generation),
+        onError: (_) => _handleDisconnection(companyId, role, generation),
+        onDone: () => _handleDisconnection(companyId, role, generation),
         cancelOnError: true,
       );
     } catch (_) {
-      _scheduleReconnect(companyId, generation);
+      _scheduleReconnect(companyId, role, generation);
     }
   }
 
@@ -92,16 +102,25 @@ class WebsocketService {
     }
   }
 
-  void _handleDisconnection(String companyId, int generation) {
-    if (generation != _connectionGeneration) return;
+  void _handleDisconnection(
+    String companyId,
+    WebSocketRole role,
+    int generation,
+  ) {
+    if (generation != _connectionGeneration || role != _role) return;
     _socketSubscription = null;
     _channel = null;
-    _scheduleReconnect(companyId, generation);
+    _scheduleReconnect(companyId, role, generation);
   }
 
-  void _scheduleReconnect(String companyId, int generation) {
+  void _scheduleReconnect(
+    String companyId,
+    WebSocketRole role,
+    int generation,
+  ) {
     if (_manuallyDisconnected ||
         _companyId != companyId ||
+        _role != role ||
         generation != _connectionGeneration ||
         _reconnectTimer != null) {
       return;
@@ -119,7 +138,7 @@ class WebsocketService {
 
     _reconnectTimer = Timer(Duration(seconds: seconds), () {
       _reconnectTimer = null;
-      _openConnection(companyId, generation);
+      _openConnection(companyId, role, generation);
     });
   }
 

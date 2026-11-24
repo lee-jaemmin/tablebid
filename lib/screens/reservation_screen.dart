@@ -94,7 +94,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         print('웹소켓 이벤트 처리 실패: $error');
       },
     );
-    service.connect(widget.companyId);
+    service.connect(widget.companyId, role: WebSocketRole.staff);
   }
 
   Future<void> allowAllBids() async {

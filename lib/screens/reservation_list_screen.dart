@@ -64,7 +64,7 @@ class _ReservationListScreenState extends State<ReservationListScreen> {
         print(e);
       }
     });
-    service.connect(widget.companyId);
+    service.connect(widget.companyId, role: WebSocketRole.staff);
   }
 
   @override

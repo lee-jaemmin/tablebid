@@ -16,4 +16,17 @@ class ApiClient {
       path: '/ws/companies/$companyId',
     ).toString();
   }
+
+  static String getCustomerWebSocketUrl(String companyId) {
+    final apiUri = Uri.parse(baseUrl);
+
+    final wsScheme = apiUri.scheme == 'https' ? 'wss' : 'ws';
+
+    return Uri(
+      scheme: wsScheme,
+      host: apiUri.host,
+      port: apiUri.hasPort ? apiUri.port : null,
+      path: '/ws/customers/companies/$companyId',
+    ).toString();
+  }
 }

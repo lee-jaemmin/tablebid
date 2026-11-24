@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         print('웹소켓 이벤트 처리 실패: $error');
       },
     );
-    service.connect(companyId);
+    service.connect(companyId, role: WebSocketRole.staff);
   }
 
   // 전체 조회 필요할 때 (테이블 수정, 삭제, 추가 등)
@@ -247,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _refreshCount++;
       });
 
-      await WebsocketService.instance.connect(_company!.id);
+      await WebsocketService.instance.connect(_company!.id, role: WebSocketRole.staff);
     } catch (e) {
       print('홈 새로고침 실패: $e');
       if (!mounted) return;
@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         _refreshCount++;
       });
 
-      await WebsocketService.instance.connect(company.id);
+      await WebsocketService.instance.connect(company.id, role: WebSocketRole.staff);
     } catch (e) {
       print('복귀 동기화 실패: $e');
     }

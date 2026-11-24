@@ -122,7 +122,7 @@ class _CustomerCompanyScreenState extends State<CustomerCompanyScreen> {
         _loadTables(showError: false);
       }
     });
-    service.connect(widget.company.id);
+    service.connect(widget.company.id, role: WebSocketRole.customer);
   }
 
   @override
