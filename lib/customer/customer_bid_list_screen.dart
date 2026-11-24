@@ -9,7 +9,6 @@ import 'package:tablebid/customer/customer_bid_modify_alert.dart';
 import 'package:tablebid/methods/reservation_phone_number.dart';
 import 'package:tablebid/models/customer_table_model.dart';
 import 'package:tablebid/models/customer_reservation_model.dart';
-import 'package:tablebid/models/reservation_model.dart';
 import 'package:tablebid/models/user_model.dart';
 import 'package:tablebid/models/web_socket_event.dart';
 import 'package:tablebid/services/reservation_api.dart';
@@ -36,7 +35,6 @@ class CustomerBidListScreen extends StatefulWidget {
 class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
   StreamSubscription<WebSocketEvent>? _webSocketSubscription;
   List<CustomerReservationModel> _reservations = [];
-  final Map<int, ReservationModel> _reservationDetails = {};
   Set<int> _myReservationIds = {};
   Future<void> _reservationUpdates = Future<void>.value();
   bool _isLoading = true;
@@ -60,25 +58,14 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     setState(() => _isLoading = true);
     try {
       final user = await UserApi().getUser(widget.userId);
-      final reservations = await ReservationApi().getReservationsByTable(
+      final reservations = await ReservationApi().getCustomerReservationsByTable(
         widget.table.id,
       );
       final myBids = await MyBidApi().getMyBids();
       reservations.sort((a, b) => (b.bidPrice ?? 0).compareTo(a.bidPrice ?? 0));
       if (!mounted) return;
       setState(() {
-        _reservationDetails
-          ..clear()
-          ..addEntries(reservations.map((item) => MapEntry(item.id, item)));
-        _reservations = reservations.map((item) => CustomerReservationModel(
-          id: item.id,
-          tableId: item.tableId,
-          bidPrice: item.bidPrice,
-          isFixed: item.isFixed,
-          fixedAt: item.fixedAt,
-          reservationTime: item.reservationTime,
-          arrivalAt: item.arrivalAt,
-        )).toList();
+        _reservations = reservations;
         _myReservationIds = myBids.map((item) => item.id).toSet();
         _user = user;
         _isLoading = false;
@@ -114,7 +101,6 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
       setState(() {
         if (event.type == 'reservation_deleted') {
           _reservations.removeWhere((item) => item.id == reservation.id);
-          _reservationDetails.remove(reservation.id);
         } else {
           final index = _reservations.indexWhere((item) => item.id == reservation.id);
           if (index == -1) {
@@ -137,11 +123,9 @@ class _CustomerBidListScreenState extends State<CustomerBidListScreen> {
     }
   }
 
-  String _customerName(int id) =>
-      _reservationDetails[id]?.customerName ?? _user!.userName;
+  String _customerName(int id) => _user!.userName;
 
   String _customerPhone(int id) =>
-      _reservationDetails[id]?.customerPhone ??
       toReservationDisplayPhone(_user!.phonenumber ?? '');
 
   @override
