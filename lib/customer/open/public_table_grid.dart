@@ -98,7 +98,7 @@ class PublicTableGrid extends StatelessWidget {
                         Text(
                           maxLines: 1,
                           '경매 마감',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          style: TextStyle(fontSize: 12, color: Colors.black),
                         ),
                         const SizedBox(width: 4),
                         Text(
